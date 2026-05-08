@@ -1,10 +1,57 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ModalBackGround from "../components/ModalBackGround"
 import DeckCreationModal from "../components/DeckCreationModal"
+import type { Deck } from "../types/Deck"
 
 function Decks() {
 
     const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
+    const [decks, setDecks] = useState<Deck[]>([])
+
+    function handleCreateDeck(deck: Deck) {
+        setDecks((prev) => [...prev, deck])
+        setBackGroundModalIsOpen(false)
+    }
+
+    useEffect(() => {
+        console.log(decks)
+    },[decks])
+
+    const msgNoDecks = (
+        <div 
+        className="empty-state" 
+        style={{gridColumn: "1 / -1"}}
+        >
+            <strong>Nenhum deck encontrado</strong>
+            <p>Crie uma coleção para começar.</p>
+        </div>
+    )
+
+    function escapeHtml(value: string) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    const listOfDeck = decks.map(deck => 
+        <button 
+        className="deck-card" 
+        data-deck-id={deck.id}
+        key={deck.id}
+        >
+            <span className="deck-emoji">
+                {escapeHtml(deck.emoji || "📚")}
+            </span>
+            <span>
+            <h3 className="deck-name">{escapeHtml(deck.name)}</h3>
+            <p className="deck-count">{deck.cards.length} {deck.cards.length === 1 ? "card" : "cards"}</p>
+            </span>
+        </button>
+    )
+    
 
     return (
     <>
@@ -43,11 +90,21 @@ function Decks() {
              />
 
             <h2 className="section-title">Coleções</h2>
-            <div className="deck-grid" id="deckGrid"></div>
+            <div className="deck-grid" id="deckGrid">
+                {
+                    decks.length === 0 ? 
+                        msgNoDecks
+                    :
+                    listOfDeck
+                }
+            </div>
         </section>
 
         <ModalBackGround isOpen={backGroundModalIsOpen} onClose={() => setBackGroundModalIsOpen(false)}> 
-            <DeckCreationModal onClose={() => setBackGroundModalIsOpen(false)}/>
+            <DeckCreationModal 
+            onClose={() => setBackGroundModalIsOpen(false)}
+            onCreateDeck={handleCreateDeck}
+            />
         </ModalBackGround>
     </>
     )

@@ -3,29 +3,44 @@
 type Context = "adjective" | "adverb" | "figurative" | "formal" | "informal" | "literal" | "modal verb" | "noun"
 | "phrase" | "preposition" | "slang" | "verb"
 
-type Example = {
+export type Example = {
     id: string;
-    example: string;
+    text: string;
 }
 
 type Meaning = {
     id: string;
     definition: string;
-    contexts: Context[];
+    contexts?: Context[];
     examples: Example[];
 };
+
+export type MeaningFormData = {
+    id: string;
+    definition: string;
+    contexts: string;
+    examples: Example[];
+}
 
 export type Card = {
     id: string;
     name: string;
-    context: Context;
+    context?: Context;
     synonym: string;
     phonetic: string;
     meanings: Meaning[]
 };
 
+export type CardFormData = {
+    name: string;
+    context: string;
+    synonym: string;
+    phonetic: string;
+    meanings: MeaningFormData[]
+}
+
 export type HelperCard = {
-    create: Card;
-    edit: Card;
+    create: CardFormData;
+    edit?: CardFormData;
 }
 

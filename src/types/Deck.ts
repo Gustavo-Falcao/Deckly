@@ -5,6 +5,6 @@ export type Deck = {
     name: string;
     emoji: string;
     helperCard: HelperCard;
-    criationDate: string;
+    creationDate: string;
     cards: Card[];
 };
