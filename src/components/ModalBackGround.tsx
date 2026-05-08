@@ -1,15 +1,34 @@
+import { createPortal } from "react-dom";
+
 type ModalBackGroundProps = {
-    isOpen: boolean
+    isOpen: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
 }
 
-function ModalBackGround({ isOpen }: ModalBackGroundProps) {
+function ModalBackGround({ isOpen, onClose, children}: ModalBackGroundProps) {
+    const modalRoot = document.getElementById("modal-root")
+
+    if(!modalRoot) {
+        return null
+    }
+    
     if(isOpen) {
-        return (         
+        return createPortal (         
             <div 
-            className="modal-backdrop" 
+            className="modal-backdrop active"
             id="deckModal"
-            ></div>  
-        )
+            onClick={onClose}
+            >
+                <div 
+                className="box-sheet"
+                onClick={(e) => e.stopPropagation()}
+                >
+                    {children}   
+                </div>
+            </div>,
+            modalRoot  
+        );
     }
 }
 

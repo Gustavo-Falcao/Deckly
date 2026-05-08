@@ -639,8 +639,12 @@ button {
   display: flex;
 }
 
-.sheet {
+.box-sheet {
   width: min(398px, 100%);
+}
+
+.sheet {
+  width: 100%;
   border-radius: 28px;
   background: var(--surface);
   padding: 18px;

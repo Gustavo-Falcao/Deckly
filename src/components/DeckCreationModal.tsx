@@ -1,4 +1,9 @@
-function DeckCreationModal() {
+type DeckCreationModalProps = {
+    onClose: () => void
+}
+
+function DeckCreationModal({ onClose }: DeckCreationModalProps) {
+//colocar state dos inputs e pegar parametro da funcao de setar os decks
     return (
         <div className="sheet">
             <h2>Novo deck</h2>
@@ -25,7 +30,9 @@ function DeckCreationModal() {
                     Criar deck
                 </button>
                 <button 
-                className="secondary-btn" id="closeDeckModal"
+                className="secondary-btn" 
+                id="closeDeckModal"
+                onClick={onClose}
                 >
                     Cancelar
                 </button>

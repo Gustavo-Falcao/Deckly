@@ -2,12 +2,9 @@ import Decks from "./Decks"
 import Cards from "./Cards"
 import { useState } from "react"
 import CriarCard from "./CriarCard"
-import ModalBackGround from "../components/ModalBackGround"
-
 
 function App() {
   const [page, setPage] = useState("decks")
-  const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false);
 
   return (
     <>
@@ -24,13 +21,13 @@ function App() {
             <path 
             d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5v-11Z" 
             stroke="currentColor" 
-            stroke-width="2" 
+            strokeWidth={2} 
             />
             <path 
             d="M8 9h8M8 13h5" 
             stroke="currentColor" 
-            stroke-width="2" 
-            stroke-linecap="round" 
+            strokeWidth={2} 
+            strokeLinecap="round" 
             />
           </svg>
           Decks
@@ -44,13 +41,13 @@ function App() {
             <path 
             d="M7 7.5h10M7 12h7M7 16.5h5" 
             stroke="currentColor" 
-            stroke-width="2" 
-            stroke-linecap="round" 
+            strokeWidth={2}
+            strokeLinecap="round" 
             />
             <path 
             d="M5.5 3.5h13A2.5 2.5 0 0 1 21 6v12a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18V6a2.5 2.5 0 0 1 2.5-2.5Z" 
             stroke="currentColor" 
-            stroke-width="2" 
+            strokeWidth={2}
             />
           </svg>
           Cards
@@ -64,15 +61,13 @@ function App() {
             <path 
             d="M12 5v14M5 12h14" 
             stroke="currentColor" 
-            stroke-width="2.4" 
-            stroke-linecap="round" 
+            strokeWidth={2.4} 
+            strokeLinecap="round" 
             />
           </svg>
           Novo
         </button>
       </nav>
-
-      <ModalBackGround isOpen={backGroundModalIsOpen}/>
     </>
   )
 }
