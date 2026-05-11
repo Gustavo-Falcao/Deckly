@@ -1,4 +1,30 @@
+import { useState, type JSX } from "react";
+import type { Deck } from "../types/Deck";
+
 function CriarCard() {
+
+    type DeckOption = {
+        id: string
+        name: string
+    }
+
+    const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
+            const valorLocalStorage = localStorage.getItem("_DECKS_")
+    
+            if(!valorLocalStorage)
+                return []
+    
+            return JSON.parse(valorLocalStorage);
+        })
+    const [nomeDeckEscolhido, setNomeDeckEscolhido] = useState("")
+    const optionDecks: DeckOption[] = decks.map((deck) => {
+        return {
+            id: deck.id,
+            name: deck.name
+        }
+    })
+
+
     return (
     <>
         <section className="screen active" id="screen-form">
@@ -8,8 +34,8 @@ function CriarCard() {
                     <path 
                     d="M18 6 6 18M6 6l12 12" 
                     stroke="currentColor" 
-                    stroke-width="2.4" 
-                    stroke-linecap="round" 
+                    strokeWidth="2.4" 
+                    strokeLinecap="round" 
                     />
                 </svg>
             </button>
@@ -22,7 +48,17 @@ function CriarCard() {
         <form className="form-card" id="cardForm">
             <div className="field">
                 <label htmlFor="cardDeck">Deck</label>
-                <select id="cardDeck" required></select>
+                <select 
+                id="cardDeck" 
+                required
+                value={nomeDeckEscolhido}
+                onChange={(e) => setNomeDeckEscolhido(e.target.value)}
+                >
+                    <option value="" hidden>Deck</option>
+                    {optionDecks.map((deck) : JSX.Element => 
+                        <option key={deck.id} value={deck.name}>{deck.name}</option>
+                    )}
+                </select>
             </div>
 
             <div className="field">

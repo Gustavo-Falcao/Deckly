@@ -6,7 +6,14 @@ import type { Deck } from "../types/Deck"
 function Decks() {
 
     const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
-    const [decks, setDecks] = useState<Deck[]>([])
+    const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
+        const valorLocalStorage = localStorage.getItem("_DECKS_")
+
+        if(!valorLocalStorage)
+            return []
+
+        return JSON.parse(valorLocalStorage);
+    })
 
     function handleCreateDeck(deck: Deck) {
         setDecks((prev) => [...prev, deck])
@@ -15,6 +22,8 @@ function Decks() {
 
     useEffect(() => {
         console.log(decks)
+        localStorage.setItem("_DECKS_", JSON.stringify(decks))
+
     },[decks])
 
     const msgNoDecks = (

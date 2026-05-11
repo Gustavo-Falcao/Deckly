@@ -8,9 +8,9 @@ function Cards() {
                         <path
                         d="M15 18l-6-6 6-6" 
                         stroke="currentColor" 
-                        stroke-width="2.4" 
-                        stroke-linecap="round" 
-                        stroke-linejoin="round" 
+                        strokeWidth="2.4" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
                         />
                     </svg>
                 </button>
@@ -23,8 +23,8 @@ function Cards() {
                         <path
                         d="M12 5v14M5 12h14" 
                         stroke="currentColor" 
-                        stroke-width="2.4" 
-                        stroke-linecap="round" 
+                        strokeWidth="2.4" 
+                        strokeLinecap="round" 
                         />
                     </svg>
                 </button>
