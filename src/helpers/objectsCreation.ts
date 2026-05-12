@@ -31,7 +31,7 @@ function createEmptyMeaning(): MeaningFormData  {
     }
 }
 
-function createEmptyCardFormData(): CardFormData {
+export function createEmptyCardFormData(): CardFormData {
     return {
         name: "",
         context: "",
