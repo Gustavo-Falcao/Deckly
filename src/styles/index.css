@@ -439,6 +439,10 @@ button {
   box-shadow: var(--shadow);
 }
 
+.choose-deck {
+  margin-top: 22px;
+}
+
 .field {
   margin-bottom: 14px;
 }
@@ -615,6 +619,7 @@ button {
   gap: 3px;
   font-size: 0.72rem;
   font-weight: 900;
+  text-decoration: none;
 }
 
 .nav-item svg {

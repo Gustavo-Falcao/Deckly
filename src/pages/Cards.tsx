@@ -1,4 +1,22 @@
+import { useState, type JSX } from "react"
+import type { DeckOption, Deck } from "../types/Deck"
+
 function Cards() {
+
+    const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
+                const valorLocalStorage = localStorage.getItem("_DECKS_")
+        
+                return valorLocalStorage ? JSON.parse(valorLocalStorage) : []
+            })
+    const [idDeckEscolhido, setIdDeckEscolhido] = useState<string>("")
+    const optionDecks: DeckOption[] = decks.map((deck) => {
+        return {
+            id: deck.id,
+            name: deck.name
+        }
+    })
+    const deckEscolhido = decks.find(deck => deck.id === idDeckEscolhido) ?? null
+
     return (
     <>
         <section className="screen active" id="screen-cards">
@@ -31,9 +49,53 @@ function Cards() {
             </header>
 
             <input className="search-box" id="cardSearch" type="search" placeholder="Buscar palavra no deck..." />
+            <div className="choose-deck">
+                <div className="field">
+                    <label htmlFor="cardDeck">Deck</label>
+                    <select 
+                    id="cardDeck" 
+                    required
+                    value={idDeckEscolhido}
+                    onChange={(e) => setIdDeckEscolhido(e.target.value)}
+                    >
+                        <option value="" hidden>Deck</option>
+                        {optionDecks.map((deck) : JSX.Element => 
+                            <option key={deck.id} value={deck.id}>{deck.name}</option>
+                        )}
+                    </select>
+                </div>
+            </div>
 
             <h2 className="section-title">Cards</h2>
-            <div className="cards-list" id="cardsList"></div>
+            <div className="cards-list" id="cardsList">
+                {
+                    deckEscolhido === null ?
+                        <div className="empty-state">
+                            <strong>Nenhum Deck selecionado</strong>Escolha um deck para visualiazar os cards.
+                        </div>
+                    :
+                    deckEscolhido.cards.length === 0 ?
+                        <div className="empty-state">
+                            <strong>Nenhum card por aqui</strong>Toque em + para cadastrar sua primeira palavra.
+                        </div>
+                    :
+                    deckEscolhido.cards.map((card) :JSX.Element =>  
+                        <article key={card.id}>
+                            <div 
+                            className="word-card is-closed" 
+                            data-card-id={card.id} 
+                            role="button" 
+                            aria-haspopup="dialog">
+                                <h2 className="word-title">
+                                    {card.name}
+                                </h2>
+                            </div>
+                        </article>        
+                    )
+                    
+                    
+                }
+            </div>
         </section>
     </>
     )

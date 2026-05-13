@@ -1,14 +1,9 @@
 import { useState, type JSX } from "react";
-import type { Deck } from "../types/Deck";
+import type { Deck, DeckOption } from "../types/Deck";
 import type { CardFormData } from "../types/Card";
 import { createEmptyCardFormData } from "../helpers/objectsCreation"  
 
 function CriarCard() {
-
-    type DeckOption = {
-        id: string
-        name: string
-    }
 
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
             const valorLocalStorage = localStorage.getItem("_DECKS_")

@@ -8,3 +8,8 @@ export type Deck = {
     creationDate: string;
     cards: Card[];
 };
+
+export type DeckOption = {
+    id: string
+    name: string
+}
