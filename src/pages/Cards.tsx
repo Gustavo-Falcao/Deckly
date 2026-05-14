@@ -16,6 +16,7 @@ function Cards() {
         }
     })
     const deckEscolhido = decks.find(deck => deck.id === idDeckEscolhido) ?? null
+    const nomeDeckAtivo: string = deckEscolhido?.name || "Nenhum"
 
     return (
     <>
@@ -34,7 +35,7 @@ function Cards() {
                 </button>
                 <div style={{flex: 1}}>
                     <p className="eyebrow">Deck aberto</p>
-                    <h1 className="page-title" id="currentDeckTitle">Inglês</h1>
+                    <h1 className="page-title" id="currentDeckTitle">{nomeDeckAtivo}</h1>
                 </div>
                 <button className="icon-btn" id="newCardFromDeck" aria-label="Criar card">
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">

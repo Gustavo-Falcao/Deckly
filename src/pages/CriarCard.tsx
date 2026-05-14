@@ -32,6 +32,8 @@ function CriarCard() {
         return deck.helperCard.create;
     })
 
+    //criar elementos do formulario com base no objeto do cardCriacao 
+
     return (
     <>
         <section className="screen active" id="screen-form">
@@ -141,7 +143,9 @@ function CriarCard() {
                                 </select>
                                 <button className="inline-action add-tag" type="button">Adicionar</button>
                             </div>
-                            <div className="selected-tags"></div>
+                            <div className="selected-tags">
+                                <span className="empty-tags">Sem tag</span>
+                            </div>
                         </div>
 
                         <div className="examples-container">
@@ -174,7 +178,6 @@ function CriarCard() {
                     </div>
 
 
-
                     <button className="secondary-btn" type="button" id="addMeaning">
                         + Adicionar significado
                     </button>
@@ -185,45 +188,9 @@ function CriarCard() {
                     >Salvar card</button>
                     <div style={{height: "10px"}}></div>
                     <button className="danger-btn" type="button" id="deleteCardBtn">Excluir card</button>
-                    </>
-                        
+                    </>   
                 }
                 
-
-            {/* <div className="field">
-                <label htmlFor="wordInput">Palavra</label>
-                <input id="wordInput" type="text" placeholder="Ex: Strident" required />
-            </div>
-
-            <div className="two-cols">
-                <div className="field">
-                    <label htmlFor="typeInput">Tipo</label>
-                    <input id="typeInput" type="text" placeholder="adjective" />
-                </div>
-                <div className="field">
-                    <label htmlFor="synonymInput">Sinônimo</label>
-                    <input id="synonymInput" type="text" placeholder="loud" />
-                </div>
-            </div>
-
-            <div className="field">
-                <label htmlFor="phoneticInput">Pronúncia</label>
-                <input id="phoneticInput" type="text" placeholder="/ STRAI-dənt /" />
-            </div>
-
-            <div id="meaningsContainer"></div>
-
-            <button className="secondary-btn" type="button" id="addMeaning">
-                + Adicionar significado
-            </button>
-            <div style={{height: "12px"}}></div>
-            <button
-            className="primary-btn" 
-            type="submit"
-            onClick={mostrarQualDeckFoiEscolhido}
-            >Salvar card</button>
-            <div style={{height: "10px"}}></div>
-            <button className="danger-btn" type="button" id="deleteCardBtn">Excluir card</button> */}
         </form>
     </section>
     </>
