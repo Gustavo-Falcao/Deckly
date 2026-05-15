@@ -1,7 +1,10 @@
-
-
-type Context = "adjective" | "adverb" | "figurative" | "formal" | "informal" | "literal" | "modal verb" | "noun"
+export type Context = "adjective" | "adverb" | "figurative" | "formal" | "informal" | "literal" | "modal verb" | "noun"
 | "phrase" | "preposition" | "slang" | "verb"
+
+export type ContextObject = {
+    id: string;
+    context: Context;
+}
 
 export type Example = {
     id: string;
@@ -11,14 +14,14 @@ export type Example = {
 type Meaning = {
     id: string;
     definition: string;
-    contexts?: Context[];
+    contexts: ContextObject[];
     examples: Example[];
 };
 
 export type MeaningFormData = {
     id: string;
     definition: string;
-    contexts: string;
+    contexts: ContextObject[];
     examples: Example[];
 }
 
@@ -28,6 +31,7 @@ export type Card = {
     context?: Context;
     synonym: string;
     phonetic: string;
+    creationDate: string;
     meanings: Meaning[]
 };
 

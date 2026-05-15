@@ -133,6 +133,17 @@ button {
   border: 1px solid var(--line);
 }
 
+.preview-btn {
+  width: 100%;
+  border-radius: 18px;
+  padding: 14px 18px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  font-weight: 900;
+  border: 3px solid var(--line);
+  border-style: dashed;
+}
+
 .danger-btn {
   width: 100%;
   border-radius: 18px;
@@ -327,14 +338,73 @@ button {
   background: #e7ebf1;
 }
 
-.tag.blue {
-  color: var(--accent);
-  background: var(--accent-soft);
+.tag.figurative {
+    color: #d63384;
+    background-color: #fce4ec;
 }
 
-.tag.pink {
-  color: var(--pink);
-  background: var(--pink-soft);
+.tag.literal {
+    color: #0d6efd;
+    background-color: #e7f1ff;
+}
+
+.tag.informal {
+    color: #b45309;
+    background-color: #fef3c7; 
+}
+
+.tag.technical {
+    color: #0f766e;
+    background-color: #ccfbf1;
+}
+
+.tag.formal {
+    color: #6f42c1;
+    background-color: #e0cffc;
+}
+
+.tag.verb {
+    color: #15803d;
+    background-color: #dcfce7;
+}
+
+.tag.noun {
+    color: #475569;
+    background-color: #f1f5f9;
+}
+
+.tag.adjective {
+    color: #4338ca;
+    background-color: #e0e7ff;
+}
+
+.tag.adverb {
+    color: #c02a2a;
+    background-color: #fee2e2;
+}
+
+.tag.slang {
+    color: #854d0e;
+    background-color: #fef9c3;
+}
+
+.tag.preposition {
+    color: #0891b2;
+    background-color: #ecfeff;
+}
+
+.tag.modal-verb {
+    color: #065f46;
+    background-color: #d1fae5;
+}
+
+.tag.phrase {
+    color: #475569;   
+    background-color: #ffffff; 
+    border: 1px dashed #94a3b8; 
+    font-style: italic;    
+    border-radius: 4px;           
+    padding: 2px 8px;      
 }
 
 .meaning {
@@ -582,6 +652,11 @@ button {
 }
 
 .remove-example:disabled {
+  color: var(--muted-2);
+  cursor: default;
+}
+
+.remove-meaning:disabled {
   color: var(--muted-2);
   cursor: default;
 }
