@@ -89,11 +89,43 @@ function CriarCard() {
     }
 
     function handleSimpleChange(field: keyof CardFormData, value: string) {        
-        const currentValue = field === "context" ? value.trim() as Context : value.trim()
+        const currentValue = field === "context" ? value.trim() as Context : value
 
         setCardCriacao((prev) => (
             {...prev, [field]: currentValue}
         ))
+    }
+
+    function handleNestedChange(field: string, value: string, meaningId: string, exampleId?: string) {
+            
+        switch(field) {
+            case "definition":
+                setCardCriacao((prev) => (
+                    {...prev, meanings: prev.meanings.map(meaning => 
+                        meaning.id === meaningId ?
+                            {...meaning, definition: value}
+                        :
+                            meaning
+                        )}
+                ))
+            break
+            case "example":
+                setCardCriacao((prev) => (
+                    {...prev, meanings: prev.meanings.map(meaning => 
+                        meaning.id === meaningId ?
+                            {...meaning, examples: meaning.examples.map(example => 
+                                example.id === exampleId ?
+                                    {...example, text: value}
+                                :
+                                    example
+                            )}
+                        :
+                            meaning
+                    )}
+                ))
+            break
+            default: return
+        }
     }
 
     function adicionarSignificado() {
@@ -260,6 +292,7 @@ function CriarCard() {
                                     className="meaning-definition"
                                     placeholder="Explique o significado"
                                     value={meaning.definition}
+                                    onChange={(e) => handleNestedChange("definition", e.target.value, meaning.id)}
                                     >
                                     </textarea>
                                 </div>
@@ -322,7 +355,7 @@ function CriarCard() {
                                     {
                                     meaning.examples.map((example, index) =>
 
-                                        <div className="example-field">
+                                        <div className="example-field" key={example.id}>
                                             <div className="example-title">
                                                 <label>Exemplo {index+1}</label>
                                                 <button
@@ -338,6 +371,7 @@ function CriarCard() {
                                             className="meaning-example" 
                                             placeholder="Frase de exemplo"
                                             value={example.text}
+                                            onChange={(e) => handleNestedChange("example", e.target.value, meaning.id, example.id)}
                                             >
                                             </textarea>
                                         </div>
