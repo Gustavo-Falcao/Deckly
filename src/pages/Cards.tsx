@@ -3,15 +3,19 @@ import type { DeckOption, Deck } from "../types/Deck"
 import ModalBackGround from "../components/ModalBackGround"
 import type { Card } from "../types/Card"
 import CardComponent from "../components/CardComponent"
+import { useParams } from "react-router-dom"
 
 function Cards() {
-
+    const { idDeck } = useParams<{idDeck: string}>()
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
                 const valorLocalStorage = localStorage.getItem("_DECKS_")
         
                 return valorLocalStorage ? JSON.parse(valorLocalStorage) : []
             })
-    const [idDeckEscolhido, setIdDeckEscolhido] = useState<string>("")
+    const [idDeckEscolhido, setIdDeckEscolhido] = useState<string>((): string => {
+        console.log("Inicializando idDedckEscolhido com o id => " + idDeck)
+        return idDeck ? idDeck : ""
+    })
     const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
     const optionDecks: DeckOption[] = decks.map((deck) => {
         return {

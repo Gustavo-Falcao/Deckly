@@ -2,9 +2,10 @@ import { useEffect, useState } from "react"
 import ModalBackGround from "../components/ModalBackGround"
 import DeckCreationModal from "../components/DeckCreationModal"
 import type { Deck } from "../types/Deck"
+import { useNavigate } from "react-router-dom"
 
 function Decks() {
-
+    const navigate = useNavigate()
     const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
         const valorLocalStorage = localStorage.getItem("_DECKS_")
@@ -45,11 +46,16 @@ function Decks() {
         .replaceAll("'", "&#039;");
     }
 
+    function abrirDeck(deckId: string) {
+        navigate(`/decks/${deckId}/cards`);
+    }
+
     const listOfDeck = decks.map(deck => 
         <button 
         className="deck-card" 
         data-deck-id={deck.id}
         key={deck.id}
+        onClick={() => abrirDeck(deck.id)}
         >
             <span className="deck-emoji">
                 {escapeHtml(deck.emoji || "📚")}
