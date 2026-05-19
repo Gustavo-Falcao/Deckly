@@ -17,11 +17,10 @@ function ModalBackGround({ isOpen, onClose, children}: ModalBackGroundProps) {
         return createPortal (         
             <div 
             className="modal-backdrop active"
-            id="deckModal"
             onClick={onClose}
             >
                 <div 
-                className="box-sheet"
+                className="sheet card-view-sheet"
                 onClick={(e) => e.stopPropagation()}
                 >
                     {children}   

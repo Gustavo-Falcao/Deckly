@@ -11,7 +11,7 @@ export type Example = {
     text: string;
 }
 
-type Meaning = {
+export type Meaning = {
     id: string;
     definition: string;
     contexts: ContextObject[];
@@ -40,7 +40,7 @@ export type CardFormData = {
     context: string;
     synonym: string;
     phonetic: string;
-    meanings: MeaningFormData[]
+    meanings: Meaning[]
 }
 
 export type HelperCard = {

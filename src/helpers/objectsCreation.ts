@@ -1,5 +1,5 @@
 import type { Deck } from "../types/Deck"
-import type { CardFormData, Context, Example, HelperCard, MeaningFormData } from "../types/Card"
+import type { CardFormData, Context, Example, HelperCard, Meaning } from "../types/Card"
 import { getCurrentDate } from "./handleDate"
 
 export function createDeck(nome: string, emoji: string): Deck {
@@ -27,7 +27,7 @@ export function createContextObjectWithContext(context: Context) {
     }
 }
 
-export function createEmptyMeaning(): MeaningFormData  {
+export function createEmptyMeaning(): Meaning  {
     return {
         id: crypto.randomUUID(),
         definition: "",

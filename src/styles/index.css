@@ -308,6 +308,7 @@ button {
   overflow-y: auto;
   padding-right: 4px;
   scrollbar-width: thin;
+  padding-top: 12px;
 }
 
 .word-desc {
@@ -317,7 +318,8 @@ button {
   color: var(--muted);
   font-size: 1rem;
   font-weight: 850;
-  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eef0f4;
 }
 
 .tag {

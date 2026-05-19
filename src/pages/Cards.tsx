@@ -1,5 +1,8 @@
-import { useState, type JSX } from "react"
+import { useRef, useState, type JSX } from "react"
 import type { DeckOption, Deck } from "../types/Deck"
+import ModalBackGround from "../components/ModalBackGround"
+import type { Card } from "../types/Card"
+import CardComponent from "../components/CardComponent"
 
 function Cards() {
 
@@ -9,6 +12,7 @@ function Cards() {
                 return valorLocalStorage ? JSON.parse(valorLocalStorage) : []
             })
     const [idDeckEscolhido, setIdDeckEscolhido] = useState<string>("")
+    const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
     const optionDecks: DeckOption[] = decks.map((deck) => {
         return {
             id: deck.id,
@@ -17,6 +21,14 @@ function Cards() {
     })
     const deckEscolhido = decks.find(deck => deck.id === idDeckEscolhido) ?? null
     const nomeDeckAtivo: string = deckEscolhido?.name || "Nenhum"
+    const idCardAtivo = useRef("")
+
+
+    function findCard(): Card | undefined {
+        const idCard = idCardAtivo.current
+
+        return deckEscolhido?.cards.find(card => card.id === idCard)
+    }
 
     return (
     <>
@@ -81,7 +93,13 @@ function Cards() {
                         </div>
                     :
                     deckEscolhido.cards.map((card) :JSX.Element =>  
-                        <article key={card.id}>
+                        <article 
+                        key={card.id}
+                        onClick={() => {
+                            idCardAtivo.current = card.id;
+                            setBackGroundModalIsOpen(true)
+                        }}
+                        >
                             <div 
                             className="word-card is-closed" 
                             data-card-id={card.id} 
@@ -98,7 +116,12 @@ function Cards() {
                 }
             </div>
         </section>
+    
+        <ModalBackGround isOpen={backGroundModalIsOpen} onClose={() => setBackGroundModalIsOpen(false)}>
+            <CardComponent card={findCard()} onClose={() => setBackGroundModalIsOpen(false)} />
+        </ModalBackGround>
     </>
+
     )
 }
 
