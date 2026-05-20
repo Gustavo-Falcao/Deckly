@@ -4,9 +4,10 @@ type ModalBackGroundProps = {
     isOpen: boolean;
     onClose: () => void;
     children: React.ReactNode;
+    modalOpen: string
 }
 
-function ModalBackGround({ isOpen, onClose, children}: ModalBackGroundProps) {
+function ModalBackGround({ isOpen, onClose, modalOpen, children}: ModalBackGroundProps) {
     const modalRoot = document.getElementById("modal-root")
 
     if(!modalRoot) {
@@ -16,8 +17,13 @@ function ModalBackGround({ isOpen, onClose, children}: ModalBackGroundProps) {
     if(isOpen) {
         return createPortal (         
             <div 
-            className="modal-backdrop active"
-            onClick={onClose}
+            className={`modal-backdrop ${modalOpen === "delete" ? 'active-delete' : 'active'}`}
+            onClick={() => {
+                if(modalOpen === "delete") {
+                    return
+                }
+                onClose()
+            }}
             >
                 <div 
                 className="sheet card-view-sheet"

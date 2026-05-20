@@ -115,7 +115,10 @@ function Decks() {
             </div>
         </section>
 
-        <ModalBackGround isOpen={backGroundModalIsOpen} onClose={() => setBackGroundModalIsOpen(false)}> 
+        <ModalBackGround 
+        isOpen={backGroundModalIsOpen} 
+        modalOpen="deck-create"
+        onClose={() => setBackGroundModalIsOpen(false)}> 
             <DeckCreationModal 
             onClose={() => setBackGroundModalIsOpen(false)}
             onCreateDeck={handleCreateDeck}

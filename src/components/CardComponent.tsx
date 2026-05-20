@@ -3,6 +3,8 @@ import type { Card, Example } from "../types/Card"
 type CardProps = {
     card: Card | undefined
     onClose: () => void
+    isOpen: boolean
+    openDeleteCard: () => void
 }
 
 function isMostrarBackGroundExamples(examples: Example[]) {
@@ -14,8 +16,9 @@ function isMostrarBackGroundExamples(examples: Example[]) {
     return false
 }
 
-function CardComponent({card, onClose}: CardProps) {
-    if(!card) return
+function CardComponent({card, onClose, isOpen, openDeleteCard}: CardProps) {
+    
+    if(!card || !isOpen) return
     return (
         <article>
           <div className="word-card card-modal-card">
@@ -63,6 +66,7 @@ function CardComponent({card, onClose}: CardProps) {
             <button 
             className="small-action delete" 
             data-delete-id={card.id}
+            onClick={openDeleteCard}
             >
                 Excluir</button>
             <button 

@@ -719,10 +719,18 @@ button {
   justify-content: center;
   z-index: 20;
   padding: 16px;
+  backdrop-filter: blur(3px);
 }
 
 .modal-backdrop.active {
   display: flex;
+}
+
+.modal-backdrop.active-delete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .box-sheet {
@@ -736,6 +744,58 @@ button {
   padding: 18px;
   box-shadow: var(--shadow);
   animation: slideUp 180ms ease-out;
+}
+
+.box-delete-card {
+  width: 100%;
+  border-radius: 28px;
+  background-color: rgba(255, 255, 255, 0.801);
+  backdrop-filter: blur(2px);
+  padding: 20px;
+  animation: slideUp 180ms ease-out;
+}
+
+.campo-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.campo-info > h2 {
+  font-size: 18px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.campo-info > p {
+  font-size: 14px;
+  color: #686767;
+  text-align: left;
+  margin-top: 7px;
+  margin-bottom: 20px;
+}
+
+.options-delete-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.bot-modal-delete-card {
+  width: 100%;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: rgba(107, 107, 107, 0.178);
+  padding: 12px 37px;
+  border-radius: 50px;
+  border-style: none;
+  letter-spacing: .2px;
+}
+
+.bot-modal-delete-card.fechar {
+  color: rgba(255, 0, 0, 0.849);
 }
 
 @keyframes slideUp {

@@ -3,9 +3,11 @@ import type { DeckOption, Deck } from "../types/Deck"
 import ModalBackGround from "../components/ModalBackGround"
 import type { Card } from "../types/Card"
 import CardComponent from "../components/CardComponent"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
+import RemoveCardModal from "../components/RemoveCardModal"
 
 function Cards() {
+    const navigate = useNavigate()
     const { idDeck } = useParams<{idDeck: string}>()
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
                 const valorLocalStorage = localStorage.getItem("_DECKS_")
@@ -13,7 +15,6 @@ function Cards() {
                 return valorLocalStorage ? JSON.parse(valorLocalStorage) : []
             })
     const [idDeckEscolhido, setIdDeckEscolhido] = useState<string>((): string => {
-        console.log("Inicializando idDedckEscolhido com o id => " + idDeck)
         return idDeck ? idDeck : ""
     })
     const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
@@ -26,7 +27,8 @@ function Cards() {
     const deckEscolhido = decks.find(deck => deck.id === idDeckEscolhido) ?? null
     const nomeDeckAtivo: string = deckEscolhido?.name || "Nenhum"
     const idCardAtivo = useRef("")
-
+    const [cardModalIsOpen, setCardModalIsOpen] = useState(false)
+    const [deleteCardModalIsOpen, setDeleteCardModalIsOpen] = useState(false)
 
     function findCard(): Card | undefined {
         const idCard = idCardAtivo.current
@@ -34,11 +36,45 @@ function Cards() {
         return deckEscolhido?.cards.find(card => card.id === idCard)
     }
 
+    function voltarParaDecks() {
+        navigate(`/`)
+    }
+
+    function abrirCriarCard() {
+        if(!idDeckEscolhido) return
+
+        navigate(`/decks/${idDeckEscolhido}/cards/novo`)
+    }
+
+    function openCardModal(cardId: string) {
+        idCardAtivo.current = cardId
+        setBackGroundModalIsOpen(true)
+        setCardModalIsOpen(true)
+    }
+
+    function fecharCardModal() {
+        setBackGroundModalIsOpen(false)
+        setCardModalIsOpen(false)
+    }
+
+    function fecharDeleteCardModal() {
+        setDeleteCardModalIsOpen(false)
+    }
+
+    function deletarCard() {
+        
+    }
+
     return (
     <>
         <section className="screen active" id="screen-cards">
             <header className="topbar">
-                <button className="icon-btn" id="backToDecks" aria-label="Voltar para decks">
+                <button 
+                className="icon-btn" 
+                id="backToDecks" 
+                aria-label="Voltar para decks"
+                onClick={() => voltarParaDecks()}
+                >
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path
                         d="M15 18l-6-6 6-6" 
@@ -53,7 +89,9 @@ function Cards() {
                     <p className="eyebrow">Deck aberto</p>
                     <h1 className="page-title" id="currentDeckTitle">{nomeDeckAtivo}</h1>
                 </div>
-                <button className="icon-btn" id="newCardFromDeck" aria-label="Criar card">
+                <button className="icon-btn" id="newCardFromDeck" aria-label="Criar card"
+                onClick={() => abrirCriarCard()}
+                >
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path
                         d="M12 5v14M5 12h14" 
@@ -99,10 +137,7 @@ function Cards() {
                     deckEscolhido.cards.map((card) :JSX.Element =>  
                         <article 
                         key={card.id}
-                        onClick={() => {
-                            idCardAtivo.current = card.id;
-                            setBackGroundModalIsOpen(true)
-                        }}
+                        onClick={() => openCardModal(card.id)}
                         >
                             <div 
                             className="word-card is-closed" 
@@ -121,8 +156,32 @@ function Cards() {
             </div>
         </section>
     
-        <ModalBackGround isOpen={backGroundModalIsOpen} onClose={() => setBackGroundModalIsOpen(false)}>
-            <CardComponent card={findCard()} onClose={() => setBackGroundModalIsOpen(false)} />
+        <ModalBackGround isOpen={backGroundModalIsOpen} onClose={() => {
+            if(cardModalIsOpen) {
+                fecharCardModal()   
+            }
+
+            if(deleteCardModalIsOpen) {
+                fecharDeleteCardModal()
+            }}}
+            modalOpen={cardModalIsOpen ? "card" : deleteCardModalIsOpen ? "delete" : ""}
+            >
+            <CardComponent 
+            card={findCard()} 
+            onClose={() => fecharCardModal()} 
+            isOpen={cardModalIsOpen}
+            openDeleteCard={() => {
+                setDeleteCardModalIsOpen(true) 
+                setCardModalIsOpen(false)
+            }}
+            />
+
+            <RemoveCardModal 
+            onClose={() => {
+                fecharDeleteCardModal()
+                setCardModalIsOpen(true)
+                }} 
+            isOpen={deleteCardModalIsOpen}/>
         </ModalBackGround>
     </>
 

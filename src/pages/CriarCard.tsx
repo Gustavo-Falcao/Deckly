@@ -4,9 +4,11 @@ import type { CardFormData, Context, Card } from "../types/Card";
 import { createEmptyCardFormData, createEmptyMeaning, createContextObjectWithContext, createEmptyExample } from "../helpers/objectsCreation"  
 import ModalBackGround from "../components/ModalBackGround";
 import CardPreview from "../components/CardPreview";
+import { useParams, useNavigate } from "react-router-dom";
 
 function CriarCard() {
-
+    const { idDeck } = useParams<{idDeck: string}>()
+    const navigate = useNavigate()
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
             const valorLocalStorage = localStorage.getItem("_DECKS_")
     
@@ -15,7 +17,9 @@ function CriarCard() {
     
             return JSON.parse(valorLocalStorage);
         })
-    const [idDeckEscolhido, setIdDeckEscolhido] = useState("")
+    const [idDeckEscolhido, setIdDeckEscolhido] = useState((): string => {
+        return idDeck ? idDeck : "" 
+    })
     const optionDecks: DeckOption[] = decks.map((deck) => {
         return {
             id: deck.id,
@@ -247,11 +251,19 @@ function CriarCard() {
         setCardCriacao(emptyCardCriacao)
     }
 
+    function voltarParaCards() {
+        if(!idDeckEscolhido) return
+
+        navigate(`/decks/${idDeckEscolhido}/cards`)
+    }
+
     return (
     <>
         <section className="screen active" id="screen-form">
         <header className="topbar">
-            <button className="icon-btn" id="cancelForm" aria-label="Cancelar">
+            <button className="icon-btn" id="cancelForm" aria-label="Cancelar"
+            onClick={() => voltarParaCards()}
+            >
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path 
                     d="M18 6 6 18M6 6l12 12" 
