@@ -10,12 +10,12 @@ function App() {
     <>
       <main className="app">
         <Routes>
-          <Route path="/" element={<Decks/>} />
+          <Route path="/decks" element={<Decks/>} />
           <Route path="/cards" element={<Cards />} />
           <Route path="/decks/:idDeck/cards" element={<Cards/>} />
-          <Route path="/novo" element={<CriarCard/>} />
-          <Route path="/decks/:idDeck/cards/novo" element={<CriarCard/>}/>
-          <Route path="/decks/:idDeck/cards/:idCard/editar" element={<CriarCard/>} />
+          <Route path="/novo" element={<CriarCard mode="criar"/>} />
+          <Route path="/decks/:idDeck/cards/novo" element={<CriarCard mode="criar"/>}/>
+          <Route path="/decks/:idDeck/cards/:idCard/editar" element={<CriarCard mode="editar"/>} />
         </Routes>
       </main>
       

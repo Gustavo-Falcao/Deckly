@@ -43,8 +43,18 @@ export type CardFormData = {
     meanings: Meaning[]
 }
 
+export type CardEdit = {
+    id: string;
+    name: string;
+    context?: Context;
+    synonym: string;
+    phonetic: string;
+    creationDate: string;
+    meanings: Meaning[]
+}
+
 export type HelperCard = {
     create: CardFormData;
-    edit?: CardFormData;
+    edit?: CardEdit;
 }
 

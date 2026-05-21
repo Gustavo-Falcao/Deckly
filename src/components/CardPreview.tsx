@@ -1,8 +1,8 @@
-import type { CardFormData, Example } from "../types/Card";
+import type { CardEdit, CardFormData, Example } from "../types/Card";
 
 
 type CardPreviewProps = {
-    card: CardFormData
+    card: CardFormData | CardEdit | undefined
     onClose: () => void
 }
 
@@ -16,6 +16,8 @@ function CardPreview({card, onClose}: CardPreviewProps) {
 
         return false
     }
+
+    if(!card) return
 
     return (
         <article>

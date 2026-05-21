@@ -5,6 +5,7 @@ type CardProps = {
     onClose: () => void
     isOpen: boolean
     openDeleteCard: () => void
+    openEditCard: () => void
 }
 
 function isMostrarBackGroundExamples(examples: Example[]) {
@@ -16,7 +17,7 @@ function isMostrarBackGroundExamples(examples: Example[]) {
     return false
 }
 
-function CardComponent({card, onClose, isOpen, openDeleteCard}: CardProps) {
+function CardComponent({card, onClose, isOpen, openDeleteCard, openEditCard}: CardProps) {
     
     if(!card || !isOpen) return
     return (
@@ -61,6 +62,7 @@ function CardComponent({card, onClose, isOpen, openDeleteCard}: CardProps) {
             <button 
             className="small-action" 
             data-edit-id={card.id}
+            onClick={openEditCard}
             >
                 Editar</button>
             <button 
@@ -68,17 +70,14 @@ function CardComponent({card, onClose, isOpen, openDeleteCard}: CardProps) {
             data-delete-id={card.id}
             onClick={openDeleteCard}
             >
-                Excluir</button>
+                Excluir
+            </button>
             <button 
             className="small-action" 
             id="closeCardModalBtn"
             onClick={onClose}
             >
-                Fechar</button>
-            <button
-            className="small-action"
-            >
-                Mover
+                Fechar
             </button>
           </div>
         </article>

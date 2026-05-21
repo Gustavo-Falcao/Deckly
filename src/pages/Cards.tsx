@@ -1,75 +1,97 @@
-import { useEffect, useRef, useState, type JSX } from "react"
+import { useEffect, useState, type JSX } from "react"
 import type { DeckOption, Deck } from "../types/Deck"
 import ModalBackGround from "../components/ModalBackGround"
-import type { Card } from "../types/Card"
+import type { Card, CardEdit } from "../types/Card"
 import CardComponent from "../components/CardComponent"
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import RemoveCardModal from "../components/RemoveCardModal"
 
 function Cards() {
+    const { idDeck } = useParams<{ idDeck: string }>()
     const navigate = useNavigate()
-    const { idDeck } = useParams<{idDeck: string}>()
+    const [searchParams, setSearchParams] = useSearchParams()
+    
+    const backGroundModalIsOpen = searchParams.get("backgroundModal") === "true"
+    const modalMode = searchParams.get("modalMode")
+    const idCardAtivo = searchParams.get("idCard")
+    const cardModalIsOpen = modalMode === "card"
+    const deleteCardModalIsOpen = modalMode === "deleteCard"
+    
+    const[idDeckAtivo, setIdDeckAtivo] = useState(() => {
+        return idDeck ? idDeck : ""
+    })
+
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
                 const valorLocalStorage = localStorage.getItem("_DECKS_")
         
                 return valorLocalStorage ? JSON.parse(valorLocalStorage) : []
             })
-    const [idDeckEscolhido, setIdDeckEscolhido] = useState<string>((): string => {
-        return idDeck ? idDeck : ""
-    })
-    const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
+
     const optionDecks: DeckOption[] = decks.map((deck) => {
         return {
             id: deck.id,
             name: deck.name
         }
     })
-    const deckEscolhido = decks.find(deck => deck.id === idDeckEscolhido) ?? null
+
+    const deckEscolhido = decks.find(deck => deck.id === idDeckAtivo) ?? null
     const nomeDeckAtivo: string = deckEscolhido?.name || "Nenhum"
-    const idCardAtivo = useRef("")
-    const [cardModalIsOpen, setCardModalIsOpen] = useState(false)
-    const [deleteCardModalIsOpen, setDeleteCardModalIsOpen] = useState(false)
 
     useEffect(() => {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
     }, [decks])
 
     function findCard(): Card | undefined {
-        const idCard = idCardAtivo.current
+        const idCard = idCardAtivo
 
         return deckEscolhido?.cards.find(card => card.id === idCard)
     }
 
     function voltarParaDecks() {
-        navigate(`/`)
+        navigate(`/decks`)
     }
 
     function abrirCriarCard() {
-        if(!idDeckEscolhido) return
+        if(!idDeckAtivo) return
 
-        navigate(`/decks/${idDeckEscolhido}/cards/novo`)
+        navigate(`/decks/${idDeckAtivo}/cards/novo`)
     }
 
     function openCardModal(cardId: string) {
-        idCardAtivo.current = cardId
-        setBackGroundModalIsOpen(true)
-        setCardModalIsOpen(true)
+        setSearchParams((params) => {
+            const newParams = new URLSearchParams(params)
+
+            newParams.set("backgroundModal", "true")
+            newParams.set("modalMode", "card")
+            newParams.set("idCard", cardId)
+
+            return newParams
+        })
     }
 
     function fecharCardModal() {
-        setBackGroundModalIsOpen(false)
-        setCardModalIsOpen(false)
+        setSearchParams({})
     }
 
+    function changeModalMode(newModalMode: "card" | "deleteCard") {
+        const newSearchParams = new URLSearchParams(searchParams)
+
+        newSearchParams.set("modalMode", newModalMode)
+
+        setSearchParams(newSearchParams)
+    }
+
+    function openDeleteCardModal() {
+        changeModalMode("deleteCard")
+    }
+ 
     function fecharDeleteCardModal() {
-        setDeleteCardModalIsOpen(false)
+        changeModalMode("card")
     }
 
     function deletarCard() {
-        const idCurrentCard = idCardAtivo.current
-        const idCurrentDeck = idDeckEscolhido
-        
-        idCardAtivo.current = ""
+        const idCurrentCard = idCardAtivo
+        const idCurrentDeck = idDeckAtivo
 
         setDecks((prevDecks) => prevDecks.map((deck) => 
             deck.id === idCurrentDeck ?
@@ -78,9 +100,40 @@ function Cards() {
                 deck
             ))
 
-        setDeleteCardModalIsOpen(false)
-        setCardModalIsOpen(false)
-        setBackGroundModalIsOpen(false)
+        fecharCardModal()
+    }
+
+    function abrirEdicaoCard() {
+        const cardAtivo = idCardAtivo
+        const idDeckAtual = idDeckAtivo
+
+        const card = findCard()
+
+        if(!card) return
+
+        const cardEdit: CardEdit = {
+            id: card.id,
+            name: card.name,
+            context: card.context,
+            synonym: card.synonym,
+            phonetic: card.phonetic,
+            creationDate: card.creationDate,
+            meanings: card.meanings
+        }
+
+        setDecks((prevDecks) => prevDecks.map((deck) => 
+            deck.id === idDeckAtual ?
+                {...deck, helperCard: {...deck.helperCard, edit: cardEdit}}
+            :
+                deck
+        ))
+
+        navigate(`/decks/${idDeckAtivo}/cards/${cardAtivo}/editar`)
+    }
+
+    function alterarDeck(deckId: string) {
+        setIdDeckAtivo(deckId)
+        navigate(`/decks/${deckId}/cards`)
     }
 
     return (
@@ -128,8 +181,8 @@ function Cards() {
                     <select 
                     id="cardDeck" 
                     required
-                    value={idDeckEscolhido}
-                    onChange={(e) => setIdDeckEscolhido(e.target.value)}
+                    value={idDeckAtivo}
+                    onChange={(e) => alterarDeck(e.target.value)}
                     >
                         <option value="" hidden>Deck</option>
                         {optionDecks.map((deck) : JSX.Element => 
@@ -188,16 +241,13 @@ function Cards() {
             card={findCard()} 
             onClose={() => fecharCardModal()} 
             isOpen={cardModalIsOpen}
-            openDeleteCard={() => {
-                setDeleteCardModalIsOpen(true) 
-                setCardModalIsOpen(false)
-            }}
+            openDeleteCard={openDeleteCardModal}
+            openEditCard={abrirEdicaoCard}
             />
 
             <RemoveCardModal 
             onClose={() => {
                 fecharDeleteCardModal()
-                setCardModalIsOpen(true)
                 }} 
             isOpen={deleteCardModalIsOpen}
             onDelete={deletarCard}

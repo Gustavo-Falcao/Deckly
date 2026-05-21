@@ -1,13 +1,21 @@
 import { useEffect, useRef, useState, type JSX } from "react";
 import type { Deck, DeckOption } from "../types/Deck";
-import type { CardFormData, Context, Card } from "../types/Card";
+import type { CardFormData, Context, Card, CardEdit } from "../types/Card";
 import { createEmptyCardFormData, createEmptyMeaning, createContextObjectWithContext, createEmptyExample } from "../helpers/objectsCreation"  
 import ModalBackGround from "../components/ModalBackGround";
 import CardPreview from "../components/CardPreview";
 import { useParams, useNavigate } from "react-router-dom";
+import { useHideOnScroll } from "../hooks/useHideOnScroll";
 
-function CriarCard() {
-    const { idDeck } = useParams<{idDeck: string}>()
+type CriarCardMode = "criar" | "editar"
+
+type CriarCardProps = {
+    mode: CriarCardMode
+}
+
+function CriarCard({ mode }: CriarCardProps) {
+    console.log("PRIMEIRO RENDER CRIAR CARD")
+    const { idDeck, idCard } = useParams<{idDeck: string, idCard: string}>()
     const navigate = useNavigate()
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
             const valorLocalStorage = localStorage.getItem("_DECKS_")
@@ -26,7 +34,30 @@ function CriarCard() {
             name: deck.name
         }
     })
-    const [cardCriacao, setCardCriacao] = useState<CardFormData>(() :CardFormData => {
+    const[isEditCardUndefined, setIsEditCardUndefined] = useState((): boolean => {
+        if(mode === "criar") {
+            console.log("mode é igual a criar, então retornou automaticamente false")
+            return false
+        } 
+
+        const deck = decks.find((deck) => deck.id === idDeckEscolhido)
+
+        if(!deck){
+            console.log("Deck não foi encontrado")
+            return true
+        } 
+
+        if(!deck.helperCard.edit) {
+            console.log("Deck foi encontrado, mas edit não existe")
+            return true
+        } 
+
+        return false
+    })
+
+    console.log("Card undefined logo depois da criacao" + isEditCardUndefined)
+
+    const [cardForm, setCardForm] = useState<CardFormData | CardEdit>(() :CardFormData | CardEdit => {
         if(decks.length === 0)
             return createEmptyCardFormData();
 
@@ -35,7 +66,14 @@ function CriarCard() {
         if(!deck)
             return createEmptyCardFormData();
 
-        return deck.helperCard.create;
+        if(mode === "criar")
+            return deck.helperCard.create
+
+        if(mode === "editar" && deck.helperCard.edit) 
+            return deck.helperCard.edit
+
+        return createEmptyCardFormData()
+            
     })
     const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
 
@@ -66,31 +104,50 @@ function CriarCard() {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
     }, [decks])
 
-    function updateCardCriacao(updater: (prevCardCriacao: CardFormData) => CardFormData) {
+    useEffect(() => {
+        if(mode === "criar") return
+        let editCardUndefined = false
+        const deck = decks.find((deck) => deck.id === idDeckEscolhido)
+
+        if(!deck) editCardUndefined = true
+
+        if(deck) {
+            if(!deck.helperCard.edit)
+            editCardUndefined = true
+        }
+        console.log(`Edit card undefined dentro do useEffet => ${editCardUndefined}`)
+        setIsEditCardUndefined(editCardUndefined)
+    }, [idDeckEscolhido])
+
+    const showTopArea = useHideOnScroll(80)
+
+    function updateCardForm(updater: (prevCardForm: CardFormData | CardEdit) => CardFormData | CardEdit) {
         if(!idDeckEscolhido) return
 
-        setCardCriacao((prevCardCriacao) => {
-            const updatedCardCriacao = updater(prevCardCriacao)
+        setCardForm((prevCardForm) => {
+            const updatedCardForm = updater(prevCardForm)
 
             if(debounceSaveFormTimeoutKey.current) {
                 clearTimeout(debounceSaveFormTimeoutKey.current)
             }
 
             const currentDeckId = idDeckEscolhido
+            const currentMode = mode
 
             debounceSaveFormTimeoutKey.current = setTimeout(() => {
                 setDecks((prevDecks) => prevDecks.map((deck) => 
                     deck.id === currentDeckId ?
-                        {...deck, helperCard: {...deck.helperCard, create: updatedCardCriacao}}
+                        {...deck, helperCard: {...deck.helperCard, [currentMode === "criar" ? "create" : "edit"]: updatedCardForm}}
                     :
                         deck
                     ))
             }, 600)
 
-
-            return updatedCardCriacao
+            return updatedCardForm
         })
     }
+
+    console.log("Card undefined depois do useEffect" + isEditCardUndefined)
 
     function handleSelectedDeck(idDeck: string) {
         const selectedDeck = decks.find(deck => deck.id === idDeck)
@@ -99,11 +156,12 @@ function CriarCard() {
             return
 
         setIdDeckEscolhido(idDeck)
-        setCardCriacao(selectedDeck.helperCard.create)
+        //setCardForm(selectedDeck.helperCard.create)
+        mode === "criar" ? navigate(`/decks/${idDeck}/cards/novo`) : navigate(`/decks/${idDeck}/cards/editar`)
     }
 
     function addContextToMeaning(idMeaning: string, selectedContext: Context) {
-        updateCardCriacao((prev) => (
+        updateCardForm((prev) => (
             {...prev, meanings: prev.meanings.map(meaning => 
                 meaning.id === idMeaning ? 
                     {...meaning, contexts: [...meaning.contexts, createContextObjectWithContext(selectedContext)]}
@@ -117,7 +175,7 @@ function CriarCard() {
     function handleSimpleChange(field: keyof CardFormData, value: string) {        
         const currentValue = field === "context" ? value.trim() as Context : value
 
-        updateCardCriacao((prev) => (
+        updateCardForm((prev) => (
             {...prev, [field]: currentValue}
         ))
     }
@@ -126,7 +184,7 @@ function CriarCard() {
             
         switch(field) {
             case "definition":
-                updateCardCriacao((prev) => (
+                updateCardForm((prev) => (
                     {...prev, meanings: prev.meanings.map(meaning => 
                         meaning.id === meaningId ?
                             {...meaning, definition: value}
@@ -136,7 +194,7 @@ function CriarCard() {
                 ))
             break
             case "example":
-                updateCardCriacao((prev) => (
+                updateCardForm((prev) => (
                     {...prev, meanings: prev.meanings.map(meaning => 
                         meaning.id === meaningId ?
                             {...meaning, examples: meaning.examples.map(example => 
@@ -155,20 +213,20 @@ function CriarCard() {
     }
 
     function adicionarSignificado() {
-        updateCardCriacao((prev) => (
+        updateCardForm((prev) => (
             {...prev, meanings: [...prev.meanings, createEmptyMeaning()]}
         ))
     }
 
     function removerSignificado(significadoId: string) {
-        updateCardCriacao((prev) => (
+        updateCardForm((prev) => (
             {...prev, meanings: prev.meanings.filter(meaning => 
                 meaning.id !== significadoId)}
         ))
     }
 
     function removerMeaningContext(significadoId: string, contextId: string) {
-        updateCardCriacao((prev) => (
+        updateCardForm((prev) => (
             {...prev, meanings: prev.meanings.map(meaning => 
                 meaning.id === significadoId ?
                     {...meaning, contexts: meaning.contexts.filter(context => 
@@ -181,7 +239,7 @@ function CriarCard() {
     }
 
     function adicionarExemplo(significadoId: string) {
-        updateCardCriacao((prev) => (
+        updateCardForm((prev) => (
             {...prev, meanings: prev.meanings.map(meaning => 
                 meaning.id === significadoId ?
                     {...meaning, examples: [...meaning.examples, createEmptyExample()]}
@@ -192,7 +250,7 @@ function CriarCard() {
     }
 
     function removerExemplo(significadoId: string, exampleId: string) {
-        updateCardCriacao((prev) => (
+        updateCardForm((prev) => (
             {...prev, meanings: prev.meanings.map(meaning => 
                 meaning.id === significadoId ?
                     {...meaning, examples: meaning.examples.filter(example => 
@@ -204,8 +262,12 @@ function CriarCard() {
         ))
     }
 
-    function criarCard() {
-        const cardToCreate: CardFormData = cardCriacao;
+    function isCardEdit(card: CardFormData | CardEdit): card is CardEdit {
+        return "id" in card
+    }
+
+    function salvarCard() {
+        const cardToCreate: CardFormData | CardEdit = cardForm;
 
         if(!cardToCreate.name){
             alert("Informe um nome ao card")
@@ -226,14 +288,32 @@ function CriarCard() {
             }
         }
 
+        const currentMode = mode
+
+        if(currentMode === "criar") {
+            if(!isCardEdit(cardToCreate)) {
+                criarCard(cardToCreate)
+                voltarParaCardsDoModeCreate()
+            } else {
+                alert("Não foi possível criar: id já existe.")
+            }
+        }
+        else {
+            isCardEdit(cardToCreate) ? salvarEdicaoCard(cardToCreate) : alert("Não foi possível editar: card sem id.")
+        }
+
+    }
+
+    function criarCard(cardFormCreate: CardFormData) {
+
         const card: Card = {
             id: crypto.randomUUID(),
-            name: cardToCreate.name,
-            context: cardToCreate.context as Context || undefined,
-            synonym: cardToCreate.synonym,
-            phonetic: cardToCreate.phonetic,
+            name: cardFormCreate.name,
+            context: cardFormCreate.context as Context || undefined,
+            synonym: cardFormCreate.synonym,
+            phonetic: cardFormCreate.phonetic,
             creationDate: new Date().toISOString(),
-            meanings: cardToCreate.meanings
+            meanings: cardFormCreate.meanings
         }
 
         const emptyCardCriacao = createEmptyCardFormData()
@@ -245,36 +325,75 @@ function CriarCard() {
                 deck
         ))
 
-        setCardCriacao(emptyCardCriacao)
+        setCardForm(emptyCardCriacao)
     }
 
-    function voltarParaCards() {
+    function salvarEdicaoCard(cardFormEdit: CardEdit) {
+
+        const cardAtualizado: Card = {
+            id: cardFormEdit.id,
+            name: cardFormEdit.name,
+            context: cardFormEdit.context,
+            synonym: cardFormEdit.synonym,
+            phonetic: cardFormEdit.phonetic,
+            creationDate: cardFormEdit.creationDate,
+            meanings: cardFormEdit.meanings
+        }
+
+        setDecks((prevDecks) => prevDecks.map((deck) => 
+            deck.id === idDeckEscolhido ?
+                {...deck, 
+                    cards: deck.cards.map((card) => 
+                        card.id === cardFormEdit.id ?
+                            cardAtualizado
+                        :
+                            card),
+                    helperCard: {...deck.helperCard, edit: undefined}}
+            :
+                deck
+        ))
+    }
+
+    function voltarParaCardsDoModeCreate() {
         if(!idDeckEscolhido) return
 
         navigate(`/decks/${idDeckEscolhido}/cards`)
     }
 
+    function voltarParaCardsDoModeEdit() {
+        if(!idDeckEscolhido) return
+
+        navigate(`/decks/${idDeckEscolhido}/cards?backgroundModal=true&modalMode=card&idCard=${idCard}`)
+    }
+
+    const titlePage = !mode || mode === "criar" ? "Criar" : "Editar"
+
+    console.log("Card undefined " + isEditCardUndefined)
     return (
     <>
         <section className="screen active" id="screen-form">
-        <header className="topbar">
-            <button className="icon-btn" id="cancelForm" aria-label="Cancelar"
-            onClick={() => voltarParaCards()}
-            >
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path 
-                    d="M18 6 6 18M6 6l12 12" 
-                    stroke="currentColor" 
-                    strokeWidth="2.4" 
-                    strokeLinecap="round" 
-                    />
-                </svg>
-            </button>
-            <div style={{flex: 1}}>
-            <p className="eyebrow">Card</p>
-            <h1 className="page-title" id="formTitle">Criar card</h1>
-            </div>
-        </header>
+        <div className={`top-area ${showTopArea ? "show" : "hide"}`}>
+            <header className="topbar">
+                <button className="icon-btn" id="cancelForm" aria-label="Cancelar"
+                onClick={() => {
+                    mode === "criar" ? voltarParaCardsDoModeCreate() : voltarParaCardsDoModeEdit()
+                }}
+                >
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path 
+                        d="M18 6 6 18M6 6l12 12" 
+                        stroke="currentColor" 
+                        strokeWidth="2.4" 
+                        strokeLinecap="round" 
+                        />
+                    </svg>
+                </button>
+                <div style={{flex: 1}}>
+                <p className="eyebrow">Card</p>
+                <h1 className="page-title" id="formTitle">{titlePage} card</h1>
+                </div>
+            </header>
+        </div>
 
         <form className="form-card" id="cardForm">
             <div className="field">
@@ -297,6 +416,11 @@ function CriarCard() {
                             <strong>Nenhum Deck selecionado</strong>Escolha um deck para criar o card
                         </div>
                     : 
+                    isEditCardUndefined ?
+                        <div className="empty-state">
+                            <strong>Nenhum card foi selecionado para editar</strong>Volte ao deck e escolha um card para editar.
+                        </div>
+                    :
                     <>
                     <div className="field">
                         <label htmlFor="wordInput">Palavra</label>
@@ -304,7 +428,7 @@ function CriarCard() {
                             id="wordInput" 
                             type="text" 
                             placeholder="Ex: Strident" 
-                            value={cardCriacao.name}
+                            value={cardForm.name}
                             onChange={(e) => handleSimpleChange("name", e.target.value)}
                             />
                     </div>
@@ -314,7 +438,7 @@ function CriarCard() {
                             <label htmlFor="typeInput">Tipo</label>
                             <select 
                             className="meaning-tag-select" 
-                            value={cardCriacao.context}
+                            value={cardForm.context}
                             onChange={(e) => handleSimpleChange("context", e.target.value)}
                             >
                             <option value="" hidden>Tipo</option>
@@ -329,7 +453,7 @@ function CriarCard() {
                                 id="synonymInput" 
                                 type="text" 
                                 placeholder="loud" 
-                                value={cardCriacao.synonym}
+                                value={cardForm.synonym}
                                 onChange={(e) => handleSimpleChange("synonym", e.target.value)}
                                 />
                         </div>
@@ -341,14 +465,14 @@ function CriarCard() {
                             id="phoneticInput" 
                             type="text" 
                             placeholder="/ STRAI-dənt /" 
-                            value={cardCriacao.phonetic}
+                            value={cardForm.phonetic}
                             onChange={(e) => handleSimpleChange("phonetic", e.target.value)}
                             />
                     </div>
 
                     <div>
 
-                        {cardCriacao.meanings.map((meaning, index: number) => 
+                        {cardForm.meanings.map((meaning, index: number) => 
                             <div 
                             className="meaning-form"
                             key={meaning.id}
@@ -358,7 +482,7 @@ function CriarCard() {
                                     <span>Significado {index+1}</span>
                                     <button 
                                     className="remove-meaning" type="button"
-                                    disabled={cardCriacao.meanings.length < 2}
+                                    disabled={cardForm.meanings.length < 2}
                                     onClick={() => removerSignificado(meaning.id)}
                                     >Remover</button>
                                 </div>
@@ -478,7 +602,7 @@ function CriarCard() {
                     <button 
                     className="primary-btn" 
                     type="submit"
-                    onClick={() => criarCard()}
+                    onClick={() => salvarCard()}
                     >Salvar card</button>
                     <div style={{height: "10px"}}></div>
                     <button 
@@ -487,6 +611,7 @@ function CriarCard() {
                     onClick={() => setBackGroundModalIsOpen(true)}
                     >Pré-visualizar card</button>
                     </>   
+
                 }
         </form>
         </section>
@@ -496,7 +621,7 @@ function CriarCard() {
         onClose={() => setBackGroundModalIsOpen(false)}
         modalOpen="card"
         >
-            <CardPreview card={cardCriacao} onClose={() => setBackGroundModalIsOpen(false)}/>
+            <CardPreview card={cardForm} onClose={() => setBackGroundModalIsOpen(false)}/>
         </ModalBackGround>
 
     </>

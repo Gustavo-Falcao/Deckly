@@ -53,7 +53,6 @@ button {
   min-height: 100vh;
   margin: 0 auto;
   position: relative;
-  overflow: hidden;
   padding: env(safe-area-inset-top) 16px calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 18px);
 }
 
@@ -828,4 +827,21 @@ button {
   background: transparent;
   box-shadow: none;
   padding: 0;
+}
+
+.top-area {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: transform 0.25s ease;
+  background-color: rgba(255, 255, 255, 0.466);
+  backdrop-filter: blur(5px);
+}
+
+.top-area.hide {
+  transform: translateY(-100%);
+}
+
+.top-area.show {
+  transform: translateY(0);
 }

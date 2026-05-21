@@ -6,6 +6,8 @@ function BottomNav() {
 
     console.log(`Nome do caminho atual => ${pathname}`)
 
+    const isDecksActive = pathname === "/decks"
+
     const isCardsActive = 
         pathname === "/cards" ||
         /^\/decks\/[^/]+\/cards$/.test(pathname);
@@ -15,13 +17,22 @@ function BottomNav() {
         pathname == "/cards/novo" ||
         /^\/decks\/[^/]+\/cards\/novo$/.test(pathname);
 
+    const isEditCardActive = 
+        /^\/decks\/[^/]+\/cards\/[^/]+\/editar$/.test(pathname);
+
+    console.log(`Edit is active => ${isEditCardActive}`)
+
     return (
 
         <nav className="bottom-nav" aria-label="Menu inferior">
             <NavLink 
-            to={"/"} 
-            className={({isActive}) => 
-            `nav-item ${isActive ? "active" : ""}`
+            to={"/decks"} 
+            onClick={(event) => {
+                if(isDecksActive)
+                    event.preventDefault()
+            }}  
+            className={() => 
+            `nav-item ${isDecksActive ? "active" : ""}`
             }  
             data-screen="screen-decks"
             >
@@ -46,8 +57,11 @@ function BottomNav() {
             <NavLink 
             to={"/cards"}
             className={() =>
-            `nav-item ${isCardsActive ? "active" : ""}`
-            }  
+            `nav-item ${isCardsActive ? "active" : ""}`}
+            onClick={(event) => {
+                if(isCardsActive)
+                    event.preventDefault()
+            }}    
             data-screen="screen-decks"
             >
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -69,8 +83,12 @@ function BottomNav() {
             <NavLink 
             to={"/novo"}
             className={() =>
-            `nav-item ${isNewCardActive ? "active" : ""}`
+            `nav-item ${isNewCardActive || isEditCardActive ? "active" : ""}`
             }  
+            onClick={(event) => {
+                if(isNewCardActive || isEditCardActive)
+                    event.preventDefault()
+            }}  
             data-screen="screen-decks"
             >
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -81,7 +99,7 @@ function BottomNav() {
                 strokeLinecap="round" 
                 />
                 </svg>
-                Novo
+                {isEditCardActive ? "Edit" : "Novo"}
             </NavLink>
         </nav>
     )

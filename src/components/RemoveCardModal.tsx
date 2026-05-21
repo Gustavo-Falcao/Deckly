@@ -19,7 +19,7 @@ function RemoveCardModal({onClose, isOpen, onDelete}: RemoverCardProps) {
                 <button 
                 className="bot-modal-delete-card"
                 onClick={onClose}
-                >Cancel</button>
+                >Cancelar</button>
                 <button 
                 className="bot-modal-delete-card fechar"
                 onClick={onDelete}
