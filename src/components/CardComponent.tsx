@@ -75,6 +75,11 @@ function CardComponent({card, onClose, isOpen, openDeleteCard}: CardProps) {
             onClick={onClose}
             >
                 Fechar</button>
+            <button
+            className="small-action"
+            >
+                Mover
+            </button>
           </div>
         </article>
     )

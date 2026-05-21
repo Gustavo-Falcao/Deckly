@@ -1,4 +1,4 @@
-import { useRef, useState, type JSX } from "react"
+import { useEffect, useRef, useState, type JSX } from "react"
 import type { DeckOption, Deck } from "../types/Deck"
 import ModalBackGround from "../components/ModalBackGround"
 import type { Card } from "../types/Card"
@@ -29,6 +29,10 @@ function Cards() {
     const idCardAtivo = useRef("")
     const [cardModalIsOpen, setCardModalIsOpen] = useState(false)
     const [deleteCardModalIsOpen, setDeleteCardModalIsOpen] = useState(false)
+
+    useEffect(() => {
+        localStorage.setItem("_DECKS_", JSON.stringify(decks))
+    }, [decks])
 
     function findCard(): Card | undefined {
         const idCard = idCardAtivo.current
@@ -62,7 +66,21 @@ function Cards() {
     }
 
     function deletarCard() {
+        const idCurrentCard = idCardAtivo.current
+        const idCurrentDeck = idDeckEscolhido
         
+        idCardAtivo.current = ""
+
+        setDecks((prevDecks) => prevDecks.map((deck) => 
+            deck.id === idCurrentDeck ?
+                {...deck, cards: deck.cards.filter((card) => card.id !== idCurrentCard)}
+            :
+                deck
+            ))
+
+        setDeleteCardModalIsOpen(false)
+        setCardModalIsOpen(false)
+        setBackGroundModalIsOpen(false)
     }
 
     return (
@@ -181,7 +199,9 @@ function Cards() {
                 fecharDeleteCardModal()
                 setCardModalIsOpen(true)
                 }} 
-            isOpen={deleteCardModalIsOpen}/>
+            isOpen={deleteCardModalIsOpen}
+            onDelete={deletarCard}
+            />
         </ModalBackGround>
     </>
 

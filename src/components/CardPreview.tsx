@@ -32,9 +32,13 @@ function CardPreview({card, onClose}: CardPreviewProps) {
                         {meaning.definition || meaning.contexts.length > 0 ? <span className="meaning-number">{index + 1}</span> : undefined}
                         <p className="definition">
                             {meaning.definition}
-                            {meaning.contexts.map(contx =>
-                                <span key={contx.id} className={`tag ${contx.context}`}>{contx.context}</span>
-                            )}
+                            {meaning.contexts.length > 0 ?
+                                meaning.contexts.map(contx =>
+                                    <span key={contx.id} className={`tag ${contx.context}`}>{contx.context}</span>
+                                )
+                            :
+                                undefined
+                            }
                         </p>
                         {isMostrarBackGroundExamples(meaning.examples) ? 
                             <div className="examples-box">

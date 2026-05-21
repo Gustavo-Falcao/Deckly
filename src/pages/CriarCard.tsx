@@ -63,9 +63,6 @@ function CriarCard() {
     const debounceSaveFormTimeoutKey = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     useEffect(() => {
-        console.log("Decks atualizado abaixo")
-        console.log(decks)
-
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
     }, [decks])
 
@@ -494,7 +491,11 @@ function CriarCard() {
         </form>
         </section>
 
-        <ModalBackGround isOpen={backGroundModalIsOpen} onClose={() => setBackGroundModalIsOpen(false)}>
+        <ModalBackGround 
+        isOpen={backGroundModalIsOpen} 
+        onClose={() => setBackGroundModalIsOpen(false)}
+        modalOpen="card"
+        >
             <CardPreview card={cardCriacao} onClose={() => setBackGroundModalIsOpen(false)}/>
         </ModalBackGround>
 

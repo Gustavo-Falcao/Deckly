@@ -1,9 +1,10 @@
 type RemoverCardProps = {
     onClose: () => void
     isOpen: boolean
+    onDelete: () => void
 }
 
-function RemoveCardModal({onClose, isOpen}: RemoverCardProps) {
+function RemoveCardModal({onClose, isOpen, onDelete}: RemoverCardProps) {
     if(!isOpen) return
     
     return (
@@ -19,7 +20,10 @@ function RemoveCardModal({onClose, isOpen}: RemoverCardProps) {
                 className="bot-modal-delete-card"
                 onClick={onClose}
                 >Cancel</button>
-                <button className="bot-modal-delete-card fechar">Confirmar</button>
+                <button 
+                className="bot-modal-delete-card fechar"
+                onClick={onDelete}
+                >Confirmar</button>
             </div>
         </div>
     )
