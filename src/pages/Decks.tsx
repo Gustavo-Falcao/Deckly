@@ -3,6 +3,7 @@ import ModalBackGround from "../components/ModalBackGround"
 import DeckCreationModal from "../components/DeckCreationModal"
 import type { Deck } from "../types/Deck"
 import { useNavigate } from "react-router-dom"
+import { useHideOnScroll } from "../hooks/useHideOnScroll"
 
 function Decks() {
     const navigate = useNavigate()
@@ -15,6 +16,10 @@ function Decks() {
 
         return JSON.parse(valorLocalStorage);
     })
+    const showTopArea = useHideOnScroll(80)
+    const [inputSearchDeck, setInputSearchDeck] = useState("")
+    const filteredDecks: Deck[] = decks.filter(deck => deck.name.toLowerCase().includes(inputSearchDeck.toLowerCase())) || []
+
 
     function handleCreateDeck(deck: Deck) {
         setDecks((prev) => [...prev, deck])
@@ -37,6 +42,15 @@ function Decks() {
         </div>
     )
 
+    const msgNoDecksFoundedBySearch = (
+        <div 
+        className="empty-state" 
+        style={{gridColumn: "1 / -1"}}
+        >
+            <strong>Nenhum deck encontrado</strong>
+        </div>
+    )
+
     function escapeHtml(value: string) {
       return String(value)
         .replaceAll("&", "&amp;")
@@ -50,7 +64,7 @@ function Decks() {
         navigate(`/decks/${deckId}/cards`);
     }
 
-    const listOfDeck = decks.map(deck => 
+    const listOfDeck = filteredDecks.map(deck => 
         <button 
         className="deck-card" 
         data-deck-id={deck.id}
@@ -71,44 +85,63 @@ function Decks() {
     return (
     <>
         <section className="screen active" id="screen-decks">
-            <header className="topbar">
-                <div>
-                    <p className="eyebrow">Vocabulário</p>
-                    <h1 className="page-title">Meus decks</h1>
-                </div>
-                <button 
-                className="icon-btn" 
-                id="openDeckModal" 
-                aria-label="Criar deck"
-                onClick={() => setBackGroundModalIsOpen(true)}
-                >
-                    <svg 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    aria-hidden="true"
+            <div className={`top-area ${showTopArea ? "show" : "hide"}`}>
+                <header className="topbar">
+                    <div>
+                        <p className="eyebrow">Vocabulário</p>
+                        <h1 className="page-title">Meus decks</h1>
+                    </div>
+                    <button 
+                    className="icon-btn" 
+                    id="openDeckModal" 
+                    aria-label="Criar deck"
+                    onClick={() => setBackGroundModalIsOpen(true)}
                     >
-                        <path 
-                        d="M12 5v14M5 12h14" 
-                        stroke="currentColor" 
-                        strokeWidth={2.4} 
-                        strokeLinecap="round" 
-                        />
-                    </svg>
-                </button>
-            </header>
+                        <svg 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        aria-hidden="true"
+                        >
+                            <path 
+                            d="M12 5v14M5 12h14" 
+                            stroke="currentColor" 
+                            strokeWidth={2.4} 
+                            strokeLinecap="round" 
+                            />
+                        </svg>
+                    </button>
+                </header>
+                <div className="search-wrapper">
+                    <input 
+                    className="search-box" 
+                    id="cardSearch" 
+                    type="search" 
+                    placeholder="Buscar palavra no deck..." 
+                    value={inputSearchDeck}
+                    onChange={(e) => setInputSearchDeck(e.target.value)}
+                    />
+                    <button 
+                    className={`search-clear ${inputSearchDeck.length > 0 ? 'visible' : ''}`} 
+                    id="deckSearchClear" 
+                    aria-label="Limpar busca"
+                    onClick={() => setInputSearchDeck("")}
+                    >
+                        <svg viewBox="0 0 14 14" aria-hidden="true">
+                            <path d="M2 2l10 10M12 2L2 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
 
-            <input
-             className="search-box" 
-             id="deckSearch" 
-             type="search" 
-             placeholder="Buscar deck..." 
-             />
 
             <h2 className="section-title">Coleções</h2>
             <div className="deck-grid" id="deckGrid">
                 {
                     decks.length === 0 ? 
                         msgNoDecks
+                    :
+                    filteredDecks.length === 0 ?
+                        msgNoDecksFoundedBySearch
                     :
                     listOfDeck
                 }

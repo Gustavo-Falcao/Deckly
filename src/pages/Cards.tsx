@@ -5,6 +5,8 @@ import type { Card, CardEdit } from "../types/Card"
 import CardComponent from "../components/CardComponent"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import RemoveCardModal from "../components/RemoveCardModal"
+import { useHideOnScroll } from "../hooks/useHideOnScroll"
+import ModalEditWarning from "../components/ModalEditWarning"
 
 function Cards() {
     const { idDeck } = useParams<{ idDeck: string }>()
@@ -16,7 +18,9 @@ function Cards() {
     const idCardAtivo = searchParams.get("idCard")
     const cardModalIsOpen = modalMode === "card"
     const deleteCardModalIsOpen = modalMode === "deleteCard"
-    
+    const showTopArea = useHideOnScroll(80)
+    const isModalEditWarningOpen = modalMode === "editWarning"
+
     const[idDeckAtivo, setIdDeckAtivo] = useState(() => {
         return idDeck ? idDeck : ""
     })
@@ -36,6 +40,10 @@ function Cards() {
 
     const deckEscolhido = decks.find(deck => deck.id === idDeckAtivo) ?? null
     const nomeDeckAtivo: string = deckEscolhido?.name || "Nenhum"
+    const nomeCardAtivo: string = deckEscolhido?.cards.find(card => card.id === idCardAtivo)?.name || ""
+    const nomeEditCard = deckEscolhido?.helperCard.edit?.name 
+    const [inputSearchCard, setInputSearchCard] = useState("")
+    const filteredCards: Card[] = deckEscolhido?.cards.filter(deck => deck.name.toLowerCase().includes(inputSearchCard.toLowerCase())) || []
 
     useEffect(() => {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
@@ -73,7 +81,7 @@ function Cards() {
         setSearchParams({})
     }
 
-    function changeModalMode(newModalMode: "card" | "deleteCard") {
+    function changeModalMode(newModalMode: "card" | "deleteCard" | "editWarning") {
         const newSearchParams = new URLSearchParams(searchParams)
 
         newSearchParams.set("modalMode", newModalMode)
@@ -86,6 +94,14 @@ function Cards() {
     }
  
     function fecharDeleteCardModal() {
+        changeModalMode("card")
+    }
+
+    function openWarningEditModal() {
+        changeModalMode("editWarning")
+    }
+
+    function fecharWarningEditModal() {
         changeModalMode("card")
     }
 
@@ -104,12 +120,17 @@ function Cards() {
     }
 
     function abrirEdicaoCard() {
-        const cardAtivo = idCardAtivo
+        const cardAtivo = idCardAtivo || ""
         const idDeckAtual = idDeckAtivo
 
         const card = findCard()
 
         if(!card) return
+
+        if(!isActiveCardPresentOnEditOrEditIsUndefined(cardAtivo)) {
+            openWarningEditModal()
+            return
+        }
 
         const cardEdit: CardEdit = {
             id: card.id,
@@ -130,51 +151,144 @@ function Cards() {
 
         navigate(`/decks/${idDeckAtivo}/cards/${cardAtivo}/editar`)
     }
+    //para o card ativo ser editado 
+        //deck edit undefined 
+        //deck ativo ser igual ao presente no edit
+    
+    function isActiveCardPresentOnEditOrEditIsUndefined(idCardAtivo: string): boolean {
+       const cardEdit = deckEscolhido?.helperCard.edit
+
+       if(!cardEdit) return true
+
+       if(cardEdit.id === idCardAtivo) return true
+
+       return false
+    }
 
     function alterarDeck(deckId: string) {
         setIdDeckAtivo(deckId)
         navigate(`/decks/${deckId}/cards`)
     }
 
+    //Futuramente validar o formulario antes de salvar
+    function saveChangesEditCardAndOpenCurrentCardToEdit() {
+        if(!deckEscolhido) return
+
+        const cardEdit = deckEscolhido.helperCard.edit
+        const cardToEdit = deckEscolhido.cards.find(card => card.id === idCardAtivo)
+
+        if(!cardEdit || !cardToEdit) return
+
+        const updatedCard: Card = {
+            id: cardEdit.id,
+            name: cardEdit.name,
+            context: cardEdit.context,
+            synonym: cardEdit.synonym,
+            phonetic: cardEdit.phonetic,
+            creationDate: cardEdit.creationDate,
+            meanings: cardEdit.meanings
+        }
+
+        setDecks((prevDecks) => prevDecks.map((deck) => 
+            deck.id === deckEscolhido.id ?
+                {...deck, cards: deck.cards.map(card => 
+                    card.id === cardEdit.id ?
+                        updatedCard
+                    :
+                        card
+                    ),
+                    helperCard: {...deck.helperCard, edit: cardToEdit}
+                }
+            :
+                deck
+            ))
+
+        navigate(`/decks/${idDeckAtivo}/cards/${cardToEdit.id}/editar`)
+    }
+
+    //descartar alterações
+        //atribuir o card que o usuário quer editar no card edit descartando as alterazções do outro presente
+        //setar o modo do modal para card
+        //nevegar para editar 
+
+    function discardChangesAndOpenCurrentCardToEdit() {
+        if(!deckEscolhido) return
+
+        const cardToEdit = deckEscolhido.cards.find(card => card.id === idCardAtivo)
+
+        if(!cardToEdit) return
+
+        setDecks((prevDecks) => prevDecks.map((deck) => 
+            deck.id === deckEscolhido.id ?
+                {...deck, helperCard: {...deck.helperCard, edit: cardToEdit}
+                }
+            :
+                deck
+            ))
+
+        navigate(`/decks/${idDeckAtivo}/cards/${cardToEdit.id}/editar`)
+    }
+
     return (
     <>
         <section className="screen active" id="screen-cards">
-            <header className="topbar">
-                <button 
-                className="icon-btn" 
-                id="backToDecks" 
-                aria-label="Voltar para decks"
-                onClick={() => voltarParaDecks()}
-                >
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path
-                        d="M15 18l-6-6 6-6" 
-                        stroke="currentColor" 
-                        strokeWidth="2.4" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        />
-                    </svg>
-                </button>
-                <div style={{flex: 1}}>
-                    <p className="eyebrow">Deck aberto</p>
-                    <h1 className="page-title" id="currentDeckTitle">{nomeDeckAtivo}</h1>
+            <div className={`top-area ${showTopArea ? "show" : "hide"}`}>
+                <header className="topbar">
+                    <button 
+                    className="icon-btn" 
+                    id="backToDecks" 
+                    aria-label="Voltar para decks"
+                    onClick={() => voltarParaDecks()}
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path
+                            d="M15 18l-6-6 6-6" 
+                            stroke="currentColor" 
+                            strokeWidth="2.4" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            />
+                        </svg>
+                    </button>
+                    <div style={{flex: 1}}>
+                        <p className="eyebrow">Deck aberto</p>
+                        <h1 className="page-title" id="currentDeckTitle">{nomeDeckAtivo}</h1>
+                    </div>
+                    <button className="icon-btn" id="newCardFromDeck" aria-label="Criar card"
+                    onClick={() => abrirCriarCard()}
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path
+                            d="M12 5v14M5 12h14" 
+                            stroke="currentColor" 
+                            strokeWidth="2.4" 
+                            strokeLinecap="round" 
+                            />
+                        </svg>
+                    </button>
+                </header>
+                <div className="search-wrapper">
+                    <input 
+                    className="search-box" 
+                    id="cardSearch" 
+                    type="search" 
+                    placeholder="Buscar palavra no deck..." 
+                    value={inputSearchCard}
+                    onChange={(e) => setInputSearchCard(e.target.value)}
+                    />
+                    <button 
+                    className={`search-clear ${inputSearchCard.length > 0 ? 'visible' : ''}`} 
+                    id="deckSearchClear" 
+                    aria-label="Limpar busca"
+                    onClick={() => setInputSearchCard("")}
+                    >
+                        <svg viewBox="0 0 14 14" aria-hidden="true">
+                            <path d="M2 2l10 10M12 2L2 12" />
+                        </svg>
+                    </button>
                 </div>
-                <button className="icon-btn" id="newCardFromDeck" aria-label="Criar card"
-                onClick={() => abrirCriarCard()}
-                >
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path
-                        d="M12 5v14M5 12h14" 
-                        stroke="currentColor" 
-                        strokeWidth="2.4" 
-                        strokeLinecap="round" 
-                        />
-                    </svg>
-                </button>
-            </header>
+            </div>
 
-            <input className="search-box" id="cardSearch" type="search" placeholder="Buscar palavra no deck..." />
             <div className="choose-deck">
                 <div className="field">
                     <label htmlFor="cardDeck">Deck</label>
@@ -205,7 +319,15 @@ function Cards() {
                             <strong>Nenhum card por aqui</strong>Toque em + para cadastrar sua primeira palavra.
                         </div>
                     :
-                    deckEscolhido.cards.map((card) :JSX.Element =>  
+                    filteredCards.length === 0 ?
+                                <div 
+                                className="empty-state" 
+                                style={{gridColumn: "1 / -1"}}
+                                >
+                                    <strong>Nenhum deck encontrado</strong>
+                                </div>
+                    :
+                    filteredCards.map((card) :JSX.Element =>  
                         <article 
                         key={card.id}
                         onClick={() => openCardModal(card.id)}
@@ -235,7 +357,7 @@ function Cards() {
             if(deleteCardModalIsOpen) {
                 fecharDeleteCardModal()
             }}}
-            modalOpen={cardModalIsOpen ? "card" : deleteCardModalIsOpen ? "delete" : ""}
+            modalOpen={cardModalIsOpen ? "card" : "info"}
             >
             <CardComponent 
             card={findCard()} 
@@ -251,6 +373,16 @@ function Cards() {
                 }} 
             isOpen={deleteCardModalIsOpen}
             onDelete={deletarCard}
+            nomeDeck={nomeDeckAtivo}
+            nomeCard={nomeCardAtivo}
+            />
+
+            <ModalEditWarning 
+            isOpen={isModalEditWarningOpen}
+            nomeEditCard={nomeEditCard}
+            onClose={fecharWarningEditModal}
+            saveChanges={saveChangesEditCardAndOpenCurrentCardToEdit}
+            discardChanges={discardChangesAndOpenCurrentCardToEdit}
             />
         </ModalBackGround>
     </>

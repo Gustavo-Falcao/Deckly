@@ -17,7 +17,7 @@ function ModalBackGround({ isOpen, onClose, modalOpen, children}: ModalBackGroun
     if(isOpen) {
         return createPortal (         
             <div 
-            className={`modal-backdrop ${modalOpen === "delete" ? 'active-delete' : 'active'}`}
+            className={`modal-backdrop ${modalOpen === "info" ? 'modal-info' : 'active'}`}
             onClick={() => {
                 if(modalOpen === "delete") {
                     return

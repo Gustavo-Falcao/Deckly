@@ -14,7 +14,6 @@ type CriarCardProps = {
 }
 
 function CriarCard({ mode }: CriarCardProps) {
-    console.log("PRIMEIRO RENDER CRIAR CARD")
     const { idDeck, idCard } = useParams<{idDeck: string, idCard: string}>()
     const navigate = useNavigate()
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
@@ -26,7 +25,7 @@ function CriarCard({ mode }: CriarCardProps) {
             return JSON.parse(valorLocalStorage);
         })
     const [idDeckEscolhido, setIdDeckEscolhido] = useState((): string => {
-        return idDeck ? idDeck : "" 
+        return idDeck ? idDeck : ""
     })
     const optionDecks: DeckOption[] = decks.map((deck) => {
         return {
@@ -34,28 +33,6 @@ function CriarCard({ mode }: CriarCardProps) {
             name: deck.name
         }
     })
-    const[isEditCardUndefined, setIsEditCardUndefined] = useState((): boolean => {
-        if(mode === "criar") {
-            console.log("mode é igual a criar, então retornou automaticamente false")
-            return false
-        } 
-
-        const deck = decks.find((deck) => deck.id === idDeckEscolhido)
-
-        if(!deck){
-            console.log("Deck não foi encontrado")
-            return true
-        } 
-
-        if(!deck.helperCard.edit) {
-            console.log("Deck foi encontrado, mas edit não existe")
-            return true
-        } 
-
-        return false
-    })
-
-    console.log("Card undefined logo depois da criacao" + isEditCardUndefined)
 
     const [cardForm, setCardForm] = useState<CardFormData | CardEdit>(() :CardFormData | CardEdit => {
         if(decks.length === 0)
@@ -75,7 +52,6 @@ function CriarCard({ mode }: CriarCardProps) {
         return createEmptyCardFormData()
             
     })
-    const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
 
     type ContextOption = {
         value: string;
@@ -97,29 +73,18 @@ function CriarCard({ mode }: CriarCardProps) {
         {value: "verb", name: "Verb"}
     ]
 
+    const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
     const [selectedContextByMeaningId, setSelectedContextByMeaningId] = useState<Record<string, Context | "">>({});
     const debounceSaveFormTimeoutKey = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const titlePage = !mode || mode === "criar" ? "Criar" : "Editar"
+    const showTopArea = useHideOnScroll(80)
 
     useEffect(() => {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
+        console.log("Decks salvos no local storage abaixo")
+        console.log(decks)
     }, [decks])
 
-    useEffect(() => {
-        if(mode === "criar") return
-        let editCardUndefined = false
-        const deck = decks.find((deck) => deck.id === idDeckEscolhido)
-
-        if(!deck) editCardUndefined = true
-
-        if(deck) {
-            if(!deck.helperCard.edit)
-            editCardUndefined = true
-        }
-        console.log(`Edit card undefined dentro do useEffet => ${editCardUndefined}`)
-        setIsEditCardUndefined(editCardUndefined)
-    }, [idDeckEscolhido])
-
-    const showTopArea = useHideOnScroll(80)
 
     function updateCardForm(updater: (prevCardForm: CardFormData | CardEdit) => CardFormData | CardEdit) {
         if(!idDeckEscolhido) return
@@ -147,8 +112,6 @@ function CriarCard({ mode }: CriarCardProps) {
         })
     }
 
-    console.log("Card undefined depois do useEffect" + isEditCardUndefined)
-
     function handleSelectedDeck(idDeck: string) {
         const selectedDeck = decks.find(deck => deck.id === idDeck)
 
@@ -157,7 +120,7 @@ function CriarCard({ mode }: CriarCardProps) {
 
         setIdDeckEscolhido(idDeck)
         //setCardForm(selectedDeck.helperCard.create)
-        mode === "criar" ? navigate(`/decks/${idDeck}/cards/novo`) : navigate(`/decks/${idDeck}/cards/editar`)
+        navigate(`/decks/${idDeck}/cards/novo`)
     }
 
     function addContextToMeaning(idMeaning: string, selectedContext: Context) {
@@ -299,7 +262,12 @@ function CriarCard({ mode }: CriarCardProps) {
             }
         }
         else {
-            isCardEdit(cardToCreate) ? salvarEdicaoCard(cardToCreate) : alert("Não foi possível editar: card sem id.")
+            if(isCardEdit(cardToCreate)) {
+                salvarEdicaoCard(cardToCreate)
+                voltarParaCardsDoModeEdit()
+            } else {
+                alert("Não foi possível editar: card sem id.")
+            }
         }
 
     }
@@ -366,9 +334,6 @@ function CriarCard({ mode }: CriarCardProps) {
         navigate(`/decks/${idDeckEscolhido}/cards?backgroundModal=true&modalMode=card&idCard=${idCard}`)
     }
 
-    const titlePage = !mode || mode === "criar" ? "Criar" : "Editar"
-
-    console.log("Card undefined " + isEditCardUndefined)
     return (
     <>
         <section className="screen active" id="screen-form">
@@ -396,31 +361,28 @@ function CriarCard({ mode }: CriarCardProps) {
         </div>
 
         <form className="form-card" id="cardForm">
-            <div className="field">
-                <label htmlFor="cardDeck">Deck</label>
-                <select 
-                id="cardDeck" 
-                required
-                value={idDeckEscolhido}
-                onChange={(e) => handleSelectedDeck(e.target.value)}
-                >
-                    <option value="" hidden>Deck</option>
-                    {optionDecks.map((deck) : JSX.Element => 
-                        <option key={deck.id} value={deck.id}>{deck.name}</option>
-                    )}
-                </select>
-            </div>
+            {mode === "criar" && 
+                <div className="field">
+                    <label htmlFor="cardDeck">Deck</label>
+                    <select 
+                    id="cardDeck" 
+                    required
+                    value={idDeckEscolhido}
+                    onChange={(e) => handleSelectedDeck(e.target.value)}
+                    >
+                        <option value="" hidden>Deck</option>
+                        {optionDecks.map((deck) : JSX.Element => 
+                            <option key={deck.id} value={deck.id}>{deck.name}</option>
+                        )}
+                    </select>
+                </div>
+            }
                 {
                     idDeckEscolhido.length === 0 ? 
                         <div className="empty-state">
                             <strong>Nenhum Deck selecionado</strong>Escolha um deck para criar o card
                         </div>
                     : 
-                    isEditCardUndefined ?
-                        <div className="empty-state">
-                            <strong>Nenhum card foi selecionado para editar</strong>Volte ao deck e escolha um card para editar.
-                        </div>
-                    :
                     <>
                     <div className="field">
                         <label htmlFor="wordInput">Palavra</label>

@@ -1,7 +1,7 @@
 import Decks from "./Decks"
 import Cards from "./Cards"
 import CriarCard from "./CriarCard"
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, Navigate } from "react-router-dom"
 import BottomNav from "../components/BottomNav"
 
 function App() {
@@ -10,6 +10,7 @@ function App() {
     <>
       <main className="app">
         <Routes>
+          <Route path="/" element={<Navigate to="/decks" replace />}/> 
           <Route path="/decks" element={<Decks/>} />
           <Route path="/cards" element={<Cards />} />
           <Route path="/decks/:idDeck/cards" element={<Cards/>} />

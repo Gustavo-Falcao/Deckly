@@ -104,8 +104,8 @@ button {
   width: 46px;
   height: 46px;
   border-radius: 16px;
-  background: var(--surface);
-  color: var(--text);
+  background: var(--text);
+  color: white;
   display: grid;
   place-items: center;
   box-shadow: 0 10px 26px rgba(20, 28, 43, 0.08);
@@ -156,7 +156,7 @@ button {
   width: 100%;
   border: 0;
   outline: 0;
-  border-radius: 20px;
+  border-radius: 22px;
   background: var(--surface);
   color: var(--text);
   padding: 16px 18px;
@@ -716,7 +716,7 @@ button {
   display: none;
   align-items: flex-end;
   justify-content: center;
-  z-index: 20;
+  z-index: 100;
   padding: 16px;
   backdrop-filter: blur(3px);
 }
@@ -725,7 +725,7 @@ button {
   display: flex;
 }
 
-.modal-backdrop.active-delete {
+.modal-backdrop.modal-info {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -745,25 +745,28 @@ button {
   animation: slideUp 180ms ease-out;
 }
 
-.box-delete-card {
+.box-modal-info {
   width: 100%;
   border-radius: 28px;
   background-color: rgba(255, 255, 255, 0.801);
   backdrop-filter: blur(2px);
   padding: 20px;
   animation: slideUp 180ms ease-out;
+  margin: auto;
 }
 
 .campo-info {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding-left: 10px;
+  width: 90%;
 }
 
-.campo-info > h2 {
+.title-info{
   font-size: 18px;
   margin: 0;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .campo-info > p {
@@ -791,6 +794,7 @@ button {
   border-radius: 50px;
   border-style: none;
   letter-spacing: .2px;
+  color: black;
 }
 
 .bot-modal-delete-card.fechar {
@@ -832,10 +836,12 @@ button {
 .top-area {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 50;
   transition: transform 0.25s ease;
-  background-color: rgba(255, 255, 255, 0.466);
+  background-color: rgba(255, 255, 255, 0.88);;
   backdrop-filter: blur(5px);
+  border-radius: 0px 0px 28px 28px;
+  padding: 0px 8px 8px 8px;
 }
 
 .top-area.hide {
@@ -844,4 +850,62 @@ button {
 
 .top-area.show {
   transform: translateY(0);
+}
+
+.icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #e07b004a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0px auto 16px auto;
+}
+
+.icon-wrap svg {
+  width: 26px;
+  height: 26px;
+  stroke: #E07B00;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+.search-clear {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #d9dee8;
+  color: #777d8a;
+  display: none;
+  place-items: center;
+  border: 0;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, opacity 0.15s;
+  flex-shrink: 0;
+}
+.search-clear.visible {
+  display: grid;
+}
+.search-clear:active {
+  background: #a3a8b2;
+  color: #fff;
+}
+.search-clear svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  fill: none;
 }

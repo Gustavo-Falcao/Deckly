@@ -2,28 +2,32 @@ type RemoverCardProps = {
     onClose: () => void
     isOpen: boolean
     onDelete: () => void
+    nomeDeck: string
+    nomeCard: string
 }
 
-function RemoveCardModal({onClose, isOpen, onDelete}: RemoverCardProps) {
+function RemoveCardModal({onClose, isOpen, onDelete, nomeDeck, nomeCard}: RemoverCardProps) {
     if(!isOpen) return
     
     return (
-        <div className="box-delete-card">
+        <div className="box-modal-info">
             <div className="campo-info">
-                <h2>Deseja deletar o card ?</h2>
+                <div className="title-info">
+                    {`Deseja deletar "${nomeCard}"?`}
+                </div>
                 <p>
-                    Ao clicar em confirmar a ação não poderá ser desfeita.
+                    A exclusão deste card resultará em sua remoção definitiva do deck "{nomeDeck}".
                 </p>
             </div>
             <div className="options-delete-card">
                 <button 
+                className="bot-modal-delete-card fechar"
+                onClick={onDelete}
+                >Deletar Card</button>
+                <button 
                 className="bot-modal-delete-card"
                 onClick={onClose}
                 >Cancelar</button>
-                <button 
-                className="bot-modal-delete-card fechar"
-                onClick={onDelete}
-                >Confirmar</button>
             </div>
         </div>
     )
