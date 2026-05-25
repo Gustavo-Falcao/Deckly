@@ -16,7 +16,8 @@ export function createDeck(nome: string, emoji: string): Deck {
 export function createEmptyExample(): Example {
     return {
         id: crypto.randomUUID(),
-        text: ""
+        text: "",
+        targetToBeHidden: ""
     }
 }
 
