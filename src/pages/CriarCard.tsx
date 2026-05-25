@@ -281,6 +281,10 @@ function CriarCard({ mode }: CriarCardProps) {
             synonym: cardFormCreate.synonym,
             phonetic: cardFormCreate.phonetic,
             creationDate: new Date().toISOString(),
+            nextReviewDate: new Date().toISOString(),
+            interval: 0,
+            repetitions: 0,
+            easeFactor: 2.5,
             meanings: cardFormCreate.meanings
         }
 
@@ -298,6 +302,10 @@ function CriarCard({ mode }: CriarCardProps) {
 
     function salvarEdicaoCard(cardFormEdit: CardEdit) {
 
+        const cardToBeEdited = decks.find(deck => deck.id === idDeck)?.cards.find(card => card.id === cardFormEdit.id);
+
+        if(!cardToBeEdited) return
+
         const cardAtualizado: Card = {
             id: cardFormEdit.id,
             name: cardFormEdit.name,
@@ -305,6 +313,10 @@ function CriarCard({ mode }: CriarCardProps) {
             synonym: cardFormEdit.synonym,
             phonetic: cardFormEdit.phonetic,
             creationDate: cardFormEdit.creationDate,
+            nextReviewDate: cardToBeEdited.nextReviewDate,
+            interval: cardToBeEdited.interval,
+            repetitions: cardToBeEdited.repetitions,
+            easeFactor: cardToBeEdited.easeFactor,
             meanings: cardFormEdit.meanings
         }
 

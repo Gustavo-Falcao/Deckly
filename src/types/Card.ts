@@ -9,6 +9,7 @@ export type ContextObject = {
 export type Example = {
     id: string;
     text: string;
+    targetToBeHidden: string
 }
 
 export type Meaning = {
@@ -32,6 +33,10 @@ export type Card = {
     synonym: string;
     phonetic: string;
     creationDate: string;
+    nextReviewDate: string;
+    interval: number;
+    repetitions: number;
+    easeFactor: number;
     meanings: Meaning[]
 };
 

@@ -191,8 +191,9 @@ function Cards() {
 
         const cardEdit = deckEscolhido.helperCard.edit
         const cardToEdit = deckEscolhido.cards.find(card => card.id === idCardAtivo)
+        const cardToBeEdited = deckEscolhido.cards.find(card => card.id === cardEdit?.id);
 
-        if(!cardEdit || !cardToEdit) return
+        if(!cardEdit || !cardToEdit || !cardToBeEdited) return
 
         const updatedCard: Card = {
             id: cardEdit.id,
@@ -201,6 +202,10 @@ function Cards() {
             synonym: cardEdit.synonym,
             phonetic: cardEdit.phonetic,
             creationDate: cardEdit.creationDate,
+            nextReviewDate: cardToBeEdited.nextReviewDate,
+            interval: cardToBeEdited.interval,
+            repetitions: cardToBeEdited.repetitions,
+            easeFactor: cardToBeEdited.easeFactor,
             meanings: cardEdit.meanings
         }
 
