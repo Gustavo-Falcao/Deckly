@@ -8,6 +8,20 @@ import RemoveCardModal from "../components/RemoveCardModal"
 import { useHideOnScroll } from "../hooks/useHideOnScroll"
 import ModalEditWarning from "../components/ModalEditWarning"
 
+type FilterMode = "recente" | "antigo"
+
+function getCardsFiltrados(deckAtual: Deck | null, inputSearch: string, filterMode: FilterMode): Card[] {
+    if(!deckAtual || deckAtual.cards.length === 0) return []
+
+    const filteredCardsByName = deckAtual.cards.filter(card => card.name.toLowerCase().includes(inputSearch.toLowerCase()))
+
+    if(filterMode === "antigo") {
+        return [...filteredCardsByName].reverse()
+    }
+
+    return filteredCardsByName
+}
+
 function Cards() {
     const { idDeck } = useParams<{ idDeck: string }>()
     const navigate = useNavigate()
@@ -38,12 +52,13 @@ function Cards() {
         }
     })
 
+    const [filterModeCard, setFilterModeCard] = useState<FilterMode>("recente")
     const deckEscolhido = decks.find(deck => deck.id === idDeckAtivo) ?? null
     const nomeDeckAtivo: string = deckEscolhido?.name || "Nenhum"
     const nomeCardAtivo: string = deckEscolhido?.cards.find(card => card.id === idCardAtivo)?.name || ""
     const nomeEditCard = deckEscolhido?.helperCard.edit?.name 
     const [inputSearchCard, setInputSearchCard] = useState("")
-    const filteredCards: Card[] = deckEscolhido?.cards.filter(deck => deck.name.toLowerCase().includes(inputSearchCard.toLowerCase())) || []
+    const filteredCards: Card[] = getCardsFiltrados(deckEscolhido, inputSearchCard, filterModeCard)
 
     useEffect(() => {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
@@ -151,10 +166,10 @@ function Cards() {
 
         navigate(`/decks/${idDeckAtivo}/cards/${cardAtivo}/editar`)
     }
+    
     //para o card ativo ser editado 
         //deck edit undefined 
         //deck ativo ser igual ao presente no edit
-    
     function isActiveCardPresentOnEditOrEditIsUndefined(idCardAtivo: string): boolean {
        const cardEdit = deckEscolhido?.helperCard.edit
 
@@ -286,6 +301,18 @@ function Cards() {
                             <path d="M2 2l10 10M12 2L2 12" />
                         </svg>
                     </button>
+                    <div className="filter-chips" id="filterChips" role="group" aria-label="Ordenar cards">
+                        <button 
+                        className={`filter-chip ${filterModeCard === "recente" ? 'active' : ''}`} 
+                        data-filter="recent"
+                        onClick={() => setFilterModeCard("recente")}
+                        >Mais recente</button>
+                        <button 
+                        className={`filter-chip ${filterModeCard === "antigo" ? 'active' : ''}`} 
+                        data-filter="oldest"
+                        onClick={() => setFilterModeCard("antigo")}
+                        >Mais antigo</button>
+                    </div>
                 </div>
             </div>
 

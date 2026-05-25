@@ -288,7 +288,7 @@ function CriarCard({ mode }: CriarCardProps) {
 
         setDecks((prevDecks) => prevDecks.map((deck) => 
             deck.id === idDeckEscolhido ?
-                {...deck, cards: [...deck.cards, card], helperCard: {...deck.helperCard, create: emptyCardCriacao}}
+                {...deck, cards: [card, ...deck.cards], helperCard: {...deck.helperCard, create: emptyCardCriacao}}
             :
                 deck
         ))

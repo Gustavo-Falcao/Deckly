@@ -909,3 +909,32 @@ button {
   stroke-linecap: round;
   fill: none;
 }
+
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0 4px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--surface);
+  color: var(--muted);
+  box-shadow: 0 4px 12px rgba(24, 33, 54, 0.07);
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+.filter-chip.active {
+  background: var(--text);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(23, 25, 31, 0.18);
+}
+.filter-chip:active {
+  transform: scale(0.96);
+}
