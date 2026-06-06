@@ -58,6 +58,9 @@ function CriarCard({ mode }: CriarCardProps) {
         name: string;
     }
 
+    console.log("Card form abaixo ")
+    console.log(cardForm)
+
     const contextOptions: ContextOption[] = [
         {value: "adjective", name: "Adjective"},
         {value: "adverb", name: "Adverb"},
@@ -115,12 +118,15 @@ function CriarCard({ mode }: CriarCardProps) {
     function handleSelectedDeck(idDeck: string) {
         const selectedDeck = decks.find(deck => deck.id === idDeck)
 
-        if(!selectedDeck)
-            return
-
+        if(!selectedDeck) {
+            navigate(`/novo`)
+            setCardForm(createEmptyCardFormData())
+        } else {
+            navigate(`/decks/${idDeck}/cards/novo`)
+            setCardForm(selectedDeck!.helperCard.create)
+        }
+            
         setIdDeckEscolhido(idDeck)
-        //setCardForm(selectedDeck.helperCard.create)
-        navigate(`/decks/${idDeck}/cards/novo`)
     }
 
     function addContextToMeaning(idMeaning: string, selectedContext: Context) {

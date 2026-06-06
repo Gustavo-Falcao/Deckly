@@ -182,7 +182,7 @@ function Cards() {
 
     function alterarDeck(deckId: string) {
         setIdDeckAtivo(deckId)
-        navigate(`/decks/${deckId}/cards`)
+        !deckId ? navigate(`/cards`) : navigate(`/decks/${deckId}/cards`)
     }
 
     //Futuramente validar o formulario antes de salvar
