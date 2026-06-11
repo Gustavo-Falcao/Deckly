@@ -5,7 +5,7 @@ type ModalBackGroundProps = {
     isOpen: boolean;
     onClose: () => void;
     children: React.ReactNode;
-    modalOpen: string
+    modalOpen?: string
 }
 
 function ModalBackGround({ isOpen, onClose, modalOpen, children}: ModalBackGroundProps) {

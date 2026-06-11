@@ -4,6 +4,7 @@ import type { CardFormData, Context, Card, CardEdit } from "../types/Card";
 import { createEmptyCardFormData, createEmptyMeaning, createContextObjectWithContext, createEmptyExample } from "../helpers/objectsCreation"  
 import ModalBackGround from "../components/ModalBackGround";
 import CardPreview from "../components/CardPreview";
+import HideWordModal from "../components/HideWordModal";
 import { useParams, useNavigate } from "react-router-dom";
 import { useHideOnScroll } from "../hooks/useHideOnScroll";
 
@@ -77,10 +78,13 @@ function CriarCard({ mode }: CriarCardProps) {
     ]
 
     const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
+    const [isModalCardPreviewOpen, setIsModalCardPreviewOpen] = useState(false)
+    const [isModalHideWordOpen, setIsModalHideWordOpen] = useState(false)
     const [selectedContextByMeaningId, setSelectedContextByMeaningId] = useState<Record<string, Context | "">>({});
     const debounceSaveFormTimeoutKey = useRef<ReturnType<typeof setTimeout> | null>(null)
     const titlePage = !mode || mode === "criar" ? "Criar" : "Editar"
     const showTopArea = useHideOnScroll(80)
+    const exampleTextToHideModalWord = useRef<string>("")
 
     useEffect(() => {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
@@ -303,7 +307,6 @@ function CriarCard({ mode }: CriarCardProps) {
                 deck
         ))
 
-        setCardForm(emptyCardCriacao)
     }
 
     function salvarEdicaoCard(cardFormEdit: CardEdit) {
@@ -350,6 +353,28 @@ function CriarCard({ mode }: CriarCardProps) {
         if(!idDeckEscolhido) return
 
         navigate(`/decks/${idDeckEscolhido}/cards?backgroundModal=true&modalMode=card&idCard=${idCard}`)
+    }
+
+    function abrirModalCardPreview() {
+        setIsModalCardPreviewOpen(true)
+        setBackGroundModalIsOpen(true)
+    }
+
+    function fecharModalCardPreview() {
+        setIsModalCardPreviewOpen(false)
+        setBackGroundModalIsOpen(false)
+    }
+
+    function abrirModalHideWord(exampleText: string) {
+        exampleTextToHideModalWord.current = exampleText 
+        setIsModalHideWordOpen(true)
+        setBackGroundModalIsOpen(true)
+    }
+
+    function fecharModalHideWord() {
+        exampleTextToHideModalWord.current = ""
+        setIsModalHideWordOpen(false)
+        setBackGroundModalIsOpen(false)
     }
 
     return (
@@ -417,6 +442,7 @@ function CriarCard({ mode }: CriarCardProps) {
                         <div className="field">
                             <label htmlFor="typeInput">Tipo</label>
                             <select 
+                            id="typeInput"
                             className="meaning-tag-select" 
                             value={cardForm.context}
                             onChange={(e) => handleSimpleChange("context", e.target.value)}
@@ -548,13 +574,29 @@ function CriarCard({ mode }: CriarCardProps) {
                                                     Remover
                                                 </button>
                                             </div>
-                                            <textarea 
-                                            className="meaning-example" 
-                                            placeholder="Frase de exemplo"
-                                            value={example.text}
-                                            onChange={(e) => handleNestedChange("example", e.target.value, meaning.id, example.id)}
-                                            >
-                                            </textarea>
+                                            <div className="example-main-row">
+                                                <textarea 
+                                                className="meaning-example" 
+                                                placeholder="Frase de exemplo"
+                                                value={example.text}
+                                                onChange={(e) => handleNestedChange("example", e.target.value, meaning.id, example.id)}
+                                                >
+                                                </textarea>
+                                                <button 
+                                                className="hide-words-action" 
+                                                type="button" 
+                                                aria-label="Ocultar palavras do exemplo"
+                                                disabled={example.text.length < 1}
+                                                onClick={() => abrirModalHideWord(example.text)}
+                                                >🙈</button>
+                                            </div>
+                                            <div className="hidden-preview">
+                                                {example.targetToBeHidden.length ? 
+                                                    null
+                                                :
+                                                <span className="hidden-preview-empty">Nenhuma palavra oculta</span>
+                                                }
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -588,7 +630,7 @@ function CriarCard({ mode }: CriarCardProps) {
                     <button 
                     className="preview-btn" 
                     type="button" 
-                    onClick={() => setBackGroundModalIsOpen(true)}
+                    onClick={abrirModalCardPreview}
                     >Pré-visualizar card</button>
                     </>   
 
@@ -598,10 +640,11 @@ function CriarCard({ mode }: CriarCardProps) {
 
         <ModalBackGround 
         isOpen={backGroundModalIsOpen} 
-        onClose={() => setBackGroundModalIsOpen(false)}
+        onClose={() => isModalCardPreviewOpen ? fecharModalCardPreview() : fecharModalHideWord()}
         modalOpen="card"
         >
-            <CardPreview card={cardForm} onClose={() => setBackGroundModalIsOpen(false)}/>
+            <CardPreview card={cardForm} onClose={fecharModalCardPreview} isOpen={isModalCardPreviewOpen}/>
+            <HideWordModal isOpen={isModalHideWordOpen} onClose={fecharModalHideWord} exampleText={exampleTextToHideModalWord.current}/>
         </ModalBackGround>
 
     </>

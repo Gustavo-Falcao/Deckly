@@ -4,9 +4,10 @@ import type { CardEdit, CardFormData, Example } from "../types/Card";
 type CardPreviewProps = {
     card: CardFormData | CardEdit | undefined
     onClose: () => void
+    isOpen: boolean
 }
 
-function CardPreview({card, onClose}: CardPreviewProps) {
+function CardPreview({card, onClose, isOpen}: CardPreviewProps) {
 
     function isMostrarBackGroundExamples(examples: Example[]) {
         for(const ex of examples) {
@@ -17,7 +18,7 @@ function CardPreview({card, onClose}: CardPreviewProps) {
         return false
     }
 
-    if(!card) return
+    if(!card || !isOpen) return null
 
     return (
         <article>
