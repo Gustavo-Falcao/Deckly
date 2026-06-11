@@ -14,6 +14,18 @@ type CriarCardProps = {
     mode: CriarCardMode
 }
 
+type ContextOption = {
+    value: string;
+    name: string;
+}
+
+type ExampleTextHide = {
+    idExample: string
+    idMeaning: string
+    text: string
+    wordCurrentlyHide: string
+}
+
 function CriarCard({ mode }: CriarCardProps) {
     const { idDeck, idCard } = useParams<{idDeck: string, idCard: string}>()
     const navigate = useNavigate()
@@ -54,14 +66,6 @@ function CriarCard({ mode }: CriarCardProps) {
             
     })
 
-    type ContextOption = {
-        value: string;
-        name: string;
-    }
-
-    console.log("Card form abaixo ")
-    console.log(cardForm)
-
     const contextOptions: ContextOption[] = [
         {value: "adjective", name: "Adjective"},
         {value: "adverb", name: "Adverb"},
@@ -84,7 +88,12 @@ function CriarCard({ mode }: CriarCardProps) {
     const debounceSaveFormTimeoutKey = useRef<ReturnType<typeof setTimeout> | null>(null)
     const titlePage = !mode || mode === "criar" ? "Criar" : "Editar"
     const showTopArea = useHideOnScroll(80)
-    const exampleTextToHideModalWord = useRef<string>("")
+    const exampleTextToHideModalWord = useRef<ExampleTextHide>({
+        idExample: "",
+        idMeaning: "",
+        text: "",
+        wordCurrentlyHide: ""
+    })
 
     useEffect(() => {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
@@ -92,6 +101,14 @@ function CriarCard({ mode }: CriarCardProps) {
         console.log(decks)
     }, [decks])
 
+
+    useEffect(() => {
+        console.log(cardForm)
+    }, [])
+
+    function separarPalavras(text: string): string[] {
+        return String(text).trim().split(/\s+/).filter(Boolean);
+    }
 
     function updateCardForm(updater: (prevCardForm: CardFormData | CardEdit) => CardFormData | CardEdit) {
         if(!idDeckEscolhido) return
@@ -365,16 +382,48 @@ function CriarCard({ mode }: CriarCardProps) {
         setBackGroundModalIsOpen(false)
     }
 
-    function abrirModalHideWord(exampleText: string) {
-        exampleTextToHideModalWord.current = exampleText 
+    function abrirModalHideWord(exampleText: string, idExample: string, idMeaning: string, wordCurrentlyHide: string) {
+        exampleTextToHideModalWord.current = {
+            idExample: idExample, 
+            idMeaning: idMeaning, 
+            text: exampleText,
+            wordCurrentlyHide: wordCurrentlyHide
+        }
         setIsModalHideWordOpen(true)
         setBackGroundModalIsOpen(true)
     }
 
     function fecharModalHideWord() {
-        exampleTextToHideModalWord.current = ""
+        exampleTextToHideModalWord.current = {
+            idExample: "", 
+            idMeaning: "", 
+            text: "",
+            wordCurrentlyHide: ""
+        }
         setIsModalHideWordOpen(false)
         setBackGroundModalIsOpen(false)
+    }
+
+    function ocultarPalavra(wordToHide: string) {
+        const meaningId = exampleTextToHideModalWord.current.idMeaning
+        const exampleId = exampleTextToHideModalWord.current.idExample
+
+        updateCardForm((prevCardForm) => (
+            {...prevCardForm, meanings: prevCardForm.meanings.map((meaning) => 
+                meaning.id === meaningId ? 
+                    {...meaning, examples: meaning.examples.map((example) => 
+                        example.id === exampleId ?
+                            {...example, targetToBeHidden: wordToHide}
+                        :
+                            example
+                    )}
+                    :
+                        meaning
+                )
+            }
+        ))
+
+        fecharModalHideWord()
     }
 
     return (
@@ -587,12 +636,17 @@ function CriarCard({ mode }: CriarCardProps) {
                                                 type="button" 
                                                 aria-label="Ocultar palavras do exemplo"
                                                 disabled={example.text.length < 1}
-                                                onClick={() => abrirModalHideWord(example.text)}
+                                                onClick={() => abrirModalHideWord(example.text, example.id, meaning.id, example.targetToBeHidden)}
                                                 >🙈</button>
                                             </div>
                                             <div className="hidden-preview">
                                                 {example.targetToBeHidden.length ? 
-                                                    null
+                                                    separarPalavras(example.targetToBeHidden).map((word, index) => <span 
+                                                        className="hidden-word-chip"
+                                                        key={index}
+                                                        >
+                                                            {word}
+                                                        </span>)
                                                 :
                                                 <span className="hidden-preview-empty">Nenhuma palavra oculta</span>
                                                 }
@@ -644,7 +698,7 @@ function CriarCard({ mode }: CriarCardProps) {
         modalOpen="card"
         >
             <CardPreview card={cardForm} onClose={fecharModalCardPreview} isOpen={isModalCardPreviewOpen}/>
-            <HideWordModal isOpen={isModalHideWordOpen} onClose={fecharModalHideWord} exampleText={exampleTextToHideModalWord.current}/>
+            <HideWordModal isOpen={isModalHideWordOpen} onClose={fecharModalHideWord} exampleText={exampleTextToHideModalWord.current.text} onSave={ocultarPalavra} wordCurrentlyHide={exampleTextToHideModalWord.current.wordCurrentlyHide}/>
         </ModalBackGround>
 
     </>

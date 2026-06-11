@@ -64,6 +64,10 @@ function Cards() {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
     }, [decks])
 
+    useEffect(() => {
+        console.log(decks)
+    }, [])
+
     function findCard(): Card | undefined {
         const idCard = idCardAtivo
 

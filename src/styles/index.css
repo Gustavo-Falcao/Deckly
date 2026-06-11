@@ -1071,3 +1071,12 @@ button {
   margin: 4px auto 0;
   display: block;
 }
+
+.hidden-word-chip {
+  border-radius: 999px;
+  background: var(--pink-soft);
+  color: var(--pink);
+  padding: 5px 9px;
+  font-size: 0.74rem;
+  font-weight: 950;
+}
