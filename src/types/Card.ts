@@ -17,6 +17,10 @@ export type Meaning = {
     definition: string;
     contexts: ContextObject[];
     examples: Example[];
+    nextReviewDate: string;
+    interval: number;
+    repetitions: number;
+    easeFactor: number;
 };
 
 export type MeaningFormData = {
@@ -33,10 +37,6 @@ export type Card = {
     synonym: string;
     phonetic: string;
     creationDate: string;
-    nextReviewDate: string;
-    interval: number;
-    repetitions: number;
-    easeFactor: number;
     meanings: Meaning[]
 };
 
@@ -45,7 +45,7 @@ export type CardFormData = {
     context: string;
     synonym: string;
     phonetic: string;
-    meanings: Meaning[]
+    meanings: MeaningFormData[]
 }
 
 export type CardEdit = {
@@ -55,7 +55,7 @@ export type CardEdit = {
     synonym: string;
     phonetic: string;
     creationDate: string;
-    meanings: Meaning[]
+    meanings: MeaningFormData[]
 }
 
 export type HelperCard = {

@@ -32,6 +32,38 @@ function Decks() {
 
     },[decks])
 
+    //fazer useEffect para atualizar os dados 
+    //tirar os dados do modo treino da raiz do objeto card e colocar na raiz do objeto meaning
+
+    useEffect(() => {
+        const arrayDecks = decks
+
+        const arrayDecksAtualizado :Deck[] = arrayDecks.map(deck => 
+            ({...deck, cards: deck.cards.map(card => 
+                ({
+                    id: card.id,
+                    name: card.name,
+                    context: card.context,
+                    synonym: card.synonym,
+                    phonetic: card.phonetic,
+                    creationDate: card.creationDate,
+                    meanings: card.meanings.map(meaning =>
+                        ({
+                            ...meaning, 
+                            nextReviewDate: card.creationDate,
+                            interval: 0,
+                            repetitions: 0,
+                            easeFactor: 2.5
+                        })
+                    )
+                })
+            )})
+        )
+
+        setDecks(arrayDecksAtualizado)
+    
+    }, [])
+
     const msgNoDecks = (
         <div 
         className="empty-state" 

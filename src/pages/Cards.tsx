@@ -1,7 +1,7 @@
 import { useEffect, useState, type JSX } from "react"
 import type { DeckOption, Deck } from "../types/Deck"
 import ModalBackGround from "../components/ModalBackGround"
-import type { Card, CardEdit } from "../types/Card"
+import type { Card, CardEdit, Meaning } from "../types/Card"
 import CardComponent from "../components/CardComponent"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import RemoveCardModal from "../components/RemoveCardModal"
@@ -193,11 +193,42 @@ function Cards() {
     function saveChangesEditCardAndOpenCurrentCardToEdit() {
         if(!deckEscolhido) return
 
-        const cardEdit = deckEscolhido.helperCard.edit
-        const cardToEdit = deckEscolhido.cards.find(card => card.id === idCardAtivo)
-        const cardToBeEdited = deckEscolhido.cards.find(card => card.id === cardEdit?.id);
+        const cardEdit = deckEscolhido.helperCard.edit //card a ser salvo
+        const cardToBeEdited = deckEscolhido.cards.find(card => card.id === cardEdit?.id); // card a ser editado
+        const cardToEdit = deckEscolhido.cards.find(card => card.id === idCardAtivo) //novo card a ser salvo no card edit
 
         if(!cardEdit || !cardToEdit || !cardToBeEdited) return
+
+        const meaningsForm = cardEdit.meanings
+        const meanings = cardToBeEdited.meanings
+
+        let meaningsAtualizado: Meaning[] = []
+
+        for(const meaningForm of meaningsForm) {
+            let meaningInserido = false
+            
+            for(const meaning of meanings) {
+                if(meaningForm.id === meaning.id) {
+                    meaningsAtualizado.push({
+                        ...meaningForm, 
+                        nextReviewDate: meaning.nextReviewDate, interval: meaning.interval, 
+                        repetitions: meaning.repetitions, easeFactor: meaning.easeFactor
+                    })
+                    meaningInserido = true
+                    break
+                }
+            }
+
+            if(!meaningInserido) {
+                meaningsAtualizado.push({
+                    ...meaningForm,
+                    nextReviewDate: new Date().toISOString(),
+                    interval: 0,
+                    repetitions: 0,
+                    easeFactor: 2.5
+                })
+            }
+        }
 
         const updatedCard: Card = {
             id: cardEdit.id,
@@ -206,11 +237,7 @@ function Cards() {
             synonym: cardEdit.synonym,
             phonetic: cardEdit.phonetic,
             creationDate: cardEdit.creationDate,
-            nextReviewDate: cardToBeEdited.nextReviewDate,
-            interval: cardToBeEdited.interval,
-            repetitions: cardToBeEdited.repetitions,
-            easeFactor: cardToBeEdited.easeFactor,
-            meanings: cardEdit.meanings
+            meanings: meaningsAtualizado
         }
 
         setDecks((prevDecks) => prevDecks.map((deck) => 
@@ -229,11 +256,6 @@ function Cards() {
 
         navigate(`/decks/${idDeckAtivo}/cards/${cardToEdit.id}/editar`)
     }
-
-    //descartar alterações
-        //atribuir o card que o usuário quer editar no card edit descartando as alterazções do outro presente
-        //setar o modo do modal para card
-        //nevegar para editar 
 
     function discardChangesAndOpenCurrentCardToEdit() {
         if(!deckEscolhido) return

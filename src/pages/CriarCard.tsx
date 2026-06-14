@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type JSX } from "react";
 import type { Deck, DeckOption } from "../types/Deck";
-import type { CardFormData, Context, Card, CardEdit } from "../types/Card";
+import type { CardFormData, Context, Card, CardEdit, Meaning } from "../types/Card";
 import { createEmptyCardFormData, createEmptyMeaning, createContextObjectWithContext, createEmptyExample } from "../helpers/objectsCreation"  
 import ModalBackGround from "../components/ModalBackGround";
 import CardPreview from "../components/CardPreview";
@@ -151,15 +151,17 @@ function CriarCard({ mode }: CriarCardProps) {
     }
 
     function addContextToMeaning(idMeaning: string, selectedContext: Context) {
-        updateCardForm((prev) => (
-            {...prev, meanings: prev.meanings.map(meaning => 
-                meaning.id === idMeaning ? 
-                    {...meaning, contexts: [...meaning.contexts, createContextObjectWithContext(selectedContext)]}
-                    :
-                    meaning
-                )
-            }
-        ))
+
+            updateCardForm((prev) => (
+                {...prev, meanings: prev.meanings.map(meaning => 
+                    meaning.id === idMeaning ? 
+                        {...meaning, contexts: [...meaning.contexts, createContextObjectWithContext(selectedContext)]}
+                        :
+                        meaning
+                    )
+                }
+            ))
+ 
     }
 
     function handleSimpleChange(field: keyof CardFormData, value: string) {        
@@ -299,7 +301,20 @@ function CriarCard({ mode }: CriarCardProps) {
 
     }
 
+     
+
     function criarCard(cardFormCreate: CardFormData) {
+
+        const meanings: Meaning[] = cardFormCreate.meanings.map(meaning => ({
+            id: meaning.id,
+            definition: meaning.definition,
+            contexts: meaning.contexts,
+            examples: meaning.examples,
+            nextReviewDate: new Date().toISOString(),
+            interval: 0,
+            repetitions: 0,
+            easeFactor: 2.5,
+        }))
 
         const card: Card = {
             id: crypto.randomUUID(),
@@ -308,12 +323,9 @@ function CriarCard({ mode }: CriarCardProps) {
             synonym: cardFormCreate.synonym,
             phonetic: cardFormCreate.phonetic,
             creationDate: new Date().toISOString(),
-            nextReviewDate: new Date().toISOString(),
-            interval: 0,
-            repetitions: 0,
-            easeFactor: 2.5,
-            meanings: cardFormCreate.meanings
+            meanings: meanings
         }
+
 
         const emptyCardCriacao = createEmptyCardFormData()
 
@@ -327,10 +339,76 @@ function CriarCard({ mode }: CriarCardProps) {
     }
 
     function salvarEdicaoCard(cardFormEdit: CardEdit) {
-
+        console.log("ENtrou na funcao")
         const cardToBeEdited = decks.find(deck => deck.id === idDeck)?.cards.find(card => card.id === cardFormEdit.id);
 
         if(!cardToBeEdited) return
+
+
+        console.log("Encontrou o card a ser editado")
+        //ARRUMAR BUG AO SALVAR CARD:
+            //NAO ESTA SALVANDO COM OS MEANINGS
+
+        //encontrar solucao
+        //pegar o array meaning do cardForm e percorrer por ele verificando cada id de meaning que já existir dentro do cardToBeEdited e copiar os valores do treino
+
+        //criar
+        //criar meaning form data
+        //quando salvar card:
+        //criar um novo array de meanings do tipo Meaning para o card colocando os atributos necessarios para o treino
+
+        //editar
+        //antes de atribuir o objeto do card transformado para o cardEdit, transformar o array de meaning em meaningFormData, tirando os atributos necessarios para o treino.
+        //adicionar/remover meaningFormData normal
+        //Salvar edicao
+            //ter como base o card edit
+            //pegar os meanings do card edit e comparar com o do card a ser editado
+            //transformar o array em meanings
+                //se o id do meaning for igual
+                    //transforma em meaning copiando os valores do treino
+                //se o id nao for igual
+                    //transforma em meaning com os valores padrao de criacao para o treino
+        
+        let meaningsAtualizado: Meaning[] = []
+
+        const meaningsForm = cardFormEdit.meanings
+        const meanings = cardToBeEdited.meanings
+
+        
+        for(const meaningForm of meaningsForm) {
+            let meaningInserido = false
+            
+            for(const meaning of meanings) {
+                if(meaningForm.id === meaning.id) {
+                    meaningsAtualizado.push({
+                        ...meaningForm, 
+                        nextReviewDate: meaning.nextReviewDate, interval: meaning.interval, 
+                        repetitions: meaning.repetitions, easeFactor: meaning.easeFactor
+                    })
+                    meaningInserido = true
+                    break
+                }
+            }
+
+            if(!meaningInserido) {
+                meaningsAtualizado.push({
+                    ...meaningForm,
+                    nextReviewDate: new Date().toISOString(),
+                    interval: 0,
+                    repetitions: 0,
+                    easeFactor: 2.5
+                })
+            }
+        }
+
+
+        console.log("meanins atualizado abaixo")
+        console.log(meaningsAtualizado)
+        
+        // nextReviewDate: new Date().toISOString(),
+        // interval: 0,
+        // repetitions: 0,
+        // easeFactor: 2.5,
 
         const cardAtualizado: Card = {
             id: cardFormEdit.id,
@@ -339,12 +417,9 @@ function CriarCard({ mode }: CriarCardProps) {
             synonym: cardFormEdit.synonym,
             phonetic: cardFormEdit.phonetic,
             creationDate: cardFormEdit.creationDate,
-            nextReviewDate: cardToBeEdited.nextReviewDate,
-            interval: cardToBeEdited.interval,
-            repetitions: cardToBeEdited.repetitions,
-            easeFactor: cardToBeEdited.easeFactor,
-            meanings: cardFormEdit.meanings
+            meanings: [...meaningsAtualizado]
         }
+
 
         setDecks((prevDecks) => prevDecks.map((deck) => 
             deck.id === idDeckEscolhido ?
