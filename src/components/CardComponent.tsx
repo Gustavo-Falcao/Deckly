@@ -1,4 +1,5 @@
 import type { Card, Example } from "../types/Card"
+import { Fragment } from "react/jsx-runtime"
 
 type CardProps = {
     card: Card | undefined
@@ -15,6 +16,22 @@ function isMostrarBackGroundExamples(examples: Example[]) {
     }
 
     return false
+}
+
+function gerarParagrafoExemploComPalavraDestacada(sentence: string, target: string) {
+    const parts = sentence.split(target)
+
+    const exampleSentence = parts.map((part, index) => (
+        <Fragment key={index}>
+            {part}
+
+            {index < parts.length - 1 && (
+                <span className="hidden-word-chip">{target}</span>
+            )}
+        </Fragment>
+    ))
+
+    return exampleSentence
 }
 
 function CardComponent({card, onClose, isOpen, openDeleteCard, openEditCard}: CardProps) {
@@ -42,7 +59,14 @@ function CardComponent({card, onClose, isOpen, openDeleteCard, openEditCard}: Ca
                         {isMostrarBackGroundExamples(meaning.examples) ? 
                             <div className="examples-box">
                                 {meaning.examples.filter(example => example.text.length > 3).map(example => 
-                                    <p key={example.id}>{example.text}</p>
+                                    <p key={example.id}>
+                                        {example.targetToBeHidden ?
+                                            gerarParagrafoExemploComPalavraDestacada(example.text, example.targetToBeHidden)    
+                                        :
+                                            example.text
+                                        }
+                                        
+                                    </p>
                                 )}
                             </div>
                         :

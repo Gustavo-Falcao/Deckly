@@ -1,0 +1,866 @@
+[
+    {
+        "id": "63cd2c5b-7738-4f32-aa41-15ef6f24f15c",
+        "name": "Words",
+        "emoji": "US",
+        "helperCard": {
+            "create": {
+                "name": "",
+                "context": "",
+                "synonym": "",
+                "phonetic": "",
+                "meanings": [
+                    {
+                        "id": "ef888887-e55c-467e-a7b5-657e4d55c7a9",
+                        "definition": "",
+                        "contexts": [],
+                        "examples": [
+                            {
+                                "id": "068aad0e-0f83-46f6-b912-0546ca1aca70",
+                                "text": "",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "3276d951-7d61-4019-b1e0-793f46b5a867",
+                                "text": "",
+                                "targetToBeHidden": ""
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "creationDate": "25/4/2026",
+        "cards": [
+            {
+                "id": "ca140955-2d55-4b01-8d1f-23d0997833a4",
+                "name": "Teste",
+                "context": "figurative",
+                "synonym": "",
+                "phonetic": "Teste",
+                "creationDate": "2026-06-11T14:06:33.263Z",
+                "meanings": [
+                    {
+                        "id": "0591db5c-405b-4cb3-8ee3-766eef95997a",
+                        "definition": "Teste",
+                        "contexts": [
+                            {
+                                "id": "2008dc2f-26e2-4139-b3aa-d0c2be5ab5e9",
+                                "context": "phrase"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "763b353d-1933-4fe6-bc65-4dd5b88bae5d",
+                                "text": "Tested também ",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "28086db4-74da-4c8f-a20b-e4e17f274ec4",
+                                "text": "They are becoming increasingly strident in their criticism of government economic policy.",
+                                "targetToBeHidden": "strident"
+                            }
+                        ],
+                        "nextReviewDate": "2026-06-17T03:00:00.000Z",
+                        "interval": 1,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    },
+                    {
+                        "id": "922d0cfa-c085-4ae5-88c2-d3cf54134edc",
+                        "definition": "Mais um teste aqui",
+                        "contexts": [
+                            {
+                                "id": "26403f28-07b6-4501-85be-659890e51619",
+                                "context": "literal"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "e40a5b02-3a01-43b6-bcda-c1b55214dfa3",
+                                "text": "Mais um teste aquiii",
+                                "targetToBeHidden": "teste"
+                            },
+                            {
+                                "id": "fbe375b1-8148-4c1d-bef7-05199f71db34",
+                                "text": "mais outro teste aqui ",
+                                "targetToBeHidden": "outro"
+                            }
+                        ],
+                        "nextReviewDate": "2026-06-17T03:00:00.000Z",
+                        "interval": 1,
+                        "repetitions": 1,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "1fca2ec2-ca98-435d-b3bc-4fe8c35d9ddd",
+                "name": "Eager",
+                "context": "adjective",
+                "synonym": "",
+                "phonetic": "ÍÍ-gâr",
+                "creationDate": "2026-06-03T22:04:50.873Z",
+                "meanings": [
+                    {
+                        "id": "abbf22ae-465b-41df-9a32-0e216a876393",
+                        "definition": "Very interested, excited, or enthusiastic about doing something.",
+                        "contexts": [
+                            {
+                                "id": "1d93fe0a-f12e-4542-94c3-c17dc5dcea6e",
+                                "context": "literal"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "a3d12143-3f3d-4163-94a3-2ce51b127a8a",
+                                "text": "The students are eager to begin their research projects.",
+                                "targetToBeHidden": "eager"
+                            },
+                            {
+                                "id": "9a4c284c-d200-44d4-88f7-5c2061d55c9b",
+                                "text": "She’s eager to see the new movie this weekend.",
+                                "targetToBeHidden": "eager"
+                            },
+                            {
+                                "id": "f7a26f4a-f1b2-4a36-b520-55c509ee2f26",
+                                "text": "Most customers were eager to be interviewed; less than 10 refused to participate in each study.",
+                                "targetToBeHidden": "eager"
+                            }
+                        ],
+                        "nextReviewDate": "2026-06-20T03:00:00.000Z",
+                        "interval": 4,
+                        "repetitions": 2,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "0a63c928-7301-48e2-aceb-949f04fc16e7",
+                "name": "Unwell",
+                "context": "adjective",
+                "synonym": "",
+                "phonetic": "ân-UÉL",
+                "creationDate": "2026-06-03T22:02:03.550Z",
+                "meanings": [
+                    {
+                        "id": "f58ff557-6a5e-40fd-8eaa-f9149a463199",
+                        "definition": "Not healthy, sick, or not feeling good.",
+                        "contexts": [
+                            {
+                                "id": "5f722477-3ef3-47d8-b273-9de2316c75e0",
+                                "context": "formal"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "6550009a-c1cb-40c8-8220-a45ddbcab117",
+                                "text": "The patient is feeling unwell and requires rest.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "7c246622-fdd1-43f2-873b-377b52bbd28a",
+                                "text": "I’m a bit unwell today, so I’ll stay home.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "e8486374-a341-4c65-b666-8d62f6a49f38",
+                                "text": "Cases who had been overseas shortly before becoming unwell were not excluded.",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-06-03T22:02:03.550Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "cefa5306-2622-43c8-a37a-2069d0092f46",
+                "name": "Willing",
+                "context": "adjective",
+                "synonym": "",
+                "phonetic": "UÍL-lin",
+                "creationDate": "2026-06-03T21:53:18.934Z",
+                "meanings": [
+                    {
+                        "id": "9ae2c4b0-6a7e-4f96-aff3-20a5d61577f5",
+                        "definition": "Being ready, eager, or prepared to do something; often because you agree or don’t mind doing it.",
+                        "contexts": [
+                            {
+                                "id": "6cb159a0-62ae-4bb8-a884-bfaa7ef4fca5",
+                                "context": "literal"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "d5f85c60-6f14-4caf-a151-34bed43fb83b",
+                                "text": "The committee is willing to consider your proposal.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "7bab24c7-83af-41f8-a038-44ad4f8325c5",
+                                "text": "I’m willing to help you move this weekend.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "5a5dc2b7-88a9-4b8f-a1c8-e911125619a8",
+                                "text": "If you’re willing to fly on Thursday you can get a cheaper ticket.",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-06-03T21:53:18.934Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "d51a8459-d9da-4347-aa44-1a9f47e2e7de",
+                "name": "Restless",
+                "context": "adjective",
+                "synonym": "",
+                "phonetic": "RÉST-lâss",
+                "creationDate": "2026-06-03T21:47:03.980Z",
+                "meanings": [
+                    {
+                        "id": "2a46bacc-0729-4d8e-aaa0-a3b0e48f780c",
+                        "definition": "Unwilling or unable to stay still or to be quiet and calm,  because you are worried or bored.",
+                        "contexts": [
+                            {
+                                "id": "5f0f867c-9469-4502-a33b-bf831fb9ff6c",
+                                "context": "literal"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "e336f0ed-c3dd-48ff-9d03-4d806d7fddda",
+                                "text": "He’s a restless type - he never stays in one country for long.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "b862d1e3-7025-471b-8209-0d66b1df6d80",
+                                "text": "She spend a restless night, tossing and turning.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "7df6bfbb-be30-4ee4-bae3-7dd3de99e15a",
+                                "text": "He made eye contact with his wife and his restless movements diminished.",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-06-03T21:47:03.980Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "1e762125-b342-482f-86d0-971dc4f948e4",
+                "name": "Withdraw",
+                "synonym": "",
+                "phonetic": "with-DRÓN",
+                "creationDate": "2026-05-31T01:32:37.261Z",
+                "meanings": [
+                    {
+                        "id": "1353434c-1082-4886-943b-2e0a435e70b4",
+                        "definition": "To take or move out or back, or to remove.",
+                        "contexts": [
+                            {
+                                "id": "2ea66fd5-c1b7-4b2f-9027-db9a361679d4",
+                                "context": "verb"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "964b88b9-a4a3-431f-a85e-7cc36dcd5c4f",
+                                "text": "The UN has withdrawn its troops from the country.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "5a3bd8c3-2bdd-4848-bc72-91a343d4db51",
+                                "text": "Eleven million bottles of water had to be withdrawn from sale due to a health scare.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "6cceeab1-ffbf-4adc-b0b6-26fcf9543e85",
+                                "text": "After lunch, we withdrew into her office to finish our discussion in private.",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-05-31T01:32:37.261Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    },
+                    {
+                        "id": "906eace0-6a4a-4b29-9e81-fbd35e9e6ed8",
+                        "definition": "Quiet, not outgoing, distant, not wanting to interact much; emotionally pulled back.",
+                        "contexts": [
+                            {
+                                "id": "72bee2b6-4d23-476d-a8e8-b29060dfa44b",
+                                "context": "adjective"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "73fb79b2-b654-4312-99ab-c42abd4acff6",
+                                "text": "Since the accident, he has been very withdrawn.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "e62db51a-2488-4fa9-8306-c594e73edca4",
+                                "text": "She was a shy, withdrawn child.",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-05-31T01:32:37.261Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    },
+                    {
+                        "id": "520e3349-32b2-43f1-bc4b-fb7a4a64bcb4",
+                        "definition": "to stop talking to other people and start thinking thoughts that are not related to what is happening around you",
+                        "contexts": [
+                            {
+                                "id": "1f2250ed-b8f6-4a29-afed-9b3be9237881",
+                                "context": "verb"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "93f309ef-f1e3-426e-8799-304398879b46",
+                                "text": "As a child, she frequently withdrew into her own fantasy world.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "1ab4e476-39e2-42d7-b0d8-17634ea06628",
+                                "text": "After the accident, he withdrew into himself and refused to talk to family or friends.",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-05-31T01:32:37.261Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "72447927-3783-451a-a9f9-dfd559d2ddd0",
+                "name": "Deem",
+                "context": "verb",
+                "synonym": "",
+                "phonetic": "diim",
+                "creationDate": "2026-05-31T01:08:56.906Z",
+                "meanings": [
+                    {
+                        "id": "ce6dd8f5-38f9-445e-9c81-620816423f1d",
+                        "definition": "To consider or judge something in a particular way.",
+                        "contexts": [
+                            {
+                                "id": "7ca7b0bf-6eeb-4206-aa24-8c3837842b60",
+                                "context": "formal"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "daa09ae0-a4ec-4df4-8112-270f897a6a49",
+                                "text": "The area has now been deemed safe.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "d7f3bbf0-6c6d-49d3-8704-98aec254a920",
+                                "text": "We will provide help whenever you deem it appropriate.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "8fda107b-07a7-47fa-b174-5ab3ade47f7a",
+                                "text": "Anyone not paying the registration fee by 31 March will be deemed to have withdrawn from the offer.",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-05-31T01:08:56.906Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "802f7fd1-3a49-46f7-8ee6-fb273cc193a3",
+                "name": "Needless ",
+                "context": "adjective",
+                "synonym": "unnecessary",
+                "phonetic": "NÍÍD-lâss",
+                "creationDate": "2026-05-27T03:10:55.207Z",
+                "meanings": [
+                    {
+                        "id": "014aedb3-30e2-4284-b335-9b2b7396c421",
+                        "definition": "Completely unnecessary.",
+                        "contexts": [
+                            {
+                                "id": "fc0d5b8d-2949-4a15-b7bd-89654abba42f",
+                                "context": "literal"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "ae79bdf7-2cc3-4e68-bf45-4a74a9f3ee14",
+                                "text": "A needless waste of time.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "0d96246f-f176-4c14-b216-296f9f6cf99d",
+                                "text": "Needless to say, I was very disappointed.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "6bb0466f-68a1-4c49-bf7e-ab0f37d7c95a",
+                                "text": "That comment was needless and hurtful.",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-05-27T03:10:55.207Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "91067c1d-ac2b-4284-b290-84074e6006e5",
+                "name": "Witness ",
+                "synonym": "",
+                "phonetic": "UÍT-nâss",
+                "creationDate": "2026-05-27T03:06:27.485Z",
+                "meanings": [
+                    {
+                        "id": "e33983b2-18b3-4008-a683-f9a5d33894d2",
+                        "definition": "A person who sees an event happening, specially a crime or an accident.",
+                        "contexts": [
+                            {
+                                "id": "fae707b3-edd5-4864-995a-4c3b3b376465",
+                                "context": "noun"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "c36aed5a-136e-4513-9d99-9dd85f92db4b",
+                                "text": "According to witnesses, the car used in the robbery was a green van with Pennsylvania license plates.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "e5e286cb-2235-418d-871a-21924a833d61",
+                                "text": "She was a witness at their wedding.",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-05-27T03:06:27.485Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    },
+                    {
+                        "id": "a7c5edf1-c8b7-4f70-b826-76a09425f115",
+                        "definition": "to see something happen, especially something important/unusual.",
+                        "contexts": [
+                            {
+                                "id": "f1c03c5d-ccfe-406f-8400-c2776e5aa227",
+                                "context": "verb"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "dbc2c902-aedd-4610-b060-d378b3db11df",
+                                "text": "I witnessed the car crash.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "b53262dc-2230-4e3b-baff-0e32236d641e",
+                                "text": "He arrived home just in time to witness his brother being taken away by the police.",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-05-27T03:06:27.485Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "41ceee73-b00a-4f0d-9e0a-85162c5839fe",
+                "name": "Seek",
+                "context": "verb",
+                "synonym": "search",
+                "phonetic": "s-III-k",
+                "creationDate": "2026-05-27T03:02:29.428Z",
+                "meanings": [
+                    {
+                        "id": "74a362d4-fb15-45ad-8267-ba48d1e770ab",
+                        "definition": "To try to find or get something, specially something that is not a physical object.",
+                        "contexts": [
+                            {
+                                "id": "18ca20df-7032-49f0-993c-62ed1f36b8a3",
+                                "context": "formal"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "4ad6b7ec-0633-4c8f-9d2e-92f568261c33",
+                                "text": "Are you actively seeking jobs",
+                                "targetToBeHidden": "seeking"
+                            },
+                            {
+                                "id": "790a4a57-f7b9-44cc-890a-adbca47497bb",
+                                "text": "Hundreds of dissidents are seeking refuge in the U.S.",
+                                "targetToBeHidden": "seeking"
+                            },
+                            {
+                                "id": "298aefe0-f736-4e89-b19d-c1ac2e437c11",
+                                "text": "The children sought their lost dog.",
+                                "targetToBeHidden": "sought"
+                            }
+                        ],
+                        "nextReviewDate": "2026-06-17T03:00:00.000Z",
+                        "interval": 1,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "e468d1af-a861-4481-9479-fcae4effc308",
+                "name": "Intent ",
+                "synonym": "",
+                "phonetic": "in-TÉNT",
+                "creationDate": "2026-05-27T00:35:04.700Z",
+                "meanings": [
+                    {
+                        "id": "262b1c0e-15db-4dbf-be4e-a8061146fa44",
+                        "definition": "Something that you intend or intended to do.",
+                        "contexts": [
+                            {
+                                "id": "b65f72d1-6a82-4937-9da2-c26dc8b685c6",
+                                "context": "noun"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "a94a0ef8-fc80-495f-ad79-cb17f9eca4ba",
+                                "text": "There was clearly no intent to cause harm, and the judge ruled that the injury was accidental.",
+                                "targetToBeHidden": "intent"
+                            },
+                            {
+                                "id": "ba096d22-8a8b-4b46-a66a-8b2b303d813f",
+                                "text": "He acted with criminal intent.",
+                                "targetToBeHidden": "intent."
+                            }
+                        ],
+                        "nextReviewDate": "2026-06-17T03:00:00.000Z",
+                        "interval": 1,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    },
+                    {
+                        "id": "80fc1ab6-538f-46d0-b210-557789365bd1",
+                        "definition": "Very focused on something; determined; absorbed; with strong attention or purpose.",
+                        "contexts": [
+                            {
+                                "id": "dfe24963-2231-43bf-a4ca-4e1edf81aeb2",
+                                "context": "adjective"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "49ea2df4-2e22-4bcf-8faf-c963185aa390",
+                                "text": "She is intent on improving her English.",
+                                "targetToBeHidden": "intent"
+                            },
+                            {
+                                "id": "8dfa7419-122e-4fe9-9735-782299b33950",
+                                "text": "The company is intent on expanding into new markets.",
+                                "targetToBeHidden": "intent"
+                            },
+                            {
+                                "id": "3e55c7e8-3702-4f84-9410-84df9c67f5c1",
+                                "text": "He listened with intent attention.",
+                                "targetToBeHidden": "intent"
+                            },
+                            {
+                                "id": "ad49f052-cec9-4905-b241-4e51962837f5",
+                                "text": "The child watched the magician with intent eyes.",
+                                "targetToBeHidden": "intent"
+                            }
+                        ],
+                        "nextReviewDate": "2026-06-20T03:00:00.000Z",
+                        "interval": 4,
+                        "repetitions": 2,
+                        "easeFactor": 2.5
+                    },
+                    {
+                        "id": "4dff0b28-55f0-48a0-9b67-0504ec2020bc",
+                        "definition": "To have as a plan or purpose.",
+                        "contexts": [
+                            {
+                                "id": "f071b16f-0680-455e-b51b-f92158df3f17",
+                                "context": "verb"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "89e44954-713c-491f-a334-5aea23520f7b",
+                                "text": "We intend to go to Australia next year.",
+                                "targetToBeHidden": "intend"
+                            },
+                            {
+                                "id": "7ec28e9c-7ca7-45c7-81fb-6f678dd9165e",
+                                "text": "Somehow I offended him, which wasn't what I'd intended.",
+                                "targetToBeHidden": "intended."
+                            },
+                            {
+                                "id": "cc713f09-44c0-4394-92f9-7ea3a4b0214d",
+                                "text": "I don't think she intended me to hear the remark.",
+                                "targetToBeHidden": "intended"
+                            }
+                        ],
+                        "nextReviewDate": "2026-05-27T00:35:04.700Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "c6cadfb1-cfa7-4066-bd3d-34e862d42656",
+                "name": "Gaze",
+                "context": "verb",
+                "synonym": "Look",
+                "phonetic": "GUEI-z",
+                "creationDate": "2026-05-27T00:30:48.268Z",
+                "meanings": [
+                    {
+                        "id": "2841910f-754a-4c8d-9454-2adf874e8405",
+                        "definition": "To look at someone or something for a long time, specially in surprise, admiration or because you are thinking about something else.",
+                        "contexts": [
+                            {
+                                "id": "9328660d-c468-41d0-9ffd-7cd1c402b6a0",
+                                "context": "literal"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "b8ea8f31-71d5-417c-9b46-ac22e3918db2",
+                                "text": "He spends hours gazing out of the window when he should be working.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "ed5f704f-7803-437e-a43f-aab8fc7e6263",
+                                "text": "They lived their lives under the gaze of the public.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "c7e4be9d-38f3-4255-b165-3098cd43e1a0",
+                                "text": "We must gaze into the future and plan ahead.",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-05-27T00:30:48.268Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "4dcd5b5f-4918-4130-99db-2501b2d4a4ae",
+                "name": "Predicament ",
+                "context": "noun",
+                "synonym": "",
+                "phonetic": "pri-DI-ka-ment",
+                "creationDate": "2026-05-27T00:10:25.214Z",
+                "meanings": [
+                    {
+                        "id": "f1cad046-89ff-476d-8214-acf662df3220",
+                        "definition": "A difficult, unpleasant or confusing situation that is hard to get out of or solve.",
+                        "contexts": [
+                            {
+                                "id": "9d152c07-a1fb-4a9c-9823-14a90851fee4",
+                                "context": "formal"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "1eded68c-ea8c-4f0c-b787-a9c7673915bc",
+                                "text": "The company found itself in a financial predicament after losing its biggest client.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "ff90bd17-53e1-48ba-918c-e8eb83e71a14",
+                                "text": "I forgot my wallet at home, so now I'm in a bit of a predicament.",
+                                "targetToBeHidden": "predicament"
+                            }
+                        ],
+                        "nextReviewDate": "2026-06-17T03:00:00.000Z",
+                        "interval": 1,
+                        "repetitions": 0,
+                        "easeFactor": 2.35
+                    }
+                ]
+            },
+            {
+                "id": "f01fffc0-3bd7-42fa-9a26-d364bd8f9222",
+                "name": "Resemble ",
+                "context": "verb",
+                "synonym": "",
+                "phonetic": "ri-ZÉM-bâl",
+                "creationDate": "2026-05-27T00:09:05.785Z",
+                "meanings": [
+                    {
+                        "id": "2087f2bd-d93c-4cbd-a14f-3ec92382d546",
+                        "definition": "To look like / to be similar to someone or something.",
+                        "contexts": [
+                            {
+                                "id": "28a60a5d-fdd1-4eaa-a4ea-c8ea4732e2ff",
+                                "context": "literal"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "53d05663-640d-4f33-b6f8-f78551507ce0",
+                                "text": "The twins resemble each other closely.",
+                                "targetToBeHidden": "resemble"
+                            },
+                            {
+                                "id": "99d14025-6e0f-4d54-adc0-af706b09fdaf",
+                                "text": "You really resemble your mom.",
+                                "targetToBeHidden": "resemble"
+                            }
+                        ],
+                        "nextReviewDate": "2026-06-20T03:00:00.000Z",
+                        "interval": 4,
+                        "repetitions": 2,
+                        "easeFactor": 2.5
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "af700308-be46-4ae9-8e07-a575a03dcf8a",
+        "name": "Idioms",
+        "emoji": "US",
+        "helperCard": {
+            "create": {
+                "name": "",
+                "context": "",
+                "synonym": "",
+                "phonetic": "",
+                "meanings": [
+                    {
+                        "id": "b32c1866-c78c-4069-94b5-7527894c5e1e",
+                        "definition": "",
+                        "contexts": [],
+                        "examples": [
+                            {
+                                "id": "402dc542-9fd2-4c65-a868-1d6dac8d99b1",
+                                "text": "",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "2bd3bd5d-48cd-40ad-98f3-898c16a4409a",
+                                "text": "",
+                                "targetToBeHidden": ""
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "creationDate": "27/4/2026",
+        "cards": [
+            {
+                "id": "a36de4c5-7b62-4da5-8fee-f86cc284c604",
+                "name": "Needless to say",
+                "context": "formal",
+                "synonym": "",
+                "phonetic": "",
+                "creationDate": "2026-06-03T21:40:11.426Z",
+                "meanings": [
+                    {
+                        "id": "fbe6d697-6092-4f72-befa-c9d81365f6c9",
+                        "definition": "it’s obvious / it goes without saying.",
+                        "contexts": [],
+                        "examples": [
+                            {
+                                "id": "67087a7e-ba7e-4a87-8025-22217e2771b9",
+                                "text": "Needless to say, they found this kind of experience extremely boring and felt that they had gained very little from it.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "a7b37d6f-2e9c-428e-b800-09d216df73e9",
+                                "text": "Needless to say, these materials will have to be highly varied depending on such factors as participants, purposes, and period of exposure to formal teaching.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "26728740-c77c-451d-8052-2daa46225b30",
+                                "text": "Needless to say, this engineering machinery was the original motivation for the development of the approach to wobbling bijections using shearings .",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-06-03T21:40:11.426Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    }
+                ]
+            },
+            {
+                "id": "38c7022f-fc05-4190-a6df-daa7240cc4b2",
+                "name": "Go on a tear",
+                "context": "informal",
+                "synonym": "",
+                "phonetic": "",
+                "creationDate": "2026-05-27T16:50:41.138Z",
+                "meanings": [
+                    {
+                        "id": "34d88f09-8915-4f79-8aaa-3cc4a2872060",
+                        "definition": "to go on a streak of great performance, doing something very successfully for a period of time, often with a lot of wins or achievements.",
+                        "contexts": [
+                            {
+                                "id": "aece7d90-1acf-4b2b-a3de-1bc012e25827",
+                                "context": "informal"
+                            }
+                        ],
+                        "examples": [
+                            {
+                                "id": "41b00911-c7aa-43c3-85ec-4d331158f3bd",
+                                "text": "After that promotion, she went on a tear and closed five big deals in a week.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "aa2929a0-208c-4558-85e0-39c980753302",
+                                "text": "The team went on a tear and won eight games in a row.",
+                                "targetToBeHidden": ""
+                            },
+                            {
+                                "id": "3b53e662-b5b2-4de1-868d-2ee06c4ccafe",
+                                "text": "Guys, I’m telling you right now, when i like, golf again, I’m going to go on a tear.",
+                                "targetToBeHidden": ""
+                            }
+                        ],
+                        "nextReviewDate": "2026-05-27T16:50:41.138Z",
+                        "interval": 0,
+                        "repetitions": 0,
+                        "easeFactor": 2.5
+                    }
+                ]
+            }
+        ]
+    }
+]

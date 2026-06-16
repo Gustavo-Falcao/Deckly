@@ -715,7 +715,7 @@ function CriarCard({ mode }: CriarCardProps) {
                                                 >🙈</button>
                                             </div>
                                             <div className="hidden-preview">
-                                                {example.targetToBeHidden.length ? 
+                                                {example.targetToBeHidden ? 
                                                     separarPalavras(example.targetToBeHidden).map((word, index) => <span 
                                                         className="hidden-word-chip"
                                                         key={index}

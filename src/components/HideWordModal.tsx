@@ -38,11 +38,10 @@ function HideWordModal({isOpen, onClose, exampleText, onSave, wordCurrentlyHide}
     })
 
     function separarPalavras(text: string): string[] {
-        return String(text).trim().split(/\s+/).filter(Boolean);
+        const textoPreparado = String(text).replace(/([.,!?])/g, ' $1 ');
+        
+        return textoPreparado.trim().split(/\s+/).filter(Boolean);
     }
-    
-    //CONTINUAR IMPLEMENTANDO, NA PARTE DE SELECIONAR AS PALAVAR
-    //HOT TAKE => FAZER POR VARIAVEL NORMAL E CRIAR UMA FUNCAO QUE RETORNE AS PALAVRAS FILTRADAS APENAS POR SELECIONADAS E INICIALIZAR A VARIAVEL COM ESSA FUNCAO
     
     const wordsSelected: WordTokenized[] = arrayWordsExampleText.filter((word) => word.selected === true);
 

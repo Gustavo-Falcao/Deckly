@@ -63,3 +63,17 @@ export type HelperCard = {
     edit?: CardEdit;
 }
 
+export type MeaningPractice = {
+    id: string
+    idCard: string
+    generalContext: Context | undefined
+    meaningContexts: ContextObject[]
+    meaningDefinition: string
+    sentence: string
+    targetResult: string
+    nextReviewDate: string;
+    interval: number;
+    repetitions: number;
+    easeFactor: number;
+    done: boolean
+}

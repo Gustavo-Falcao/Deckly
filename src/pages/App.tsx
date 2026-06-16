@@ -3,6 +3,7 @@ import Cards from "./Cards"
 import CriarCard from "./CriarCard"
 import { Route, Routes, Navigate } from "react-router-dom"
 import BottomNav from "../components/BottomNav"
+import Practice from "./Practice"
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
           <Route path="/novo" element={<CriarCard mode="criar"/>} />
           <Route path="/decks/:idDeck/cards/novo" element={<CriarCard mode="criar"/>}/>
           <Route path="/decks/:idDeck/cards/:idCard/editar" element={<CriarCard mode="editar"/>} />
+          <Route path="/decks/:idDeck/cards/practice" element={<Practice/>}/>
         </Routes>
       </main>
       

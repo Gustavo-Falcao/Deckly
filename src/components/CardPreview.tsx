@@ -1,5 +1,5 @@
 import type { CardEdit, CardFormData, Example } from "../types/Card";
-
+import { Fragment } from "react/jsx-runtime"
 
 type CardPreviewProps = {
     card: CardFormData | CardEdit | undefined
@@ -16,6 +16,22 @@ function CardPreview({card, onClose, isOpen}: CardPreviewProps) {
         }
 
         return false
+    }
+
+    function gerarParagrafoExemploComPalavraDestacada(sentence: string, target: string) {
+        const parts = sentence.split(target)
+    
+        const exampleSentence = parts.map((part, index) => (
+            <Fragment key={index}>
+                {part}
+    
+                {index < parts.length - 1 && (
+                    <span className="hidden-word-chip">{target}</span>
+                )}
+            </Fragment>
+        ))
+    
+        return exampleSentence
     }
 
     if(!card || !isOpen) return null
@@ -46,7 +62,13 @@ function CardPreview({card, onClose, isOpen}: CardPreviewProps) {
                         {isMostrarBackGroundExamples(meaning.examples) ? 
                             <div className="examples-box">
                                 {meaning.examples.filter(example => example.text.length > 3).map(example => 
-                                    <p key={example.id}>{example.text}</p>
+                                    <p key={example.id}>
+                                        {example.targetToBeHidden ?
+                                            gerarParagrafoExemploComPalavraDestacada(example.text, example.targetToBeHidden)    
+                                        :
+                                            example.text
+                                        }  
+                                    </p>
                                 )}
                             </div>
                         :

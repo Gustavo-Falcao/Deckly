@@ -1,5 +1,5 @@
 import type { Deck } from "../types/Deck"
-import type { CardFormData, Context, Example, HelperCard, MeaningFormData, ContextObject } from "../types/Card"
+import type { CardFormData, Context, Example, HelperCard, MeaningFormData, ContextObject, MeaningPractice } from "../types/Card"
 import { getCurrentDate } from "./handleDate"
 
 export function createDeck(nome: string, emoji: string): Deck {
@@ -55,5 +55,22 @@ function createEmptyHelperCard(): HelperCard {
     return {
         create: createEmptyCardFormData(),
         edit: undefined
+    }
+}
+
+export function createEmptyMeaningPractice(): MeaningPractice {
+    return {
+        id: "",
+        idCard: "",
+        generalContext: undefined,
+        meaningContexts: [],
+        meaningDefinition: "",
+        sentence: "",
+        targetResult: "",
+        nextReviewDate: "",
+        interval: 0,
+        repetitions: 0,
+        easeFactor: 0,
+        done: false
     }
 }

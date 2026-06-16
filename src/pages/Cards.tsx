@@ -1,7 +1,7 @@
 import { useEffect, useState, type JSX } from "react"
 import type { DeckOption, Deck } from "../types/Deck"
 import ModalBackGround from "../components/ModalBackGround"
-import type { Card, CardEdit, Meaning } from "../types/Card"
+import type { Card, CardEdit, Example, Meaning, MeaningPractice } from "../types/Card"
 import CardComponent from "../components/CardComponent"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import RemoveCardModal from "../components/RemoveCardModal"
@@ -59,6 +59,8 @@ function Cards() {
     const nomeEditCard = deckEscolhido?.helperCard.edit?.name 
     const [inputSearchCard, setInputSearchCard] = useState("")
     const filteredCards: Card[] = getCardsFiltrados(deckEscolhido, inputSearchCard, filterModeCard)
+    //percorrer o array de cards e percorrer por todos os meanings comparando com a data e retornar os meanings com a data menor ou igual a atual
+    const [meaningsToPractice, setMeaningsToPractice] = useState<MeaningPractice[]>([])
 
     useEffect(() => {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
@@ -66,7 +68,73 @@ function Cards() {
 
     useEffect(() => {
         console.log(decks)
+        
+        const meaningPractice = carregarMeaninsPractice()
+
+        setMeaningsToPractice(meaningPractice)
+
+        console.log("array de meaning practice abaixo")
+        console.log(meaningPractice)
+
     }, [])
+
+    function carregarMeaninsPractice(): MeaningPractice[] {
+        if(!deckEscolhido) return []
+
+        const cardsCurrentDeck: Card[] = deckEscolhido.cards
+        let meaningsPracticeArray: MeaningPractice[] = []
+
+        for(const card of cardsCurrentDeck) {
+            const meanings = card.meanings
+            const now = Date.now();
+            const meaningsToBePracticed = meanings.filter(m => {
+                const reviewDate = new Date(m.nextReviewDate).getTime()
+
+                return reviewDate <= now
+            })
+
+            if(meaningsToBePracticed.length > 0) {
+
+                for(let i = 0; i < meaningsToBePracticed.length; i++) {
+                    
+                    const exemplos = meaningsToBePracticed[i].examples
+    
+                    const exemplosValidos = exemplos.filter(ex => ex.targetToBeHidden && ex.targetToBeHidden !== "")
+    
+                    let isExampleComTargeToBeHidden = false
+                    let example: Example | undefined
+                    
+                    if(exemplosValidos.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * exemplosValidos.length)
+                        example = exemplosValidos[randomIndex]
+                        isExampleComTargeToBeHidden = true
+                    }
+                   
+    
+                    if(isExampleComTargeToBeHidden) {
+                        const meaningPracticeObject: MeaningPractice = {
+                            id: meaningsToBePracticed[i].id,
+                            idCard: card.id,
+                            generalContext: card.context,
+                            meaningContexts: meaningsToBePracticed[i].contexts,
+                            meaningDefinition: meaningsToBePracticed[i].definition,
+                            sentence: example?.text || "",
+                            targetResult: example?.targetToBeHidden || "",
+                            nextReviewDate: meaningsToBePracticed[i].nextReviewDate,
+                            interval: meaningsToBePracticed[i].interval,
+                            repetitions: meaningsToBePracticed[i].repetitions,
+                            easeFactor: meaningsToBePracticed[i].easeFactor,
+                            done: false
+                        }
+                        
+                        meaningsPracticeArray.push(meaningPracticeObject)
+                    }
+                }
+            }
+        }
+
+        return meaningsPracticeArray
+    }
 
     function findCard(): Card | undefined {
         const idCard = idCardAtivo
@@ -332,18 +400,18 @@ function Cards() {
                             <path d="M2 2l10 10M12 2L2 12" />
                         </svg>
                     </button>
-                    <div className="filter-chips" id="filterChips" role="group" aria-label="Ordenar cards">
-                        <button 
-                        className={`filter-chip ${filterModeCard === "recente" ? 'active' : ''}`} 
-                        data-filter="recent"
-                        onClick={() => setFilterModeCard("recente")}
-                        >Mais recente</button>
-                        <button 
-                        className={`filter-chip ${filterModeCard === "antigo" ? 'active' : ''}`} 
-                        data-filter="oldest"
-                        onClick={() => setFilterModeCard("antigo")}
-                        >Mais antigo</button>
-                    </div>
+                </div>
+                <div className="filter-chips" id="filterChips" role="group" aria-label="Ordenar cards">
+                    <button 
+                    className={`filter-chip ${filterModeCard === "recente" ? 'active' : ''}`} 
+                    data-filter="recent"
+                    onClick={() => setFilterModeCard("recente")}
+                    >Mais recente</button>
+                    <button 
+                    className={`filter-chip ${filterModeCard === "antigo" ? 'active' : ''}`} 
+                    data-filter="oldest"
+                    onClick={() => setFilterModeCard("antigo")}
+                    >Mais antigo</button>
                 </div>
             </div>
 
@@ -363,6 +431,21 @@ function Cards() {
                     </select>
                 </div>
             </div>
+
+                  <div className="practice-bar">
+                    <button 
+                    className="practice-btn" 
+                    id="practiceBtn"
+                    disabled={meaningsToPractice.length === 0}
+                    onClick={() => {navigate(`/decks/${idDeck}/cards/practice`)}}
+                    >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round"/>
+                    </svg>
+                    Praticar Deck
+                    <span className="due-badge" id="dueBadge">{meaningsToPractice.length}</span>
+                    </button>
+                </div>
 
             <h2 className="section-title">Cards</h2>
             <div className="cards-list" id="cardsList">
