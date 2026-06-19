@@ -169,11 +169,9 @@ button {
 
 .section-title {
   margin: 22px 2px 12px;
-  font-size: 1rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .deck-grid {
@@ -406,6 +404,11 @@ button {
     font-style: italic;    
     border-radius: 4px;           
     padding: 2px 8px;      
+}
+
+.tag.length-cards {
+  background: var(--surface);
+  color: var(--muted);
 }
 
 .meaning {
@@ -1366,4 +1369,12 @@ button {
   color: var(--muted);
   font-size: 0.95rem;
   line-height: 1.4;
+}
+
+.title-card {
+  font-size: 1rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 900;
 }

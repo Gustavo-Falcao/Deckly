@@ -446,8 +446,10 @@ function Cards() {
                     <span className="due-badge" id="dueBadge">{meaningsToPractice.length}</span>
                     </button>
                 </div>
-
-            <h2 className="section-title">Cards</h2>
+            <div className="section-title">
+                <span className="title-card">Cards</span>
+                <span className="tag length-cards" id="dueBadge">20</span>
+            </div>
             <div className="cards-list" id="cardsList">
                 {
                     deckEscolhido === null ?
