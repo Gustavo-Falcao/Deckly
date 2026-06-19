@@ -409,6 +409,7 @@ button {
 .tag.length-cards {
   background: var(--surface);
   color: var(--muted);
+  font-size: 0.78rem;
 }
 
 .meaning {

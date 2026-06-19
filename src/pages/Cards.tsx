@@ -35,9 +35,9 @@ function Cards() {
     const showTopArea = useHideOnScroll(80)
     const isModalEditWarningOpen = modalMode === "editWarning"
 
-    const[idDeckAtivo, setIdDeckAtivo] = useState(() => {
-        return idDeck ? idDeck : ""
-    })
+    // const[idDeckAtivo, setIdDeckAtivo] = useState(() => {
+    //     return idDeck ? idDeck : ""
+    // })
 
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
                 const valorLocalStorage = localStorage.getItem("_DECKS_")
@@ -53,31 +53,23 @@ function Cards() {
     })
 
     const [filterModeCard, setFilterModeCard] = useState<FilterMode>("recente")
-    const deckEscolhido = decks.find(deck => deck.id === idDeckAtivo) ?? null
+    const deckEscolhido = decks.find(deck => deck.id === idDeck) ?? null
     const nomeDeckAtivo: string = deckEscolhido?.name || "Nenhum"
     const nomeCardAtivo: string = deckEscolhido?.cards.find(card => card.id === idCardAtivo)?.name || ""
     const nomeEditCard = deckEscolhido?.helperCard.edit?.name 
     const [inputSearchCard, setInputSearchCard] = useState("")
     const filteredCards: Card[] = getCardsFiltrados(deckEscolhido, inputSearchCard, filterModeCard)
-    //percorrer o array de cards e percorrer por todos os meanings comparando com a data e retornar os meanings com a data menor ou igual a atual
-    const [meaningsToPractice, setMeaningsToPractice] = useState<MeaningPractice[]>([])
-
+    const [meaningsToPractice, setMeaningsToPractice] = useState<MeaningPractice[]>(() => carregarMeaninsPractice())
+    
     useEffect(() => {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
     }, [decks])
 
     useEffect(() => {
-        console.log(decks)
-        
-        const meaningPractice = carregarMeaninsPractice()
-
-        setMeaningsToPractice(meaningPractice)
-
-        console.log("array de meaning practice abaixo")
-        console.log(meaningPractice)
-
-    }, [])
-
+        const newMeaningsToPractice = carregarMeaninsPractice()
+        setMeaningsToPractice(newMeaningsToPractice)
+    }, [idDeck])
+ 
     function carregarMeaninsPractice(): MeaningPractice[] {
         if(!deckEscolhido) return []
 
@@ -147,9 +139,9 @@ function Cards() {
     }
 
     function abrirCriarCard() {
-        if(!idDeckAtivo) return
+        if(!idDeck) return
 
-        navigate(`/decks/${idDeckAtivo}/cards/novo`)
+        navigate(`/decks/${idDeck}/cards/novo`)
     }
 
     function openCardModal(cardId: string) {
@@ -194,7 +186,7 @@ function Cards() {
 
     function deletarCard() {
         const idCurrentCard = idCardAtivo
-        const idCurrentDeck = idDeckAtivo
+        const idCurrentDeck = idDeck
 
         setDecks((prevDecks) => prevDecks.map((deck) => 
             deck.id === idCurrentDeck ?
@@ -208,7 +200,7 @@ function Cards() {
 
     function abrirEdicaoCard() {
         const cardAtivo = idCardAtivo || ""
-        const idDeckAtual = idDeckAtivo
+        const idDeckAtual = idDeck
 
         const card = findCard()
 
@@ -236,7 +228,7 @@ function Cards() {
                 deck
         ))
 
-        navigate(`/decks/${idDeckAtivo}/cards/${cardAtivo}/editar`)
+        navigate(`/decks/${idDeck}/cards/${cardAtivo}/editar`)
     }
     
     //para o card ativo ser editado 
@@ -252,9 +244,8 @@ function Cards() {
        return false
     }
 
-    function alterarDeck(deckId: string) {
-        setIdDeckAtivo(deckId)
-        !deckId ? navigate(`/cards`) : navigate(`/decks/${deckId}/cards`)
+    function alterarDeck(newDeckId: string) {
+        !newDeckId ? navigate(`/cards`) : navigate(`/decks/${newDeckId}/cards`)
     }
 
     //Futuramente validar o formulario antes de salvar
@@ -322,7 +313,7 @@ function Cards() {
                 deck
             ))
 
-        navigate(`/decks/${idDeckAtivo}/cards/${cardToEdit.id}/editar`)
+        navigate(`/decks/${idDeck}/cards/${cardToEdit.id}/editar`)
     }
 
     function discardChangesAndOpenCurrentCardToEdit() {
@@ -340,7 +331,7 @@ function Cards() {
                 deck
             ))
 
-        navigate(`/decks/${idDeckAtivo}/cards/${cardToEdit.id}/editar`)
+        navigate(`/decks/${idDeck}/cards/${cardToEdit.id}/editar`)
     }
 
     return (
@@ -421,7 +412,7 @@ function Cards() {
                     <select 
                     id="cardDeck" 
                     required
-                    value={idDeckAtivo}
+                    value={idDeck}
                     onChange={(e) => alterarDeck(e.target.value)}
                     >
                         <option value="" hidden>Deck</option>
@@ -448,7 +439,7 @@ function Cards() {
                 </div>
             <div className="section-title">
                 <span className="title-card">Cards</span>
-                <span className="tag length-cards" id="dueBadge">20</span>
+                <span className="tag length-cards" id="dueBadge">{deckEscolhido?.cards.length || 0}</span>
             </div>
             <div className="cards-list" id="cardsList">
                 {

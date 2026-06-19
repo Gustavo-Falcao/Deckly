@@ -22,6 +22,13 @@ function BottomNav() {
 
     console.log(`Edit is active => ${isEditCardActive}`)
 
+    const isPracticeActive = /^\/decks\/[^/]+\/cards\/practice$/.test(pathname);
+
+    console.log("Is practice active => " + isPracticeActive)
+
+    if(isPracticeActive)
+        return null
+
     return (
 
         <nav className="bottom-nav" aria-label="Menu inferior">
