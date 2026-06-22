@@ -17,7 +17,7 @@ function CardPreview({card, onClose, isOpen}: CardPreviewProps) {
 
         return false
     }
-
+    //AJUSTAR PARA COMO ESTÁ SENDO MANIPULADO
     function gerarParagrafoExemploComPalavraDestacada(sentence: string, target: string) {
         const parts = sentence.split(target)
     
