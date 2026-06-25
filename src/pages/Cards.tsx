@@ -7,10 +7,11 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import RemoveCardModal from "../components/RemoveCardModal"
 import { useHideOnScroll } from "../hooks/useHideOnScroll"
 import ModalEditWarning from "../components/ModalEditWarning"
+import Practice from "./Practice"
 
 type FilterMode = "recente" | "antigo"
 
-function getCardsFiltrados(deckAtual: Deck | null, inputSearch: string, filterMode: FilterMode): Card[] {
+function getCardsFiltrados(deckAtual: Deck | undefined, inputSearch: string, filterMode: FilterMode): Card[] {
     if(!deckAtual || deckAtual.cards.length === 0) return []
 
     const filteredCardsByName = deckAtual.cards.filter(card => card.name.toLowerCase().includes(inputSearch.toLowerCase()))
@@ -34,10 +35,7 @@ function Cards() {
     const deleteCardModalIsOpen = modalMode === "deleteCard"
     const showTopArea = useHideOnScroll(80)
     const isModalEditWarningOpen = modalMode === "editWarning"
-
-    // const[idDeckAtivo, setIdDeckAtivo] = useState(() => {
-    //     return idDeck ? idDeck : ""
-    // })
+    const [isPracticeActive, setIsPracticeActive] = useState(false)
 
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
                 const valorLocalStorage = localStorage.getItem("_DECKS_")
@@ -53,21 +51,20 @@ function Cards() {
     })
 
     const [filterModeCard, setFilterModeCard] = useState<FilterMode>("recente")
-    const deckEscolhido = decks.find(deck => deck.id === idDeck) ?? null
+    const deckEscolhido: Deck | undefined = decks.find(deck => deck.id === idDeck)
     const nomeDeckAtivo: string = deckEscolhido?.name || "Nenhum"
     const nomeCardAtivo: string = deckEscolhido?.cards.find(card => card.id === idCardAtivo)?.name || ""
     const nomeEditCard = deckEscolhido?.helperCard.edit?.name 
     const [inputSearchCard, setInputSearchCard] = useState("")
     const filteredCards: Card[] = getCardsFiltrados(deckEscolhido, inputSearchCard, filterModeCard)
     const [meaningsToPractice, setMeaningsToPractice] = useState<MeaningPractice[]>(() => carregarMeaninsPractice())
-    
+
     useEffect(() => {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
     }, [decks])
 
     useEffect(() => {
-        const newMeaningsToPractice = carregarMeaninsPractice()
-        setMeaningsToPractice(newMeaningsToPractice)
+        setMeaningsToPractice(carregarMeaninsPractice())
     }, [idDeck])
  
     function carregarMeaninsPractice(): MeaningPractice[] {
@@ -84,7 +81,7 @@ function Cards() {
 
                 return reviewDate <= now
             })
-
+            
             if(meaningsToBePracticed.length > 0) {
 
                 for(let i = 0; i < meaningsToBePracticed.length; i++) {
@@ -93,17 +90,12 @@ function Cards() {
     
                     const exemplosValidos = exemplos.filter(ex => ex.targetToBeHidden && ex.targetToBeHidden !== "")
     
-                    let isExampleComTargeToBeHidden = false
                     let example: Example | undefined
                     
                     if(exemplosValidos.length > 0) {
                         const randomIndex = Math.floor(Math.random() * exemplosValidos.length)
                         example = exemplosValidos[randomIndex]
-                        isExampleComTargeToBeHidden = true
-                    }
-                   
-    
-                    if(isExampleComTargeToBeHidden) {
+                        
                         const meaningPracticeObject: MeaningPractice = {
                             id: meaningsToBePracticed[i].id,
                             idCard: card.id,
@@ -120,7 +112,7 @@ function Cards() {
                         }
                         
                         meaningsPracticeArray.push(meaningPracticeObject)
-                    }
+                    }    
                 }
             }
         }
@@ -231,9 +223,6 @@ function Cards() {
         navigate(`/decks/${idDeck}/cards/${cardAtivo}/editar`)
     }
     
-    //para o card ativo ser editado 
-        //deck edit undefined 
-        //deck ativo ser igual ao presente no edit
     function isActiveCardPresentOnEditOrEditIsUndefined(idCardAtivo: string): boolean {
        const cardEdit = deckEscolhido?.helperCard.edit
 
@@ -334,153 +323,195 @@ function Cards() {
         navigate(`/decks/${idDeck}/cards/${cardToEdit.id}/editar`)
     }
 
+    function abrirModoTreino() {
+        setSearchParams((params) => {
+            const newParams = new URLSearchParams(params)
+
+            newParams.set("isPracticeActive", "true")
+
+            return newParams
+        })
+        setMeaningsToPractice(shuffleArray(meaningsToPractice))
+        setIsPracticeActive(true)
+    }
+
+    function fecharModoTreino() {
+        setSearchParams({})
+        setIsPracticeActive(false)
+        setMeaningsToPractice(carregarMeaninsPractice())
+    }
+
+    function shuffleArray(meaningPractice: MeaningPractice[]): MeaningPractice[] {
+        const arr = [...meaningPractice]
+
+        for (let i = arr.length - 1; i > 0; i--) {
+
+            const j = Math.floor(Math.random() * (i + 1));
+
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+
+        return arr;
+    }
+
     return (
     <>
         <section className="screen active" id="screen-cards">
-            <div className={`top-area ${showTopArea ? "show" : "hide"}`}>
-                <header className="topbar">
-                    <button 
-                    className="icon-btn" 
-                    id="backToDecks" 
-                    aria-label="Voltar para decks"
-                    onClick={() => voltarParaDecks()}
-                    >
-                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path
-                            d="M15 18l-6-6 6-6" 
-                            stroke="currentColor" 
-                            strokeWidth="2.4" 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                            />
-                        </svg>
-                    </button>
-                    <div style={{flex: 1}}>
-                        <p className="eyebrow">Deck aberto</p>
-                        <h1 className="page-title" id="currentDeckTitle">{nomeDeckAtivo}</h1>
-                    </div>
-                    <button className="icon-btn" id="newCardFromDeck" aria-label="Criar card"
-                    onClick={() => abrirCriarCard()}
-                    >
-                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path
-                            d="M12 5v14M5 12h14" 
-                            stroke="currentColor" 
-                            strokeWidth="2.4" 
-                            strokeLinecap="round" 
-                            />
-                        </svg>
-                    </button>
-                </header>
-                <div className="search-wrapper">
-                    <input 
-                    className="search-box" 
-                    id="cardSearch" 
-                    type="search" 
-                    placeholder="Buscar palavra no deck..." 
-                    value={inputSearchCard}
-                    onChange={(e) => setInputSearchCard(e.target.value)}
-                    />
-                    <button 
-                    className={`search-clear ${inputSearchCard.length > 0 ? 'visible' : ''}`} 
-                    id="deckSearchClear" 
-                    aria-label="Limpar busca"
-                    onClick={() => setInputSearchCard("")}
-                    >
-                        <svg viewBox="0 0 14 14" aria-hidden="true">
-                            <path d="M2 2l10 10M12 2L2 12" />
-                        </svg>
-                    </button>
-                </div>
-                <div className="filter-chips" id="filterChips" role="group" aria-label="Ordenar cards">
-                    <button 
-                    className={`filter-chip ${filterModeCard === "recente" ? 'active' : ''}`} 
-                    data-filter="recent"
-                    onClick={() => setFilterModeCard("recente")}
-                    >Mais recente</button>
-                    <button 
-                    className={`filter-chip ${filterModeCard === "antigo" ? 'active' : ''}`} 
-                    data-filter="oldest"
-                    onClick={() => setFilterModeCard("antigo")}
-                    >Mais antigo</button>
-                </div>
-            </div>
-
-            <div className="choose-deck">
-                <div className="field">
-                    <label htmlFor="cardDeck">Deck</label>
-                    <select 
-                    id="cardDeck" 
-                    required
-                    value={idDeck}
-                    onChange={(e) => alterarDeck(e.target.value)}
-                    >
-                        <option value="" hidden>Deck</option>
-                        {optionDecks.map((deck) : JSX.Element => 
-                            <option key={deck.id} value={deck.id}>{deck.name}</option>
-                        )}
-                    </select>
-                </div>
-            </div>
-
-                  <div className="practice-bar">
-                    <button 
-                    className="practice-btn" 
-                    id="practiceBtn"
-                    disabled={meaningsToPractice.length === 0}
-                    onClick={() => {navigate(`/decks/${idDeck}/cards/practice`)}}
-                    >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round"/>
-                    </svg>
-                    Praticar Deck
-                    <span className="due-badge" id="dueBadge">{meaningsToPractice.length}</span>
-                    </button>
-                </div>
-            <div className="section-title">
-                <span className="title-card">Cards</span>
-                <span className="tag length-cards" id="dueBadge">{deckEscolhido?.cards.length || 0}</span>
-            </div>
-            <div className="cards-list" id="cardsList">
-                {
-                    deckEscolhido === null ?
-                        <div className="empty-state">
-                            <strong>Nenhum Deck selecionado</strong>Escolha um deck para visualiazar os cards.
-                        </div>
-                    :
-                    deckEscolhido.cards.length === 0 ?
-                        <div className="empty-state">
-                            <strong>Nenhum card por aqui</strong>Toque em + para cadastrar sua primeira palavra.
-                        </div>
-                    :
-                    filteredCards.length === 0 ?
-                                <div 
-                                className="empty-state" 
-                                style={{gridColumn: "1 / -1"}}
-                                >
-                                    <strong>Nenhum deck encontrado</strong>
-                                </div>
-                    :
-                    filteredCards.map((card) :JSX.Element =>  
-                        <article 
-                        key={card.id}
-                        onClick={() => openCardModal(card.id)}
+            {isPracticeActive ? 
+                <Practice 
+                onCloseModoTreino={fecharModoTreino}
+                decks={decks}
+                setDecks={setDecks}
+                deckEscolhido={deckEscolhido}
+                meaningsToPractice={meaningsToPractice}
+                setMeaningsToPractice={setMeaningsToPractice}
+                />
+            :
+            <>
+                <div className={`top-area ${showTopArea ? "show" : "hide"}`}>
+                    <header className="topbar">
+                        <button 
+                        className="icon-btn" 
+                        id="backToDecks" 
+                        aria-label="Voltar para decks"
+                        onClick={() => voltarParaDecks()}
                         >
-                            <div 
-                            className="word-card is-closed" 
-                            data-card-id={card.id} 
-                            role="button" 
-                            aria-haspopup="dialog">
-                                <h2 className="word-title">
-                                    {card.name}
-                                </h2>
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path
+                                d="M15 18l-6-6 6-6" 
+                                stroke="currentColor" 
+                                strokeWidth="2.4" 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                />
+                            </svg>
+                        </button>
+                        <div style={{flex: 1}}>
+                            <p className="eyebrow">Deck aberto</p>
+                            <h1 className="page-title" id="currentDeckTitle">{nomeDeckAtivo}</h1>
+                        </div>
+                        <button className="icon-btn" id="newCardFromDeck" aria-label="Criar card"
+                        onClick={() => abrirCriarCard()}
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path
+                                d="M12 5v14M5 12h14" 
+                                stroke="currentColor" 
+                                strokeWidth="2.4" 
+                                strokeLinecap="round" 
+                                />
+                            </svg>
+                        </button>
+                    </header>
+                    <div className="search-wrapper">
+                        <input 
+                        className="search-box" 
+                        id="cardSearch" 
+                        type="search" 
+                        placeholder="Buscar palavra no deck..." 
+                        value={inputSearchCard}
+                        onChange={(e) => setInputSearchCard(e.target.value)}
+                        />
+                        <button 
+                        className={`search-clear ${inputSearchCard.length > 0 ? 'visible' : ''}`} 
+                        id="deckSearchClear" 
+                        aria-label="Limpar busca"
+                        onClick={() => setInputSearchCard("")}
+                        >
+                            <svg viewBox="0 0 14 14" aria-hidden="true">
+                                <path d="M2 2l10 10M12 2L2 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div className="filter-chips" id="filterChips" role="group" aria-label="Ordenar cards">
+                        <button 
+                        className={`filter-chip ${filterModeCard === "recente" ? 'active' : ''}`} 
+                        data-filter="recent"
+                        onClick={() => setFilterModeCard("recente")}
+                        >Mais recente</button>
+                        <button 
+                        className={`filter-chip ${filterModeCard === "antigo" ? 'active' : ''}`} 
+                        data-filter="oldest"
+                        onClick={() => setFilterModeCard("antigo")}
+                        >Mais antigo</button>
+                    </div>
+                </div>
+
+                <div className="choose-deck">
+                    <div className="field">
+                        <label htmlFor="cardDeck">Deck</label>
+                        <select 
+                        id="cardDeck" 
+                        required
+                        value={idDeck}
+                        onChange={(e) => alterarDeck(e.target.value)}
+                        >
+                            <option value="" hidden>Deck</option>
+                            {optionDecks.map((deck) : JSX.Element => 
+                                <option key={deck.id} value={deck.id}>{deck.name}</option>
+                            )}
+                        </select>
+                    </div>
+                </div>
+
+                    <div className="practice-bar">
+                        <button 
+                        className="practice-btn" 
+                        id="practiceBtn"
+                        disabled={meaningsToPractice.length === 0}
+                        onClick={abrirModoTreino}
+                        >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round"/>
+                        </svg>
+                        Praticar Deck
+                        <span className="due-badge" id="dueBadge">{meaningsToPractice.length}</span>
+                        </button>
+                    </div>
+                <div className="section-title">
+                    <span className="title-card">Cards</span>
+                    <span className="tag length-cards" id="dueBadge">{deckEscolhido?.cards.length || 0}</span>
+                </div>
+                <div className="cards-list" id="cardsList">
+                    {
+                        deckEscolhido === undefined ?
+                            <div className="empty-state">
+                                <strong>Nenhum Deck selecionado</strong>Escolha um deck para visualiazar os cards.
                             </div>
-                        </article>        
-                    )
-                    
-                    
-                }
-            </div>
+                        :
+                        deckEscolhido.cards.length === 0 ?
+                            <div className="empty-state">
+                                <strong>Nenhum card por aqui</strong>Toque em + para cadastrar sua primeira palavra.
+                            </div>
+                        :
+                        filteredCards.length === 0 ?
+                                    <div 
+                                    className="empty-state" 
+                                    style={{gridColumn: "1 / -1"}}
+                                    >
+                                        <strong>Nenhum deck encontrado</strong>
+                                    </div>
+                        :
+                        filteredCards.map((card) :JSX.Element =>  
+                            <article 
+                            key={card.id}
+                            onClick={() => openCardModal(card.id)}
+                            >
+                                <div 
+                                className="word-card is-closed" 
+                                data-card-id={card.id} 
+                                role="button" 
+                                aria-haspopup="dialog">
+                                    <h2 className="word-title">
+                                        {card.name}
+                                    </h2>
+                                </div>
+                            </article>        
+                        )
+                    }
+                </div>
+            </>
+            }
         </section>
     
         <ModalBackGround isOpen={backGroundModalIsOpen} onClose={() => {

@@ -1306,7 +1306,7 @@ button {
 
 .train-feedback-btns {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
@@ -1314,7 +1314,7 @@ button {
   border-radius: 16px;
   padding: 13px 8px;
   font-weight: 900;
-  font-size: 0.88rem;
+  font-size: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1342,6 +1342,11 @@ button {
 .feedback-btn.easy {
   background: #f0fdf4;
   color: #15803d;
+}
+
+.feedback-btn.repetir {
+  background: #EBE3FB;
+  color: #7B3FDB;
 }
 
 .train-done {

@@ -1,6 +1,8 @@
-import { NavLink, useLocation } from "react-router-dom"
+import { NavLink, useLocation, useSearchParams } from "react-router-dom"
 
 function BottomNav() {
+    const [searchParams, setSearchParams] = useSearchParams()
+    const isPracticeActive = searchParams.get("isPracticeActive") === "true"
     const location = useLocation();
     const pathname = location.pathname
 
@@ -21,8 +23,6 @@ function BottomNav() {
         /^\/decks\/[^/]+\/cards\/[^/]+\/editar$/.test(pathname);
 
     console.log(`Edit is active => ${isEditCardActive}`)
-
-    const isPracticeActive = /^\/decks\/[^/]+\/cards\/practice$/.test(pathname);
 
     console.log("Is practice active => " + isPracticeActive)
 

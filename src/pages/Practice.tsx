@@ -1,8 +1,17 @@
-import { useNavigate, useParams } from "react-router-dom"
-import type { MeaningPractice, Card, Example } from "../types/Card"
+import { useParams } from "react-router-dom"
+import type { MeaningPractice } from "../types/Card"
 import type { Deck } from "../types/Deck"
 import { useEffect, useState, Fragment, useRef } from "react"
 import { createEmptyMeaningPractice } from "../helpers/objectsCreation"
+
+type PracticeProps = {
+    onCloseModoTreino: () => void,
+    decks: Deck[],
+    setDecks: (deck: Deck[]) => void,
+    deckEscolhido: Deck | undefined,
+    meaningsToPractice: MeaningPractice[]
+    setMeaningsToPractice: (newMeaningsToPractice: MeaningPractice[]) => void
+}
 
 type TrainSession = {
     total: number
@@ -10,19 +19,11 @@ type TrainSession = {
     done: number
 }
 
-type Quality = "wrong" | "hard" | "good" | "easy"
+type Quality = "wrong" | "hard" | "good" | "easy" | "repeat"
 
-function Practice() {
+function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsToPractice, setMeaningsToPractice }: PracticeProps) {
 
-    const navigate = useNavigate()
     const { idDeck } = useParams<{ idDeck: string }>()
-    const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
-        const valorLocalStorage = localStorage.getItem("_DECKS_")
-
-        return valorLocalStorage ? JSON.parse(valorLocalStorage) : []
-    })
-    const deckEscolhido = decks.find(deck => deck.id === idDeck) ?? null
-    const [meaningsToPractice, setMeaningsToPractice] = useState<MeaningPractice[]>(() => carregarMeaninsPractice())
     const [currentMeaningPractice, setCurrentMeaningPractice] = useState<MeaningPractice>(() => carregarCurrentMeaningPractice(meaningsToPractice) ?? createEmptyMeaningPractice())
     const [isPracticeDone, setIsPracticeDone] = useState(false)
     const [trainSession, setTrainSession] = useState<TrainSession>({
@@ -37,13 +38,11 @@ function Practice() {
 
     useEffect(() => {
         console.log(decks)
-
     }, [])
 
     useEffect(() => {
-        localStorage.setItem("_DECKS_", JSON.stringify(decks))
-
-    }, [decks])
+        setCurrentMeaningPractice(meaningsToPractice[trainSession.current] ?? createEmptyMeaningPractice())
+    }, [meaningsToPractice])
 
     useEffect(() => {
         if((trainSession.total === trainSession.done)) {
@@ -53,87 +52,10 @@ function Practice() {
         console.log(trainSession)
     }, [trainSession])
 
-    console.log("PRACTICE DONE => " + isPracticeDone)
-
     function carregarCurrentMeaningPractice(meaningsPractice: MeaningPractice[]): MeaningPractice {
         const randomIndex = Math.floor(Math.random() * meaningsPractice.length)
 
         return meaningsPractice[randomIndex]
-    }
-
-    //funcao carregar meanings practice aqui
-
-    function carregarMeaninsPractice(): MeaningPractice[] {
-        if(!deckEscolhido) return []
-
-        const cardsCurrentDeck: Card[] = deckEscolhido.cards
-        let meaningsPracticeArray: MeaningPractice[] = []
-
-        for(const card of cardsCurrentDeck) {
-            const meanings = card.meanings
-            const now = Date.now();
-            const meaningsToBePracticed = meanings.filter(m => {
-                const reviewDate = new Date(m.nextReviewDate).getTime()
-
-                return reviewDate <= now
-            })
-            
-            if(meaningsToBePracticed.length > 0) {
-
-                for(let i = 0; i < meaningsToBePracticed.length; i++) {
-                    
-                    const exemplos = meaningsToBePracticed[i].examples
-    
-                    const exemplosValidos = exemplos.filter(ex => ex.targetToBeHidden && ex.targetToBeHidden !== "")
-    
-                    let isExampleComTargeToBeHidden = false
-                    let example: Example | undefined
-                    
-                    if(exemplosValidos.length > 0) {
-                        const randomIndex = Math.floor(Math.random() * exemplosValidos.length)
-                        example = exemplosValidos[randomIndex]
-                        isExampleComTargeToBeHidden = true
-                    }
-                    
-    
-                    if(isExampleComTargeToBeHidden) {
-                        const meaningPracticeObject: MeaningPractice = {
-                            id: meaningsToBePracticed[i].id,
-                            idCard: card.id,
-                            generalContext: card.context,
-                            meaningContexts: meaningsToBePracticed[i].contexts,
-                            meaningDefinition: meaningsToBePracticed[i].definition,
-                            sentence: example?.text || "",
-                            targetResult: example?.targetToBeHidden || "",
-                            nextReviewDate: meaningsToBePracticed[i].nextReviewDate,
-                            interval: meaningsToBePracticed[i].interval,
-                            repetitions: meaningsToBePracticed[i].repetitions,
-                            easeFactor: meaningsToBePracticed[i].easeFactor,
-                            done: false
-                        }
-                        
-                        meaningsPracticeArray.push(meaningPracticeObject)
-                    }
-                }
-            }
-        }
-
-        const arrayEmbaralhado = shuffleArray(meaningsPracticeArray)
-
-        return arrayEmbaralhado
-    }
-
-    function shuffleArray(meaningPractice: MeaningPractice[]): MeaningPractice[] {
-        const arr = [...meaningPractice]
-
-        for (let i = arr.length - 1; i > 0; i--) {
-
-            const j = Math.floor(Math.random() * (i + 1));
-
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-
-        return arr;
     }
 
     function buildMaskedSentence(text: string, target: string): string {
@@ -181,7 +103,7 @@ function Practice() {
 
             keyTimeout.current = setTimeout(() => {
                 handleQualityChoice("wrong")
-            }, 4000)
+            }, 6000)
         }
     }
 
@@ -231,43 +153,44 @@ function Practice() {
     }
 
     function handleQualityChoice(quality: Quality) {
-        const currentMeaningPracticeUpdated: MeaningPractice = applySrsResult(quality)
+        let newMeaningsToPractice: MeaningPractice[] = []
 
-        const updatedDeck = decks.map(deck => deck.id === idDeck ?
-            {...deck, cards: deck.cards.map(card => card.id === currentMeaningPracticeUpdated.idCard ? 
-                {...card, meanings: card.meanings.map(meaning => meaning.id === currentMeaningPracticeUpdated.id ?
-                    {...meaning, nextReviewDate: currentMeaningPracticeUpdated.nextReviewDate, interval: currentMeaningPracticeUpdated.interval, repetitions: currentMeaningPracticeUpdated.repetitions, easeFactor: currentMeaningPracticeUpdated.easeFactor} 
-                    : 
-                    meaning
+        if(quality === "repeat") {
+            newMeaningsToPractice = meaningsToPractice.filter(meaning => meaning.id !== currentMeaningPractice.id)
+            newMeaningsToPractice = [...newMeaningsToPractice, currentMeaningPractice]
+        } else {
+
+            const currentMeaningPracticeUpdated: MeaningPractice = applySrsResult(quality)
+    
+            const updatedDeck = decks.map(deck => deck.id === idDeck ?
+                {...deck, cards: deck.cards.map(card => card.id === currentMeaningPracticeUpdated.idCard ? 
+                    {...card, meanings: card.meanings.map(meaning => meaning.id === currentMeaningPracticeUpdated.id ?
+                        {...meaning, nextReviewDate: currentMeaningPracticeUpdated.nextReviewDate, interval: currentMeaningPracticeUpdated.interval, repetitions: currentMeaningPracticeUpdated.repetitions, easeFactor: currentMeaningPracticeUpdated.easeFactor} 
+                        : 
+                        meaning
+                    )}
+                    :
+                    card
                 )}
                 :
-                card
-            )}
-            :
-            deck
-        )
+                deck
+            )
+    
+            newMeaningsToPractice = meaningsToPractice.map(meaning => meaning.id === currentMeaningPracticeUpdated.id ? 
+                    {...currentMeaningPracticeUpdated}
+                :
+                    meaning
+            )
 
-        const newCurrentMeaningPractice: MeaningPractice = meaningsToPractice.find(meaning => meaning.done !== true && meaning.id !== currentMeaningPractice.id) ?? createEmptyMeaningPractice()
+            setDecks(updatedDeck)
+            setTrainSession((prevTrainSession) => ({
+                ...prevTrainSession,
+                current: prevTrainSession.current + 1, 
+                done: prevTrainSession.done + 1, 
+            }))
+        }
 
-        const newMeaningsToPractice: MeaningPractice[] = meaningsToPractice.map(meaning => meaning.id === currentMeaningPracticeUpdated.id ? 
-                {...currentMeaningPracticeUpdated}
-            :
-                meaning
-        )
-
-        console.log("New MeaningPractice abaixo")
-        console.log(newCurrentMeaningPractice)
-        console.log("Array meaningsToPractice abaixo")
-        console.log(meaningsToPractice)
-
-        setDecks(updatedDeck)
-        setCurrentMeaningPractice(newCurrentMeaningPractice)
         setMeaningsToPractice(newMeaningsToPractice)
-        setTrainSession((prevTrainSession) => ({
-            ...prevTrainSession,
-            current: prevTrainSession.current + 1, 
-            done: prevTrainSession.done + 1, 
-        }))
         setIsRespostaCorreta(false)
         setIsRespostaErrada(false)
         setInputPalavra("")
@@ -280,7 +203,7 @@ function Practice() {
                 className="icon-btn" 
                 id="exitTrainBtn" 
                 aria-label="Sair do treino"
-                onClick={() => {navigate(`/decks/${idDeck}/cards`)}}
+                onClick={onCloseModoTreino}
                 >
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
@@ -288,7 +211,7 @@ function Practice() {
                 </button>
                 <div className="train-progress-wrap">
                 <div className="train-progress-label">
-                    <span id="trainProgressText">{trainSession?.done} / {trainSession?.total}</span>
+                    <span id="trainProgressText">{trainSession.done} / {trainSession.total}</span>
                     <span id="trainDeckName">{deckEscolhido?.name}</span>
                 </div>
                 <div className="train-progress-bar">
@@ -307,7 +230,7 @@ function Practice() {
                         className="primary-btn" 
                         id="trainFinishBtn" 
                         style={{maxWidth:"280px"}}
-                        onClick={() => navigate(`/decks/${idDeck}/cards`)}
+                        onClick={onCloseModoTreino}
                         >
                             Voltar ao deck
                         </button>
@@ -349,7 +272,7 @@ function Practice() {
                         id="trainWrongMsg">
                             <span>✗</span>
                             <span id="trainWrongText">
-                                A resposta correta era {currentMeaningPractice?.targetResult}
+                                A resposta correta era {currentMeaningPractice.targetResult}
                             </span>
                         </div>
 
@@ -397,6 +320,12 @@ function Practice() {
                                 onClick={() => handleQualityChoice("easy")}
                                 >
                                     Fácil<small>Lembrei na hora</small>
+                                </button>
+                                <button
+                                className="feedback-btn repetir"
+                                onClick={() => handleQualityChoice("repeat")}
+                                >
+                                    Repetir<small>Vai para o final da fila</small>
                                 </button>
                             </div>
                         </div>
