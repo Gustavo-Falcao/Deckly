@@ -103,8 +103,20 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
 
             keyTimeout.current = setTimeout(() => {
                 handleQualityChoice("wrong")
-            }, 6000)
+            }, 10000)
         }
+    }
+
+    function setarRespostaErradaTeste() {
+        setIsRespostaErrada(true)
+
+        if(keyTimeout.current) {
+            clearTimeout(keyTimeout.current)
+        }
+
+        keyTimeout.current = setTimeout(() => {
+            setIsRespostaErrada(false)
+        }, 6000)
     }
 
     function addDays(days: number) {
@@ -267,14 +279,33 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
                             {trainSentence}
 
                         </div>
-                        <div 
-                        className={`train-wrong-answer ${isRespostaErrada ? "visible" : ""}`}
-                        id="trainWrongMsg">
-                            <span>✗</span>
-                            <span id="trainWrongText">
-                                A resposta correta era {currentMeaningPractice.targetResult}
-                            </span>
-                        </div>
+
+                        {isRespostaErrada && (
+                            <div 
+                            className="train-wrong-answer"
+                            id="trainWrongMsg">
+                                <svg className="progress-border">
+                                    <rect 
+                                    className="progress-bg" 
+                                    pathLength={100}
+                                    />
+                                    <rect 
+                                    className="progress-line"
+                                    pathLength={100}
+                                    />
+                                </svg>
+                                <div className="content-wrong-answer">
+                                    <span>✗</span>
+                                    <span id="trainWrongText">
+                                        A resposta correta era 
+                                        <span className="right-target">
+                                            {currentMeaningPractice.targetResult}
+                                        </span>
+                                        
+                                    </span>
+                                </div>
+                            </div>
+                        )}
 
                         <div className="train-input-area">
                             <input

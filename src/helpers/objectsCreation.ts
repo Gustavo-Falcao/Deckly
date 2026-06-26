@@ -21,9 +21,10 @@ export function createEmptyExample(): Example {
     }
 }
 
-export function createContextObjectWithContext(context: Context): ContextObject  {
+export function createContextObjectWithContext(context: Context, typeContext: "context" | "tempo verbal" | "modo verbal"): ContextObject  {
+    const idTypeContext = typeContext === "tempo verbal" ? "tempo" : typeContext === "modo verbal" ? "modo" : ""
     return {
-        id: crypto.randomUUID(),
+        id: idTypeContext + crypto.randomUUID(),
         context: context
     }
 }
