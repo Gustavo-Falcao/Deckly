@@ -107,17 +107,17 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
         }
     }
 
-    function setarRespostaErradaTeste() {
-        setIsRespostaErrada(true)
+    // function setarRespostaErradaTeste() {
+    //     setIsRespostaErrada(true)
 
-        if(keyTimeout.current) {
-            clearTimeout(keyTimeout.current)
-        }
+    //     if(keyTimeout.current) {
+    //         clearTimeout(keyTimeout.current)
+    //     }
 
-        keyTimeout.current = setTimeout(() => {
-            setIsRespostaErrada(false)
-        }, 6000)
-    }
+    //     keyTimeout.current = setTimeout(() => {
+    //         setIsRespostaErrada(false)
+    //     }, 6000)
+    // }
 
     function addDays(days: number) {
       const d = new Date();
@@ -266,11 +266,11 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
                                         {currentMeaningPractice.generalContext || ""}
                                     </span>
                                     {currentMeaningPractice.meaningContexts.length > 0 &&
-                                    <div style={{display: "flex",gap: "2px"}}>
+                                    <div style={{display: "flex",gap: "2px", alignItems: "center"}}>
                                         {currentMeaningPractice.meaningContexts.map(cont => 
                                             <span
                                             key={cont.id}
-                                            className={`tag ${cont.context}`}
+                                            className={`tag ${cont.id.includes("tempo") ? 'tempo-verbal' : cont.context}`}
                                             >{cont.context}</span>
                                         )}
                                     </div>}
