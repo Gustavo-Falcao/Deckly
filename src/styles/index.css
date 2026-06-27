@@ -418,19 +418,11 @@ button {
 .tag.conditional {
     color: #4338ca;           
     background-color: #e0e7ff;
-    border: 1px solid #c7d2fe; 
-    border-radius: 50px;       
-    font-size: 0.8rem;
-    font-weight: 600;
 }
 
 .tag.imperative {
     color: #b91c1c;           
     background-color: #fef2f2; 
-    border: 1px solid #fee2e2;
-    border-radius: 50px;       
-    font-size: 0.8rem;
-    font-weight: 600;
 }
 
 .tag.subjunctive {
