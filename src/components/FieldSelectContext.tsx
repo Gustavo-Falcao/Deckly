@@ -9,7 +9,14 @@ type ContextOption = {
 type FieldSelectProps = {
     meaning: MeaningFormData;
     addContextToMeaning: (idMeaning: string, selectedContext: Context, contextType: "context" | "tempo verbal" | "modo verbal") => void;
-    removerMeaningContext: (idMeaning: string, contextId: string) => void;
+    removerMeaningContext: (idMeaning: string, contextId: string, isContextVerb: boolean) => void;
+}
+
+type FieldSelectTypeContext = {    
+    meaning: MeaningFormData;
+    addContextToMeaning: (idMeaning: string, selectedContext: Context, contextType: "context" | "tempo verbal" | "modo verbal") => void;
+    removerMeaningContext: (idMeaning: string, contextId: string, isContextVerb: boolean) => void;
+    setarMeaningContextVerb: (idMeaning: string, mode: "add" | "remove") => void
 }
 
 type FieldSelectPaiProps = {
@@ -58,7 +65,7 @@ function FieldSelectContext({ children }: FieldSelectPaiProps) {
     return <>{children}</>
 }
 //continuar ajustando cada componente filho e exportar o pai no final e testar 
-function FieldSelectTypeContext({ meaning, addContextToMeaning, removerMeaningContext }: FieldSelectProps) {
+function FieldSelectTypeContext({ meaning, addContextToMeaning, removerMeaningContext, setarMeaningContextVerb }: FieldSelectTypeContext) {
     const [selectedContextByMeaningId, setSelectedContextByMeaningId] = useState<Record<string, Context | "">>({});
     const contexts = meaning.contexts.filter((context) => !context.id.includes("modo") && !context.id.includes("tempo"))
 
@@ -89,6 +96,9 @@ function FieldSelectTypeContext({ meaning, addContextToMeaning, removerMeaningCo
                     if(!selectedContext)
                         return
 
+                    if(selectedContext === "verb") {
+                        setarMeaningContextVerb(meaning.id, "add")
+                    }
                     addContextToMeaning(meaning.id, selectedContext, "context")
 
                     setSelectedContextByMeaningId((prev) => ({
@@ -108,7 +118,12 @@ function FieldSelectTypeContext({ meaning, addContextToMeaning, removerMeaningCo
                         className={`tag tag-chip ${context.context}`}
                         type="button"
                         aria-label="Remover tag"
-                        onClick={() => removerMeaningContext(meaning.id, context.id)}
+                        onClick={() => {
+                            if(context.context === "verb") {
+                                setarMeaningContextVerb(meaning.id, "remove")
+                            }
+                            removerMeaningContext(meaning.id, context.id, context.context === "verb")
+                        }}
                         >
                             {context.context}
                             <span aria-hidden="true">x</span>
@@ -170,7 +185,7 @@ function FieldSelectTypeTempoVerbal({ meaning, addContextToMeaning, removerMeani
                         className="tag tag-chip tempo-verbal"
                         type="button"
                         aria-label="Remover tag"
-                        onClick={() => removerMeaningContext(meaning.id, temp.id)}
+                        onClick={() => removerMeaningContext(meaning.id, temp.id, false)}
                         >
                             {temp.context}
                             <span aria-hidden="true">x</span>
@@ -232,7 +247,7 @@ function FieldSelectTypeModoVerbal({ meaning, addContextToMeaning, removerMeanin
                         className={`tag tag-chip ${mod.context}`}
                         type="button"
                         aria-label="Remover tag"
-                        onClick={() => removerMeaningContext(meaning.id, mod.id)}
+                        onClick={() => removerMeaningContext(meaning.id, mod.id, false)}
                         >
                             {mod.context}
                             <span aria-hidden="true">x</span>

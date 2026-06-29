@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type JSX } from "react";
+import { useEffect, useRef, useState, type Dispatch, type JSX, type SetStateAction } from "react";
 import type { Deck, DeckOption } from "../types/Deck";
-import type { CardFormData, Context, Card, CardEdit, Meaning } from "../types/Card";
+import type { CardFormData, Context, Card, CardEdit, Meaning, MeaningFormData } from "../types/Card";
 import { createEmptyCardFormData, createEmptyMeaning, createContextObjectWithContext, createEmptyExample } from "../helpers/objectsCreation"  
 import ModalBackGround from "../components/ModalBackGround";
 import CardPreview from "../components/CardPreview";
@@ -8,11 +8,13 @@ import HideWordModal from "../components/HideWordModal";
 import { useParams, useNavigate } from "react-router-dom";
 import { useHideOnScroll } from "../hooks/useHideOnScroll";
 import { FieldsSelectContext } from "../components/FieldSelectContext";
+import type { ToastInfo } from "./App";
 
 type CriarCardMode = "criar" | "editar"
 
 type CriarCardProps = {
-    mode: CriarCardMode
+    mode: CriarCardMode,
+    setPropsToastInfo: ({ msg, type, isOpen }: ToastInfo) => void
 }
 
 type ContextOption = {
@@ -27,7 +29,17 @@ type ExampleTextHide = {
     wordCurrentlyHide: string
 }
 
-function CriarCard({ mode }: CriarCardProps) {
+type MostrarModoAndTempoVerbalObject = {
+    isTypePalavraVerb: boolean;
+    meaningsComVerb: MeaningComVerb[]
+}
+
+type MeaningComVerb = {
+    idMeaning: string
+    hasVerbAsContext: boolean
+}
+
+function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
     const { FieldSelectTypeContext, FieldSelectTypeTempoVerbal, FieldSelectTypeModoVerbal } = FieldsSelectContext;
     const { idDeck, idCard } = useParams<{idDeck: string, idCard: string}>()
     const navigate = useNavigate()
@@ -83,35 +95,9 @@ function CriarCard({ mode }: CriarCardProps) {
         {value: "verb", name: "Verb"}
     ]
 
-    // const tempoVerbalOption: ContextOption [] = [
-    //     {value: "Pres. Simple", name: "Pres. Simple"},
-    //     {value: "Pres. Continuous", name: "Pres. Continuous"},
-    //     {value: "Pres. Perfect", name: "Pres. Perfect"},
-    //     {value: "Pres. Perf. Cont.", name: "Pres. Perf. Cont."},
-    //     {value: "Past Simple", name: "Past Simple"},
-    //     {value: "Past Continuous", name: "Past Continuous"},
-    //     {value: "Past Perfect", name: "Past Perfect"},
-    //     {value: "Past Perf. Cont.", name: "Past Perf. Cont."},
-    //     {value: "Fut. Simple", name: "Fut. Simple"},
-    //     {value: "Fut. Continuous", name: "Fut. Continuous"},
-    //     {value: "Fut. Perfect", name: "Fut. Perfect"},
-    //     {value: "Fut. Perf. Cont.", name: "Fut. Perf. Cont."}
-    // ]
-
-    // const modoVerbalOptions: ContextOption [] = [
-    //     {value: "imperative", name: "Imperative"},
-    //     {value: "conditional", name: "Conditional"},
-    //     {value: "subjunctive", name: "Subjunctive"},
-    //     {value: "passive voice", name: "Passive Voice"},
-    //     {value: "infinitive", name: "Infinitive"}
-    // ]
-
     const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
     const [isModalCardPreviewOpen, setIsModalCardPreviewOpen] = useState(false)
     const [isModalHideWordOpen, setIsModalHideWordOpen] = useState(false)
-    // const [selectedContextByMeaningId, setSelectedContextByMeaningId] = useState<Record<string, Context | "">>({});
-    // const [selectedTempoVerbalByMeaningId, setSelectedTempoVerbalByMeaningId] = useState<Record<string, Context | "">>({})
-    // const [selectedModoVerbalByMeaningId, setSelectedModoVerbalByMeaningId] = useState<Record<string, Context | "">>({})
     const debounceSaveFormTimeoutKey = useRef<ReturnType<typeof setTimeout> | null>(null)
     const titlePage = !mode || mode === "criar" ? "Criar" : "Editar"
     const showTopArea = useHideOnScroll(80)
@@ -121,6 +107,40 @@ function CriarCard({ mode }: CriarCardProps) {
         text: "",
         wordCurrentlyHide: ""
     })
+
+    const [mostrarModoAndTempoVerbal, setMostrarModoAndTempoVerbal] = useState<MostrarModoAndTempoVerbalObject>(() => {
+        let mostrarModoAndTempoVerbalObject: MostrarModoAndTempoVerbalObject = {
+            isTypePalavraVerb: false, 
+            meaningsComVerb: []
+        }
+
+        if(cardForm.context === "verb") {
+            mostrarModoAndTempoVerbalObject = {...mostrarModoAndTempoVerbalObject, isTypePalavraVerb: true}
+        }
+        
+        const meanings = cardForm.meanings
+
+        for(let i = 0; i < meanings.length; i++) {
+
+            if(meanings[i].contexts.length === 0) {
+                continue
+            }
+
+            const objetVerb = meanings[i].contexts.find(cont => cont.context === "verb")
+
+            if(objetVerb) {
+                mostrarModoAndTempoVerbalObject = {...mostrarModoAndTempoVerbalObject, meaningsComVerb: [...mostrarModoAndTempoVerbalObject.meaningsComVerb, {idMeaning: meanings[i].id, hasVerbAsContext: true}]}
+            }
+        }
+
+        return mostrarModoAndTempoVerbalObject
+    })
+
+    console.log("Card form abaixo")
+    console.log(cardForm)
+
+    console.log("ObjecMostrarModoAndTempoVerbal abaixo")
+    console.log(mostrarModoAndTempoVerbal)
 
     useEffect(() => {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
@@ -244,17 +264,30 @@ function CriarCard({ mode }: CriarCardProps) {
         ))
     }
 
-    function removerMeaningContext(significadoId: string, contextId: string) {
-        updateCardForm((prev) => (
-            {...prev, meanings: prev.meanings.map(meaning => 
-                meaning.id === significadoId ?
-                    {...meaning, contexts: meaning.contexts.filter(context => 
-                        context.id !== contextId)
-                    }
-                : 
-                meaning
-            )}
-        ))
+    function removerMeaningContext(significadoId: string, contextId: string, isContextVerb: boolean) {
+        if(isContextVerb) {
+            updateCardForm((prev) => (
+                {...prev, meanings: prev.meanings.map(meaning => 
+                    meaning.id === significadoId ?
+                        {...meaning, contexts: meaning.contexts.filter(context => 
+                            context.id !== contextId && !context.id.includes("modo") && !context.id.includes("tempo"))
+                        }
+                    : 
+                    meaning
+                )}
+            ))
+        } else {
+            updateCardForm((prev) => (
+                {...prev, meanings: prev.meanings.map(meaning => 
+                    meaning.id === significadoId ?
+                        {...meaning, contexts: meaning.contexts.filter(context => 
+                            context.id !== contextId)
+                        }
+                    : 
+                    meaning
+                )}
+            ))
+        }
     }
 
     function adicionarExemplo(significadoId: string) {
@@ -289,23 +322,35 @@ function CriarCard({ mode }: CriarCardProps) {
         const cardToCreate: CardFormData | CardEdit = cardForm;
 
         if(!cardToCreate.name){
-            alert("Informe um nome ao card")
+            setPropsToastInfo({
+                msg: "O nome do card é obrigatório",
+                type: "error",
+                isOpen: true
+            })
             return
         }
 
+        let isErroEncontrado = false
         for(const meaning of cardToCreate.meanings) {
-            if(!meaning.definition) {
-                alert("Informe uma definição para o significado " + meaning.id)
+            if(!meaning.definition || meaning.definition.length < 1) {
+                alert("A definição para o significado é obrigatória!")
                 return
             }
 
-            for(const ex of meaning.examples) {
-                if(!ex.text) {
-                    alert("informe uma frase de exemplo para o exemplo " + ex.id)
-                    return
-                }
+            const examples = meaning.examples.filter(ex => ex.text.length > 0)
+
+            if(examples.length <= 1) {
+                setPropsToastInfo({
+                    msg: "Deve ter pelo menos 2 exemplos por significado!",
+                    type: "error",
+                    isOpen: true
+                })
+                isErroEncontrado = true
+                break
             }
         }
+
+        if(isErroEncontrado) return
 
         const currentMode = mode
 
@@ -359,6 +404,12 @@ function CriarCard({ mode }: CriarCardProps) {
             :
                 deck
         ))
+
+        setPropsToastInfo({
+            msg: "Card criado com sucesso!",
+            type: "success",
+            isOpen: true
+        })
 
     }
 
@@ -422,6 +473,12 @@ function CriarCard({ mode }: CriarCardProps) {
             :
                 deck
         ))
+
+        setPropsToastInfo({
+            msg: "Alterações salvas com sucesso!",
+            type: "success",
+            isOpen: true
+        })
     }
 
     function voltarParaCardsDoModeCreate() {
@@ -490,7 +547,19 @@ function CriarCard({ mode }: CriarCardProps) {
         fecharModalHideWord()
     }
 
-    //fazer funcao para cada type context e gerar filtrado
+    function setarMeaningContextVerb(idMeaning: string, mode: "add" | "remove") {
+        if(mode === "add") {
+            setMostrarModoAndTempoVerbal((prev) => ({...prev, meaningsComVerb: [...prev.meaningsComVerb, 
+                {
+                    idMeaning: idMeaning,
+                    hasVerbAsContext: true
+                }]
+            }))
+        } else if(mode === "remove") {
+            setMostrarModoAndTempoVerbal((prev) => ({...prev, meaningsComVerb: prev.meaningsComVerb.filter(meaning => meaning.idMeaning !== idMeaning)
+            }))
+        }
+    }
 
     return (
     <>
@@ -560,7 +629,18 @@ function CriarCard({ mode }: CriarCardProps) {
                             id="typeInput"
                             className="meaning-tag-select" 
                             value={cardForm.context}
-                            onChange={(e) => handleSimpleChange("context", e.target.value)}
+                            onChange={(e) => {
+                                if(e.target.value === "verb") {
+                                    if(!mostrarModoAndTempoVerbal.isTypePalavraVerb) {
+                                        setMostrarModoAndTempoVerbal((prev) => ({...prev, isTypePalavraVerb: true}))
+                                    }
+                                } else {
+                                    if(mostrarModoAndTempoVerbal.isTypePalavraVerb) {
+                                        setMostrarModoAndTempoVerbal((prev) => ({...prev, isTypePalavraVerb: false}))
+                                    }
+                                }
+                                handleSimpleChange("context", e.target.value)
+                            }}
                             >
                             <option value="" hidden>Tipo</option>
                                         {contextOptions.map(contOption => 
@@ -618,187 +698,49 @@ function CriarCard({ mode }: CriarCardProps) {
                                     >
                                     </textarea>
                                 </div>
-
-                                {/* <div className="field">
-                                    <label>Contexto</label>
-                                    <div className="context-tools">
-                                        <select className="meaning-tag-select"
-                                        value={selectedContextByMeaningId[meaning.id] ?? ""}
-                                        onChange={(event) => {
-                                            setSelectedContextByMeaningId((prev) => ({
-                                                ...prev,
-                                                [meaning.id]: event.target.value as Context | "",
-                                            }))
-                                        }}
-                                        >
-                                        <option value="" hidden>Adicionar contexto</option>
-                                        {contextOptions.map(contOption => 
-                                            <option key={meaning.id + contOption.value + "option"} value={contOption.value}>{contOption.name}</option>
-                                        )}
-
-                                        </select>
-                                        <button 
-                                        className="inline-action add-tag" type="button"
-                                        onClick={() => {
-                                            const selectedContext = selectedContextByMeaningId[meaning.id]
-
-                                            if(!selectedContext)
-                                                return
-
-                                            addContextToMeaning(meaning.id, selectedContext, "context")
-
-                                            setSelectedContextByMeaningId((prev) => ({
-                                                ...prev, [meaning.id]: ""
-                                            }))
-                                        }}
-                                        >Adicionar</button>
-                                    </div>
-                                    <div className="selected-tags">
-                                        {
-                                        meaning.contexts.length === 0 ?
-                                            <span className="empty-tags">Sem tag</span>
-                                        :
-                                            meaning.contexts.map(context => 
-                                                <button 
-                                                key={context.id}
-                                                className={`tag tag-chip ${context.context}`}
-                                                type="button"
-                                                aria-label="Remover tag"
-                                                onClick={() => removerMeaningContext(meaning.id, context.id)}
-                                                >
-                                                    {context.context}
-                                                    <span aria-hidden="true">x</span>
-                                                </button>
-                                            )
-                                        }
-                                    </div>
-                                </div>
-                                <div className="field">
-                                    <label>Tempo Verbal</label>
-                                    <div className="context-tools">
-                                        <select className="meaning-tag-select"
-                                        value={selectedTempoVerbalByMeaningId[meaning.id] ?? ""}
-                                        onChange={(event) => {
-                                            setSelectedTempoVerbalByMeaningId((prev) => ({
-                                                ...prev,
-                                                [meaning.id]: event.target.value as Context | "",
-                                            }))
-                                        }}
-                                        >
-                                        <option value="" hidden>Adicionar contexto</option>
-                                        {tempoVerbalOption.map(tempOption => 
-                                            <option key={meaning.id + tempOption.value + "option"} value={tempOption.value}>{tempOption.name}</option>
-                                        )}
-
-                                        </select>
-                                        <button 
-                                        className="inline-action add-tag" type="button"
-                                        onClick={() => {
-                                            const selectedTempoVerbal = selectedTempoVerbalByMeaningId[meaning.id]
-
-                                            if(!selectedTempoVerbal)
-                                                return
-
-                                            addContextToMeaning(meaning.id, selectedTempoVerbal, "tempo verbal")
-
-                                            setSelectedTempoVerbalByMeaningId((prev) => ({
-                                                ...prev, [meaning.id]: ""
-                                            }))
-                                        }}
-                                        >Adicionar</button>
-                                    </div>
-                                    <div className="selected-tags">
-                                        {
-                                        meaning.contexts.length === 0 ?
-                                            <span className="empty-tags">Sem tag</span>
-                                        :
-                                            meaning.contexts.map(context => 
-                                                <button 
-                                                key={context.id}
-                                                className={`tag tag-chip ${context.context}`}
-                                                type="button"
-                                                aria-label="Remover tag"
-                                                onClick={() => removerMeaningContext(meaning.id, context.id)}
-                                                >
-                                                    {context.context}
-                                                    <span aria-hidden="true">x</span>
-                                                </button>
-                                            )
-                                        }
-                                    </div>
-                                </div>
-                                <div className="field">
-                                    <label>Modo Verbal</label>
-                                    <div className="context-tools">
-                                        <select className="meaning-tag-select"
-                                        value={selectedContextByMeaningId[meaning.id] ?? ""}
-                                        onChange={(event) => {
-                                            setSelectedContextByMeaningId((prev) => ({
-                                                ...prev,
-                                                [meaning.id]: event.target.value as Context | "",
-                                            }))
-                                        }}
-                                        >
-                                        <option value="" hidden>Adicionar contexto</option>
-                                        {contextOptions.map(contOption => 
-                                            <option key={meaning.id + contOption.value + "option"} value={contOption.value}>{contOption.name}</option>
-                                        )}
-
-                                        </select>
-                                        <button 
-                                        className="inline-action add-tag" type="button"
-                                        onClick={() => {
-                                            const selectedContext = selectedContextByMeaningId[meaning.id]
-
-                                            if(!selectedContext)
-                                                return
-
-                                            addContextToMeaning(meaning.id, selectedContext, "modo verbal")
-
-                                            setSelectedContextByMeaningId((prev) => ({
-                                                ...prev, [meaning.id]: ""
-                                            }))
-                                        }}
-                                        >Adicionar</button>
-                                    </div>
-                                    <div className="selected-tags">
-                                        {
-                                        meaning.contexts.length === 0 ?
-                                            <span className="empty-tags">Sem tag</span>
-                                        :
-                                            meaning.contexts.map(context => 
-                                                <button 
-                                                key={context.id}
-                                                className={`tag tag-chip ${context.context}`}
-                                                type="button"
-                                                aria-label="Remover tag"
-                                                onClick={() => removerMeaningContext(meaning.id, context.id)}
-                                                >
-                                                    {context.context}
-                                                    <span aria-hidden="true">x</span>
-                                                </button>
-                                            )
-                                        }
-                                    </div>
-                                </div> */}
                                 
                                 <FieldSelectTypeContext 
+                                setarMeaningContextVerb={setarMeaningContextVerb}
                                 meaning={meaning}
                                 addContextToMeaning={addContextToMeaning}
                                 removerMeaningContext={removerMeaningContext}
                                 />
 
-                                <FieldSelectTypeTempoVerbal
-                                meaning={meaning}
-                                addContextToMeaning={addContextToMeaning}
-                                removerMeaningContext={removerMeaningContext}
-                                />
+                                {mostrarModoAndTempoVerbal.isTypePalavraVerb ?
+                                    <>
+                                    <FieldSelectTypeTempoVerbal
+                                    meaning={meaning}
+                                    addContextToMeaning={addContextToMeaning}
+                                    removerMeaningContext={removerMeaningContext}
+                                    />
 
-                                <FieldSelectTypeModoVerbal 
-                                meaning={meaning}
-                                addContextToMeaning={addContextToMeaning}
-                                removerMeaningContext={removerMeaningContext}
-                                />
+                                    <FieldSelectTypeModoVerbal 
+                                    meaning={meaning}
+                                    addContextToMeaning={addContextToMeaning}
+                                    removerMeaningContext={removerMeaningContext}
+                                    />
+                                    </>
+                                :
+
+                                mostrarModoAndTempoVerbal.meaningsComVerb.length > 0 ?
+                                    mostrarModoAndTempoVerbal.meaningsComVerb.find(mean => mean.idMeaning === meaning.id)?.hasVerbAsContext && 
+                                    <>
+                                    <FieldSelectTypeTempoVerbal
+                                    meaning={meaning}
+                                    addContextToMeaning={addContextToMeaning}
+                                    removerMeaningContext={removerMeaningContext}
+                                    />
+
+                                    <FieldSelectTypeModoVerbal 
+                                    meaning={meaning}
+                                    addContextToMeaning={addContextToMeaning}
+                                    removerMeaningContext={removerMeaningContext}
+                                    />
+                                    </>
+                                :
+                                    undefined
+                                }
+
 
                                 <div className="examples-container">
                                     {

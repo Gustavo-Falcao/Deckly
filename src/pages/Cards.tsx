@@ -8,6 +8,11 @@ import RemoveCardModal from "../components/RemoveCardModal"
 import { useHideOnScroll } from "../hooks/useHideOnScroll"
 import ModalEditWarning from "../components/ModalEditWarning"
 import Practice from "./Practice"
+import type { ToastInfo } from "./App"
+
+type CardProps = {
+    setPropsToastInfo: ({ msg, type, isOpen }: ToastInfo) => void;
+}
 
 type FilterMode = "recente" | "antigo"
 
@@ -23,7 +28,7 @@ function getCardsFiltrados(deckAtual: Deck | undefined, inputSearch: string, fil
     return filteredCardsByName
 }
 
-function Cards() {
+function Cards({ setPropsToastInfo }: CardProps) {
     const { idDeck } = useParams<{ idDeck: string }>()
     const navigate = useNavigate()
     const [searchParams, setSearchParams] = useSearchParams()
@@ -188,6 +193,11 @@ function Cards() {
             ))
 
         fecharCardModal()
+        setPropsToastInfo({
+            msg: "Card deletado com sucesso!",
+            type: "success",
+            isOpen: true
+        })
     }
 
     function abrirEdicaoCard() {

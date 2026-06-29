@@ -3,7 +3,7 @@ import { createPortal } from "react-dom"
 
 type ToastInfoProps = {
     msg: string;
-    type: "error" | "sucess";
+    type: "error" | "success" | "";
     isOpen: boolean;
     onClose: () => void
 }
