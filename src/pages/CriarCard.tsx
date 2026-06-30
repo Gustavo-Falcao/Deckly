@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, type Dispatch, type JSX, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type JSX } from "react";
 import type { Deck, DeckOption } from "../types/Deck";
-import type { CardFormData, Context, Card, CardEdit, Meaning, MeaningFormData } from "../types/Card";
-import { createEmptyCardFormData, createEmptyMeaning, createContextObjectWithContext, createEmptyExample } from "../helpers/objectsCreation"  
+import type { CardFormData, Context, Card, CardEdit, Meaning } from "../types/Card";
+import { createEmptyCardFormData, createEmptyMeaning, createContextObject, createEmptyExample } from "../helpers/objectsCreation"  
 import ModalBackGround from "../components/ModalBackGround";
 import CardPreview from "../components/CardPreview";
 import HideWordModal from "../components/HideWordModal";
@@ -9,6 +9,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useHideOnScroll } from "../hooks/useHideOnScroll";
 import { FieldsSelectContext } from "../components/FieldSelectContext";
 import type { ToastInfo } from "./App";
+import Select from "../components/Select";
 
 type CriarCardMode = "criar" | "editar"
 
@@ -17,7 +18,7 @@ type CriarCardProps = {
     setPropsToastInfo: ({ msg, type, isOpen }: ToastInfo) => void
 }
 
-type ContextOption = {
+export type ContextOption = {
     value: string;
     name: string;
 }
@@ -38,6 +39,44 @@ type MeaningComVerb = {
     idMeaning: string
     hasVerbAsContext: boolean
 }
+
+const contextOptions: ContextOption[] = [
+    {value: "adjective", name: "Adjective"},
+    {value: "adverb", name: "Adverb"},
+    {value: "figurative", name: "Figurative"},
+    {value: "formal", name: "Formal"},
+    {value: "informal", name: "Informal"},
+    {value: "literal", name: "Literal"},
+    {value: "modal verb", name: "Modal Verb"},
+    {value: "noun", name: "Noun"},
+    {value: "phrase", name: "Phrase"},
+    {value: "preposition", name: "Preposition"},
+    {value: "slang", name: "Slang"},
+    {value: "verb", name: "Verb"}
+]
+
+const tempoVerbalOption: ContextOption [] = [
+    {value: "Pres. Simple", name: "Pres. Simple"},
+    {value: "Pres. Continuous", name: "Pres. Continuous"},
+    {value: "Pres. Perfect", name: "Pres. Perfect"},
+    {value: "Pres. Perf. Cont.", name: "Pres. Perf. Cont."},
+    {value: "Past Simple", name: "Past Simple"},
+    {value: "Past Continuous", name: "Past Continuous"},
+    {value: "Past Perfect", name: "Past Perfect"},
+    {value: "Past Perf. Cont.", name: "Past Perf. Cont."},
+    {value: "Fut. Simple", name: "Fut. Simple"},
+    {value: "Fut. Continuous", name: "Fut. Continuous"},
+    {value: "Fut. Perfect", name: "Fut. Perfect"},
+    {value: "Fut. Perf. Cont.", name: "Fut. Perf. Cont."}
+]
+
+const modoVerbalOptions: ContextOption [] = [
+    {value: "imperative", name: "Imperative"},
+    {value: "conditional", name: "Conditional"},
+    {value: "subjunctive", name: "Subjunctive"},
+    {value: "passive voice", name: "Passive Voice"},
+    {value: "infinitive", name: "Infinitive"}
+]
 
 function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
     const { FieldSelectTypeContext, FieldSelectTypeTempoVerbal, FieldSelectTypeModoVerbal } = FieldsSelectContext;
@@ -79,21 +118,6 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
         return createEmptyCardFormData()
             
     })
-
-    const contextOptions: ContextOption[] = [
-        {value: "adjective", name: "Adjective"},
-        {value: "adverb", name: "Adverb"},
-        {value: "figurative", name: "Figurative"},
-        {value: "formal", name: "Formal"},
-        {value: "informal", name: "Informal"},
-        {value: "literal", name: "Literal"},
-        {value: "modal verb", name: "Modal Verb"},
-        {value: "noun", name: "Noun"},
-        {value: "phrase", name: "Phrase"},
-        {value: "preposition", name: "Preposition"},
-        {value: "slang", name: "Slang"},
-        {value: "verb", name: "Verb"}
-    ]
 
     const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
     const [isModalCardPreviewOpen, setIsModalCardPreviewOpen] = useState(false)
@@ -197,12 +221,12 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
         setIdDeckEscolhido(idDeck)
     }
 
-    function addContextToMeaning(idMeaning: string, selectedContext: Context, typeContext: "context" | "tempo verbal" | "modo verbal") {
+    function addContextToMeaning(idMeaning: string, selectedContext: Context) {
 
             updateCardForm((prev) => (
                 {...prev, meanings: prev.meanings.map(meaning => 
                     meaning.id === idMeaning ? 
-                        {...meaning, contexts: [...meaning.contexts, createContextObjectWithContext(selectedContext, typeContext)]}
+                        {...meaning, contexts: [...meaning.contexts, createContextObject(selectedContext)]}
                         :
                         meaning
                     )
@@ -561,6 +585,22 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
         }
     }
 
+    function handleOnChangeTypePalavra(event: React.ChangeEvent<HTMLSelectElement>) {
+        
+        if(event.target.value === "verb") {
+            if(!mostrarModoAndTempoVerbal.isTypePalavraVerb) {
+                setMostrarModoAndTempoVerbal((prev) => ({...prev, isTypePalavraVerb: true}))
+            }
+        } else {
+            if(mostrarModoAndTempoVerbal.isTypePalavraVerb) {
+                setMostrarModoAndTempoVerbal((prev) => ({...prev, isTypePalavraVerb: false}))
+            }
+        }
+        handleSimpleChange("context", event.target.value)
+    }
+
+    
+
     return (
     <>
         <section className="screen active" id="screen-form">
@@ -624,29 +664,7 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
 
                     <div className="two-cols">
                         <div className="field">
-                            <label htmlFor="typeInput">Tipo</label>
-                            <select 
-                            id="typeInput"
-                            className="meaning-tag-select" 
-                            value={cardForm.context}
-                            onChange={(e) => {
-                                if(e.target.value === "verb") {
-                                    if(!mostrarModoAndTempoVerbal.isTypePalavraVerb) {
-                                        setMostrarModoAndTempoVerbal((prev) => ({...prev, isTypePalavraVerb: true}))
-                                    }
-                                } else {
-                                    if(mostrarModoAndTempoVerbal.isTypePalavraVerb) {
-                                        setMostrarModoAndTempoVerbal((prev) => ({...prev, isTypePalavraVerb: false}))
-                                    }
-                                }
-                                handleSimpleChange("context", e.target.value)
-                            }}
-                            >
-                            <option value="" hidden>Tipo</option>
-                                        {contextOptions.map(contOption => 
-                                            <option key={contOption.value} value={contOption.value}>{contOption.name}</option>
-                                        )}
-                            </select>
+                            <Select idSelect="typeInput" value={cardForm.context} label="Tipo" options={contextOptions} onChangeMethod={handleOnChangeTypePalavra}/>
                         </div>
                         <div className="field">
                             <label htmlFor="synonymInput">Sinônimo</label>

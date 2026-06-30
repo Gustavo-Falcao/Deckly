@@ -17,14 +17,16 @@ export function createEmptyExample(): Example {
     return {
         id: crypto.randomUUID(),
         text: "",
-        targetToBeHidden: ""
+        targetToBeHidden: "",
+        tempoVerbal: undefined,
+        modoVerbal: undefined
     }
 }
 
-export function createContextObjectWithContext(context: Context, typeContext: "context" | "tempo verbal" | "modo verbal"): ContextObject  {
-    const idTypeContext = typeContext === "tempo verbal" ? "tempo" : typeContext === "modo verbal" ? "modo" : ""
+export function createContextObject(context: Context): ContextObject  {
+    
     return {
-        id: idTypeContext + crypto.randomUUID(),
+        id: crypto.randomUUID(),
         context: context
     }
 }

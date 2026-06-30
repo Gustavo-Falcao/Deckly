@@ -1,4 +1,8 @@
-export type Context = "adjective" | "adverb" | "figurative" | "formal" | "informal" | "literal" | "modal verb" | "noun" | "phrase" | "preposition" | "slang" | "verb" | "Pres. Simple" | "Pres.Continuous" | "Pres.Perfect" | "Pres Perf. Cont." | "Past Simple" | "Past.Continuous" | "Past Perfect" | "Past Perf. Cont." | "Fut. Simple" | "Fut. Continuous" | "Fut. Perfect" | "Fut. Perf. Cont." | "imperative" | "conditional" | "subjunctive" | "passive voice" | "infinitive"
+export type Context = "adjective" | "adverb" | "figurative" | "formal" | "informal" | "literal" | "modal verb" | "noun" | "phrase" | "preposition" | "slang" | "verb"
+
+export type TempoVerbal = "Pres. Simple" | "Pres.Continuous" | "Pres.Perfect" | "Pres Perf. Cont." | "Past Simple" | "Past.Continuous" | "Past Perfect" | "Past Perf. Cont." | "Fut. Simple" | "Fut. Continuous" | "Fut. Perfect" | "Fut. Perf. Cont."
+
+export type ModoVerbal = "imperative" | "conditional" | "subjunctive" | "passive voice" | "infinitive"
 
 export type ContextObject = {
     id: string;
@@ -9,6 +13,8 @@ export type Example = {
     id: string;
     text: string;
     targetToBeHidden: string
+    tempoVerbal: TempoVerbal | undefined
+    modoVerbal: ModoVerbal | undefined
 }
 
 export type Meaning = {

@@ -73,7 +73,7 @@ function FieldSelectTypeContext({ meaning, addContextToMeaning, removerMeaningCo
         <div className="field">
             <label>Contexto</label>
             <div className="context-tools">
-                <select className="meaning-tag-select"
+                <select
                 value={selectedContextByMeaningId[meaning.id] ?? ""}
                 onChange={(event) => {
                     setSelectedContextByMeaningId((prev) => ({
