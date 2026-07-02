@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type JSX } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Deck, DeckOption } from "../types/Deck";
 import type { CardFormData, Context, Card, CardEdit, Meaning, TempoVerbal, ModoVerbal } from "../types/Card";
 import { createEmptyCardFormData, createEmptyMeaning, createContextObject, createEmptyExample } from "../helpers/objectsCreation"  

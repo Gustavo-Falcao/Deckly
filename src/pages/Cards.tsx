@@ -209,16 +209,6 @@ function Cards({ setPropsToastInfo }: CardProps) {
         })
     }
 
-    function isActiveCardPresentOnEditOrEditIsUndefined(idCardAtivo: string): boolean {
-        const cardEdit = deckEscolhido?.helperCard.edit
-
-        if(!cardEdit) return true
-
-        if(cardEdit.id === idCardAtivo) return true
-
-        return false
-    }
-
     function abrirEdicaoCard() {
         const cardAtivo = idCardAtivo || ""
         const idDeckAtual = idDeck
