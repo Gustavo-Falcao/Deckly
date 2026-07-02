@@ -10,6 +10,6 @@ export type Deck = {
 };
 
 export type DeckOption = {
-    id: string
+    value: string
     name: string
 }

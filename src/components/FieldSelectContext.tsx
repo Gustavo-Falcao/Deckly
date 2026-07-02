@@ -8,13 +8,13 @@ type ContextOption = {
 
 type FieldSelectProps = {
     meaning: MeaningFormData;
-    addContextToMeaning: (idMeaning: string, selectedContext: Context, contextType: "context" | "tempo verbal" | "modo verbal") => void;
+    addContextToMeaning: (idMeaning: string, selectedContext: Context) => void;
     removerMeaningContext: (idMeaning: string, contextId: string, isContextVerb: boolean) => void;
 }
 
 type FieldSelectTypeContext = {    
     meaning: MeaningFormData;
-    addContextToMeaning: (idMeaning: string, selectedContext: Context, contextType: "context" | "tempo verbal" | "modo verbal") => void;
+    addContextToMeaning: (idMeaning: string, selectedContext: Context) => void;
     removerMeaningContext: (idMeaning: string, contextId: string, isContextVerb: boolean) => void;
     setarMeaningContextVerb: (idMeaning: string, mode: "add" | "remove") => void
 }
@@ -99,7 +99,7 @@ function FieldSelectTypeContext({ meaning, addContextToMeaning, removerMeaningCo
                     if(selectedContext === "verb") {
                         setarMeaningContextVerb(meaning.id, "add")
                     }
-                    addContextToMeaning(meaning.id, selectedContext, "context")
+                    addContextToMeaning(meaning.id, selectedContext)
 
                     setSelectedContextByMeaningId((prev) => ({
                         ...prev, [meaning.id]: ""
@@ -166,7 +166,7 @@ function FieldSelectTypeTempoVerbal({ meaning, addContextToMeaning, removerMeani
                     if(!selectedTempoVerbal)
                         return
 
-                    addContextToMeaning(meaning.id, selectedTempoVerbal, "tempo verbal")
+                    addContextToMeaning(meaning.id, selectedTempoVerbal)
 
                     setSelectedTempoVerbalByMeaningId((prev) => ({
                         ...prev, [meaning.id]: ""
@@ -228,7 +228,7 @@ function FieldSelectTypeModoVerbal({ meaning, addContextToMeaning, removerMeanin
                     if(!selectedContext)
                         return
 
-                    addContextToMeaning(meaning.id, selectedContext, "modo verbal")
+                    addContextToMeaning(meaning.id, selectedContext)
 
                     setSelectedModoVerbalByMeaningId((prev) => ({
                         ...prev, [meaning.id]: ""

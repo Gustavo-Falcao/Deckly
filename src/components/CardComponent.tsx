@@ -53,7 +53,7 @@ function CardComponent({card, onClose, isOpen, openDeleteCard, openEditCard}: Ca
                         <p className="definition">
                             {meaning.definition}
                             {meaning.contexts.map(contx =>
-                                <span key={contx.id} className={`tag ${contx.id.includes("tempo") ? 'tempo-verbal' : contx.context}`}>{contx.context}</span>
+                                <span key={contx.id} className={`tag ${contx.context}`}>{contx.context}</span>
                             )}
                         </p>
                         {isMostrarBackGroundExamples(meaning.examples) ? 
@@ -65,7 +65,20 @@ function CardComponent({card, onClose, isOpen, openDeleteCard, openEditCard}: Ca
                                         :
                                             example.text
                                         }
-                                        
+                                        {example.tempoVerbal &&
+                                            <span 
+                                            className="tag tempo-verbal"
+                                            style={{marginLeft: "4px"}}
+                                            >{example.tempoVerbal}</span>
+                                        }
+                                        {example.modoVerbal &&
+                                            <span 
+                                            className={`tag ${example.modoVerbal}`}
+                                            style={{marginLeft: "4px"}}
+                                            >
+                                                {example.modoVerbal}
+                                            </span>
+                                        }
                                     </p>
                                 )}
                             </div>

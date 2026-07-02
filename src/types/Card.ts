@@ -69,12 +69,14 @@ export type HelperCard = {
 }
 
 export type MeaningPractice = {
-    id: string
-    idCard: string
-    generalContext: Context | undefined
-    meaningContexts: ContextObject[]
-    meaningDefinition: string
-    sentence: string
+    id: string;
+    idCard: string;
+    generalContext: Context | undefined;
+    meaningContexts: ContextObject[];
+    meaningDefinition: string;
+    sentence: string;
+    tempoVerbal: TempoVerbal | undefined;
+    modoVerbal: ModoVerbal | undefined;
     targetResult: string
     nextReviewDate: string;
     interval: number;

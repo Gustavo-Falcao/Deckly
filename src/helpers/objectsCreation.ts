@@ -69,6 +69,8 @@ export function createEmptyMeaningPractice(): MeaningPractice {
         meaningContexts: [],
         meaningDefinition: "",
         sentence: "",
+        tempoVerbal: undefined,
+        modoVerbal: undefined,
         targetResult: "",
         nextReviewDate: "",
         interval: 0,

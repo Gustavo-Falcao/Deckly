@@ -266,13 +266,22 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
                                         {currentMeaningPractice.generalContext || ""}
                                     </span>
                                     {currentMeaningPractice.meaningContexts.length > 0 &&
-                                    <div style={{display: "flex",gap: "2px", alignItems: "center"}}>
+                                    <div>
                                         {currentMeaningPractice.meaningContexts.map(cont => 
                                             <span
                                             key={cont.id}
-                                            className={`tag ${cont.id.includes("tempo") ? 'tempo-verbal' : cont.context}`}
+                                            className={`tag ${cont.context}`}
+                                            style={{margin: "2px"}}
                                             >{cont.context}</span>
                                         )}
+                                        {currentMeaningPractice.tempoVerbal &&
+                                            <span className="tag tempo-verbal" style={{margin: "2px"}}>{currentMeaningPractice.tempoVerbal}</span>
+                                        }
+                                        {currentMeaningPractice.modoVerbal &&
+                                            <span className={`tag ${currentMeaningPractice.modoVerbal}`} style={{margin: "2px"}}>
+                                                {currentMeaningPractice.modoVerbal}
+                                            </span>
+                                        }
                                     </div>}
                                 </div>
                             </div>

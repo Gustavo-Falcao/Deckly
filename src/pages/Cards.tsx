@@ -50,7 +50,7 @@ function Cards({ setPropsToastInfo }: CardProps) {
 
     const optionDecks: DeckOption[] = decks.map((deck) => {
         return {
-            id: deck.id,
+            value: deck.id,
             name: deck.name
         }
     })
@@ -108,6 +108,8 @@ function Cards({ setPropsToastInfo }: CardProps) {
                             meaningContexts: meaningsToBePracticed[i].contexts,
                             meaningDefinition: meaningsToBePracticed[i].definition,
                             sentence: example?.text || "",
+                            tempoVerbal: example.tempoVerbal || undefined,
+                            modoVerbal: example.modoVerbal || undefined,
                             targetResult: example?.targetToBeHidden || "",
                             nextReviewDate: meaningsToBePracticed[i].nextReviewDate,
                             interval: meaningsToBePracticed[i].interval,
@@ -187,7 +189,14 @@ function Cards({ setPropsToastInfo }: CardProps) {
 
         setDecks((prevDecks) => prevDecks.map((deck) => 
             deck.id === idCurrentDeck ?
-                {...deck, cards: deck.cards.filter((card) => card.id !== idCurrentCard)}
+                {...deck, 
+                    cards: deck.cards.filter((card) => card.id !== idCurrentCard),
+                    helperCard: deck.helperCard.edit?.id === idCurrentCard ?
+                        {...deck.helperCard,
+                            edit: undefined} 
+                        : 
+                        deck.helperCard
+                }
             :
                 deck
             ))
@@ -200,6 +209,16 @@ function Cards({ setPropsToastInfo }: CardProps) {
         })
     }
 
+    function isActiveCardPresentOnEditOrEditIsUndefined(idCardAtivo: string): boolean {
+        const cardEdit = deckEscolhido?.helperCard.edit
+
+        if(!cardEdit) return true
+
+        if(cardEdit.id === idCardAtivo) return true
+
+        return false
+    }
+
     function abrirEdicaoCard() {
         const cardAtivo = idCardAtivo || ""
         const idDeckAtual = idDeck
@@ -208,11 +227,17 @@ function Cards({ setPropsToastInfo }: CardProps) {
 
         if(!card) return
 
-        if(!isActiveCardPresentOnEditOrEditIsUndefined(cardAtivo)) {
+        const edit = deckEscolhido?.helperCard.edit
+
+        if(edit !== undefined && edit.id !== cardAtivo)  {
             openWarningEditModal()
             return
         }
 
+        if(edit?.id === cardAtivo) {
+            navigate(`/decks/${idDeck}/cards/${cardAtivo}/editar`)
+            return
+        }
         const cardEdit: CardEdit = {
             id: card.id,
             name: card.name,
@@ -232,26 +257,60 @@ function Cards({ setPropsToastInfo }: CardProps) {
 
         navigate(`/decks/${idDeck}/cards/${cardAtivo}/editar`)
     }
-    
-    function isActiveCardPresentOnEditOrEditIsUndefined(idCardAtivo: string): boolean {
-       const cardEdit = deckEscolhido?.helperCard.edit
-
-       if(!cardEdit) return true
-
-       if(cardEdit.id === idCardAtivo) return true
-
-       return false
-    }
 
     function alterarDeck(newDeckId: string) {
         !newDeckId ? navigate(`/cards`) : navigate(`/decks/${newDeckId}/cards`)
     }
 
-    //Futuramente validar o formulario antes de salvar
+    function isSaveChangesGood(card: CardEdit | undefined) {
+        let allGood = true
+        
+        if(!card?.name){
+            setPropsToastInfo({
+                msg: "O nome do card é obrigatório",
+                type: "error",
+                isOpen: true
+            })
+            navigate(`/decks/${idDeck}/cards/${card?.id}/editar`)
+            return false
+        }
+
+        for(const meaning of card.meanings) {
+            if(!meaning.definition || meaning.definition.length < 1) {
+                setPropsToastInfo({
+                    msg: "A palavra deve ter pelo menos 1 significado!",
+                    type: "error",
+                    isOpen: true 
+                })
+                allGood = false
+                break
+            }
+
+            const examples = meaning.examples.filter(ex => ex.text.length > 0)
+
+            if(examples.length <= 1) {
+                setPropsToastInfo({
+                    msg: "Deve ter pelo menos 2 exemplos por significado!",
+                    type: "error",
+                    isOpen: true
+                })
+                allGood = false
+                break
+            }
+        }
+
+        if(!allGood) navigate(`/decks/${idDeck}/cards/${card?.id}/editar`)
+
+        return allGood
+    }
+
     function saveChangesEditCardAndOpenCurrentCardToEdit() {
         if(!deckEscolhido) return
 
         const cardEdit = deckEscolhido.helperCard.edit //card a ser salvo
+
+        if(!isSaveChangesGood(cardEdit)) return
+
         const cardToBeEdited = deckEscolhido.cards.find(card => card.id === cardEdit?.id); // card a ser editado
         const cardToEdit = deckEscolhido.cards.find(card => card.id === idCardAtivo) //novo card a ser salvo no card edit
 
@@ -458,7 +517,8 @@ function Cards({ setPropsToastInfo }: CardProps) {
                         >
                             <option value="" hidden>Deck</option>
                             {optionDecks.map((deck) : JSX.Element => 
-                                <option key={deck.id} value={deck.id}>{deck.name}</option>
+                                <option key={deck.value} value={deck.value
+                                }>{deck.name}</option>
                             )}
                         </select>
                     </div>

@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState, type JSX } from "react";
 import type { Deck, DeckOption } from "../types/Deck";
-import type { CardFormData, Context, Card, CardEdit, Meaning } from "../types/Card";
+import type { CardFormData, Context, Card, CardEdit, Meaning, TempoVerbal, ModoVerbal } from "../types/Card";
 import { createEmptyCardFormData, createEmptyMeaning, createContextObject, createEmptyExample } from "../helpers/objectsCreation"  
 import ModalBackGround from "../components/ModalBackGround";
 import CardPreview from "../components/CardPreview";
 import HideWordModal from "../components/HideWordModal";
 import { useParams, useNavigate } from "react-router-dom";
 import { useHideOnScroll } from "../hooks/useHideOnScroll";
-import { FieldsSelectContext } from "../components/FieldSelectContext";
 import type { ToastInfo } from "./App";
 import Select from "../components/Select";
+import FieldSelectModoAndTempoVerbal from "../components/FieldSelectModoAndTempoVerbal";
 
 type CriarCardMode = "criar" | "editar"
 
@@ -55,7 +55,7 @@ const contextOptions: ContextOption[] = [
     {value: "verb", name: "Verb"}
 ]
 
-const tempoVerbalOption: ContextOption [] = [
+const tempoVerbalOptions: ContextOption [] = [
     {value: "Pres. Simple", name: "Pres. Simple"},
     {value: "Pres. Continuous", name: "Pres. Continuous"},
     {value: "Pres. Perfect", name: "Pres. Perfect"},
@@ -74,12 +74,11 @@ const modoVerbalOptions: ContextOption [] = [
     {value: "imperative", name: "Imperative"},
     {value: "conditional", name: "Conditional"},
     {value: "subjunctive", name: "Subjunctive"},
-    {value: "passive voice", name: "Passive Voice"},
+    // {value: "passive voice", name: "Passive Voice"},
     {value: "infinitive", name: "Infinitive"}
 ]
 
 function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
-    const { FieldSelectTypeContext, FieldSelectTypeTempoVerbal, FieldSelectTypeModoVerbal } = FieldsSelectContext;
     const { idDeck, idCard } = useParams<{idDeck: string, idCard: string}>()
     const navigate = useNavigate()
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
@@ -95,11 +94,10 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
     })
     const optionDecks: DeckOption[] = decks.map((deck) => {
         return {
-            id: deck.id,
+            value: deck.id,
             name: deck.name
         }
     })
-
     const [cardForm, setCardForm] = useState<CardFormData | CardEdit>(() :CardFormData | CardEdit => {
         if(decks.length === 0)
             return createEmptyCardFormData();
@@ -116,9 +114,7 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
             return deck.helperCard.edit
 
         return createEmptyCardFormData()
-            
     })
-
     const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
     const [isModalCardPreviewOpen, setIsModalCardPreviewOpen] = useState(false)
     const [isModalHideWordOpen, setIsModalHideWordOpen] = useState(false)
@@ -131,7 +127,6 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
         text: "",
         wordCurrentlyHide: ""
     })
-
     const [mostrarModoAndTempoVerbal, setMostrarModoAndTempoVerbal] = useState<MostrarModoAndTempoVerbalObject>(() => {
         let mostrarModoAndTempoVerbalObject: MostrarModoAndTempoVerbalObject = {
             isTypePalavraVerb: false, 
@@ -159,6 +154,7 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
 
         return mostrarModoAndTempoVerbalObject
     })
+    const [selectedContextByMeaningId, setSelectedContextByMeaningId] = useState<Record<string, Context | "">>({});
 
     console.log("Card form abaixo")
     console.log(cardForm)
@@ -223,15 +219,15 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
 
     function addContextToMeaning(idMeaning: string, selectedContext: Context) {
 
-            updateCardForm((prev) => (
-                {...prev, meanings: prev.meanings.map(meaning => 
-                    meaning.id === idMeaning ? 
-                        {...meaning, contexts: [...meaning.contexts, createContextObject(selectedContext)]}
-                        :
-                        meaning
-                    )
-                }
-            ))
+        updateCardForm((prev) => (
+            {...prev, meanings: prev.meanings.map(meaning => 
+                meaning.id === idMeaning ? 
+                    {...meaning, contexts: [...meaning.contexts, createContextObject(selectedContext)]}
+                    :
+                    meaning
+                )
+            }
+        ))
  
     }
 
@@ -288,30 +284,18 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
         ))
     }
 
-    function removerMeaningContext(significadoId: string, contextId: string, isContextVerb: boolean) {
-        if(isContextVerb) {
-            updateCardForm((prev) => (
-                {...prev, meanings: prev.meanings.map(meaning => 
-                    meaning.id === significadoId ?
-                        {...meaning, contexts: meaning.contexts.filter(context => 
-                            context.id !== contextId && !context.id.includes("modo") && !context.id.includes("tempo"))
-                        }
-                    : 
-                    meaning
-                )}
-            ))
-        } else {
-            updateCardForm((prev) => (
-                {...prev, meanings: prev.meanings.map(meaning => 
-                    meaning.id === significadoId ?
-                        {...meaning, contexts: meaning.contexts.filter(context => 
-                            context.id !== contextId)
-                        }
-                    : 
-                    meaning
-                )}
-            ))
-        }
+    function removerMeaningContext(significadoId: string, contextId: string) {
+  
+        updateCardForm((prev) => (
+            {...prev, meanings: prev.meanings.map(meaning => 
+                meaning.id === significadoId ?
+                    {...meaning, contexts: meaning.contexts.filter(context => 
+                        context.id !== contextId)
+                    }
+                : 
+                meaning
+            )}
+        ))
     }
 
     function adicionarExemplo(significadoId: string) {
@@ -338,6 +322,25 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
         ))
     }
 
+    function handleTempoAndModoVerbalCardForm(event: React.ChangeEvent<HTMLSelectElement>, field: "tempoVerbal" | "modoVerbal", meaningId: string, exampleId: string) {
+        const value = event.target.value
+        const valor: TempoVerbal | ModoVerbal | undefined = (value as TempoVerbal | ModoVerbal) || undefined
+        
+        updateCardForm((prev) => (
+            {...prev, meanings: prev.meanings.map(meaning => 
+                meaning.id === meaningId ?
+                    {...meaning, examples: meaning.examples.map(example => 
+                        example.id === exampleId ?
+                            {...example, [field]: valor}
+                        :
+                            example
+                    )}
+                :
+                    meaning
+            )}
+        ))
+    }
+
     function isCardEdit(card: CardFormData | CardEdit): card is CardEdit {
         return "id" in card
     }
@@ -357,7 +360,12 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
         let isErroEncontrado = false
         for(const meaning of cardToCreate.meanings) {
             if(!meaning.definition || meaning.definition.length < 1) {
-                alert("A definição para o significado é obrigatória!")
+                setPropsToastInfo({
+                    msg: "A palavra deve ter pelo menos 1 significado!",
+                    type: "error",
+                    isOpen: true 
+                })
+                
                 return
             }
 
@@ -585,6 +593,22 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
         }
     }
 
+    function handleAddContextToMeaning(idMeaning: string) {
+        const selectedContext = selectedContextByMeaningId[idMeaning]
+
+        if(!selectedContext)
+            return
+
+        if(selectedContext === "verb") {
+            setarMeaningContextVerb(idMeaning, "add")
+        }
+        addContextToMeaning(idMeaning, selectedContext)
+
+        setSelectedContextByMeaningId((prev) => ({
+            ...prev, [idMeaning]: ""
+        }))
+    }
+
     function handleOnChangeTypePalavra(event: React.ChangeEvent<HTMLSelectElement>) {
         
         if(event.target.value === "verb") {
@@ -630,18 +654,13 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
         <form className="form-card" id="cardForm">
             {mode === "criar" && 
                 <div className="field">
-                    <label htmlFor="cardDeck">Deck</label>
-                    <select 
-                    id="cardDeck" 
-                    required
+                    <Select 
+                    idSelect="cardDeck"
                     value={idDeckEscolhido}
-                    onChange={(e) => handleSelectedDeck(e.target.value)}
-                    >
-                        <option value="" hidden>Deck</option>
-                        {optionDecks.map((deck) : JSX.Element => 
-                            <option key={deck.id} value={deck.id}>{deck.name}</option>
-                        )}
-                    </select>
+                    onChangeMethod={(e) => handleSelectedDeck(e.target.value)}
+                    options={optionDecks}
+                    label="Deck"
+                    />
                 </div>
             }
                 {
@@ -664,7 +683,11 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
 
                     <div className="two-cols">
                         <div className="field">
-                            <Select idSelect="typeInput" value={cardForm.context} label="Tipo" options={contextOptions} onChangeMethod={handleOnChangeTypePalavra}/>
+                            <Select 
+                            idSelect="typeInput" 
+                            value={cardForm.context} label="Tipo" 
+                            options={contextOptions} onChangeMethod={handleOnChangeTypePalavra}
+                            />
                         </div>
                         <div className="field">
                             <label htmlFor="synonymInput">Sinônimo</label>
@@ -716,49 +739,55 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
                                     >
                                     </textarea>
                                 </div>
-                                
-                                <FieldSelectTypeContext 
-                                setarMeaningContextVerb={setarMeaningContextVerb}
-                                meaning={meaning}
-                                addContextToMeaning={addContextToMeaning}
-                                removerMeaningContext={removerMeaningContext}
-                                />
 
-                                {mostrarModoAndTempoVerbal.isTypePalavraVerb ?
-                                    <>
-                                    <FieldSelectTypeTempoVerbal
-                                    meaning={meaning}
-                                    addContextToMeaning={addContextToMeaning}
-                                    removerMeaningContext={removerMeaningContext}
-                                    />
-
-                                    <FieldSelectTypeModoVerbal 
-                                    meaning={meaning}
-                                    addContextToMeaning={addContextToMeaning}
-                                    removerMeaningContext={removerMeaningContext}
-                                    />
-                                    </>
-                                :
-
-                                mostrarModoAndTempoVerbal.meaningsComVerb.length > 0 ?
-                                    mostrarModoAndTempoVerbal.meaningsComVerb.find(mean => mean.idMeaning === meaning.id)?.hasVerbAsContext && 
-                                    <>
-                                    <FieldSelectTypeTempoVerbal
-                                    meaning={meaning}
-                                    addContextToMeaning={addContextToMeaning}
-                                    removerMeaningContext={removerMeaningContext}
-                                    />
-
-                                    <FieldSelectTypeModoVerbal 
-                                    meaning={meaning}
-                                    addContextToMeaning={addContextToMeaning}
-                                    removerMeaningContext={removerMeaningContext}
-                                    />
-                                    </>
-                                :
-                                    undefined
-                                }
-
+                                <div className="field">
+                                    <label>Contexto</label>
+                                    <div className="context-tools">
+                                        <select
+                                        value={selectedContextByMeaningId[meaning.id] ?? ""}
+                                        onChange={(event) => {
+                                            setSelectedContextByMeaningId((prev) => ({
+                                                ...prev,
+                                                [meaning.id]: event.target.value as Context | "",
+                                            }))
+                                        }}
+                                        >
+                                        <option value="" hidden>Adicionar contexto</option>
+                                        {contextOptions.map(contOption => 
+                                            <option key={meaning.id + contOption.value + "option"} value={contOption.value}>{contOption.name}</option>
+                                        )}
+                        
+                                        </select>
+                                        <button 
+                                        className="inline-action add-tag" type="button"
+                                        onClick={() => handleAddContextToMeaning(meaning.id)}
+                                        >Adicionar</button>
+                                    </div>
+                                    <div className="selected-tags">
+                                        {
+                                        meaning.contexts.length === 0 ?
+                                            <span className="empty-tags">Sem tag</span>
+                                        :
+                                            meaning.contexts.map(context => 
+                                                <button 
+                                                key={context.id}
+                                                className={`tag tag-chip ${context.context}`}
+                                                type="button"
+                                                aria-label="Remover tag"
+                                                onClick={() => {
+                                                    if(context.context === "verb") {
+                                                        setarMeaningContextVerb(meaning.id, "remove")
+                                                    }
+                                                    removerMeaningContext(meaning.id, context.id)
+                                                }}
+                                                >
+                                                    {context.context}
+                                                    <span aria-hidden="true">x</span>
+                                                </button>
+                                            )
+                                        }
+                                    </div>
+                                </div>
 
                                 <div className="examples-container">
                                     {
@@ -776,6 +805,33 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
                                                     Remover
                                                 </button>
                                             </div>
+                                            
+                                            {(mostrarModoAndTempoVerbal.isTypePalavraVerb === true || mostrarModoAndTempoVerbal.meaningsComVerb.some(mean => mean.idMeaning === meaning.id)) &&
+                                            
+                                                <FieldSelectModoAndTempoVerbal>
+                                                    <>
+                                                        <div className="field">
+                                                            <Select 
+                                                            idSelect={example.id + "tempo"}
+                                                            value={example.tempoVerbal}
+                                                            label="Tempo Verbal"
+                                                            options={tempoVerbalOptions}
+                                                            onChangeMethod={(e) => handleTempoAndModoVerbalCardForm(e, "tempoVerbal", meaning.id, example.id)}
+                                                            />
+                                                        </div>
+                                                        <div className="field">
+                                                                <Select 
+                                                                idSelect={example.id + "modo"}
+                                                                value={example.modoVerbal}
+                                                                label="Modo Verbal"
+                                                                options={modoVerbalOptions}
+                                                                onChangeMethod={(e) => handleTempoAndModoVerbalCardForm(e, "modoVerbal", meaning.id, example.id)}
+                                                                />
+                                                        </div>
+                                                    </>
+                                                </FieldSelectModoAndTempoVerbal>
+                                            }
+                        
                                             <div className="example-main-row">
                                                 <textarea 
                                                 className="meaning-example" 

@@ -53,7 +53,7 @@ function CardPreview({card, onClose, isOpen}: CardPreviewProps) {
                             {meaning.definition}
                             {meaning.contexts.length > 0 ?
                                 meaning.contexts.map(contx =>
-                                    <span key={contx.id} className={`tag ${contx.id.includes("tempo") ? 'tempo-verbal' : contx.context}`}>{contx.context}</span>
+                                    <span key={contx.id} className={`tag ${contx.context}`}>{contx.context}</span>
                                 )
                             :
                                 undefined
@@ -68,6 +68,14 @@ function CardPreview({card, onClose, isOpen}: CardPreviewProps) {
                                         :
                                             example.text
                                         }  
+                                        {example.tempoVerbal &&
+                                            <span className="tag tempo-verbal">{example.tempoVerbal}</span>
+                                        }
+                                        {example.modoVerbal &&
+                                            <span className={`tag ${example.modoVerbal}`}>
+                                                {example.modoVerbal}
+                                            </span>
+                                        }
                                     </p>
                                 )}
                             </div>
