@@ -37,9 +37,9 @@ function Cards({ setPropsToastInfo }: CardProps) {
     const modalMode = searchParams.get("modalMode")
     const idCardAtivo = searchParams.get("idCard")
     const cardModalIsOpen = modalMode === "card"
-    const deleteCardModalIsOpen = modalMode === "deleteCard"
+    const deleteCardModalIsOpen = modalMode === "delete"
     const showTopArea = useHideOnScroll(80)
-    const isModalEditWarningOpen = modalMode === "editWarning"
+    const isModalEditWarningOpen = modalMode === "warning"
     const [isPracticeActive, setIsPracticeActive] = useState(false)
 
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
@@ -159,7 +159,7 @@ function Cards({ setPropsToastInfo }: CardProps) {
         setSearchParams({})
     }
 
-    function changeModalMode(newModalMode: "card" | "deleteCard" | "editWarning") {
+    function changeModalMode(newModalMode: "card" | "delete" | "warning") {
         const newSearchParams = new URLSearchParams(searchParams)
 
         newSearchParams.set("modalMode", newModalMode)
@@ -167,8 +167,11 @@ function Cards({ setPropsToastInfo }: CardProps) {
         setSearchParams(newSearchParams)
     }
 
+    //deleteCard
+    //editWarning
+
     function openDeleteCardModal() {
-        changeModalMode("deleteCard")
+        changeModalMode("delete")
     }
  
     function fecharDeleteCardModal() {
@@ -176,7 +179,7 @@ function Cards({ setPropsToastInfo }: CardProps) {
     }
 
     function openWarningEditModal() {
-        changeModalMode("editWarning")
+        changeModalMode("warning")
     }
 
     function fecharWarningEditModal() {
@@ -582,7 +585,7 @@ function Cards({ setPropsToastInfo }: CardProps) {
             if(deleteCardModalIsOpen) {
                 fecharDeleteCardModal()
             }}}
-            modalOpen={cardModalIsOpen ? "card" : "info"}
+            modalOpen={modalMode}
             >
             <CardComponent 
             card={findCard()} 

@@ -209,6 +209,20 @@ button {
   background: var(--accent-soft);
 }
 
+.deck-card-edit {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 11px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+
 .deck-emoji {
   width: 44px;
   height: 44px;

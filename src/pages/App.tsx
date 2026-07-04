@@ -28,7 +28,7 @@ function App() {
       <main className="app">
         <Routes>
           <Route path="/" element={<Navigate to="/decks" replace />}/> 
-          <Route path="/decks" element={<Decks/>} />
+          <Route path="/decks" element={<Decks setPropsToastInfo={setPropsToastIno}/>} />
           <Route path="/cards" element={<Cards setPropsToastInfo={setarToastInfo}/>} />
           <Route path="/decks/:idDeck/cards" element={<Cards setPropsToastInfo={setarToastInfo}/>} />
           <Route path="/novo" element={<CriarCard mode="criar" setPropsToastInfo={setarToastInfo}/>} />

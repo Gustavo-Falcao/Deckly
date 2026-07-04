@@ -4,8 +4,15 @@ import DeckCreationModal from "../components/DeckCreationModal"
 import type { Deck } from "../types/Deck"
 import { useNavigate } from "react-router-dom"
 import { useHideOnScroll } from "../hooks/useHideOnScroll"
+import type { ToastInfo } from "./App"
+import RemoverDeckModal from "../components/RemoverDeckModal"
 
-function Decks() {
+
+type DecksProps = {
+    setPropsToastInfo: ({ msg, type, isOpen }: ToastInfo) => void;
+}
+
+function Decks( { setPropsToastInfo }: DecksProps ) {
     const navigate = useNavigate()
     const [backGroundModalIsOpen, setBackGroundModalIsOpen] = useState(false)
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
@@ -19,10 +26,18 @@ function Decks() {
     const showTopArea = useHideOnScroll(80)
     const [inputSearchDeck, setInputSearchDeck] = useState("")
     const filteredDecks: Deck[] = decks.filter(deck => deck.name.toLowerCase().includes(inputSearchDeck.toLowerCase())) || []
+    const [modeFormDeck, setModeFormDeck] = useState<"" | "create" | "edit">("")
+    const [deckToEdit, setDeckToEdit] = useState<Deck | undefined>(undefined)
+    const [isFormDeckModalOpen, setIsFormDeckModalOpen] = useState(false)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [modalMode, setModalMode] = useState<"" | "deckForm" | "delete">("")
 
+    console.log("modal mode => " + modalMode)
+    console.log("mode form deck => " + modeFormDeck)
 
     function handleCreateDeck(deck: Deck) {
         setDecks((prev) => [...prev, deck])
+        setIsFormDeckModalOpen(false)
         setBackGroundModalIsOpen(false)
     }
 
@@ -65,23 +80,88 @@ function Decks() {
         navigate(`/decks/${deckId}/cards`);
     }
 
-    const listOfDeck = filteredDecks.map(deck => 
-        <button 
-        className="deck-card" 
-        data-deck-id={deck.id}
-        key={deck.id}
-        onClick={() => abrirDeck(deck.id)}
-        >
-            <span className="deck-emoji">
-                {escapeHtml(deck.emoji || "📚")}
-            </span>
-            <span>
-            <h3 className="deck-name">{escapeHtml(deck.name)}</h3>
-            <p className="deck-count">{deck.cards.length} {deck.cards.length === 1 ? "card" : "cards"}</p>
-            </span>
-        </button>
-    )
+    function abrirFormCreateDeck() {
+        setModeFormDeck("create")
+        setModalMode("deckForm")
+        setIsFormDeckModalOpen(true)
+        setBackGroundModalIsOpen(true)
+    }
+
+    function abrirFormEditDeck(deckId: string, event: React.MouseEvent<HTMLDivElement>) {
+        event.stopPropagation()
+        const deck = decks.find(dk => dk.id === deckId)
+        setDeckToEdit(deck)
+        setModeFormDeck("edit")
+        setModalMode("deckForm")
+        setIsFormDeckModalOpen(true)
+        setBackGroundModalIsOpen(true)
+    }
+
+    function saveChangesDeck(updatedDeck: Deck) {
+        setDecks((prevDecks) => 
+            prevDecks.map(deck => 
+                deck.id === updatedDeck.id ? 
+                    updatedDeck 
+                : 
+                    deck
+        ))
+        setDeckToEdit(undefined)
+        setIsFormDeckModalOpen(false)
+        setBackGroundModalIsOpen(false)
+    }
+
+    function abrirDeleteWarning() {
+        setIsFormDeckModalOpen(false)
+        setIsDeleteModalOpen(true)
+        setModalMode("delete")
+    }
+
+    function fecharDeleteWarning() {
+        setIsFormDeckModalOpen(true)
+        setIsDeleteModalOpen(false)
+        setModalMode("deckForm")
+    }
+
+    function deletarDeck() {
+        setDecks((prevDecks) => prevDecks.filter(deck => deck.id !== deckToEdit?.id))
+        setIsDeleteModalOpen(false)
+        setBackGroundModalIsOpen(false)
+        setPropsToastInfo({
+            msg: "Deck deletado com sucesso!",
+            type: "success",
+            isOpen: true
+        })
+    }
     
+    const listOfDeck = filteredDecks.map(deck => 
+    <button 
+    className="deck-card" 
+    data-deck-id={deck.id}
+    key={deck.id}
+    onClick={() => abrirDeck(deck.id)}
+    >
+        <div 
+        className="deck-card-edit" 
+        data-edit-deck-id="${deck.id}" 
+        aria-label="Editar deck" 
+        
+        onClick={(event) => abrirFormEditDeck(deck.id, event)}
+        >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="5" r="1.8" fill="currentColor" />
+                <circle cx="12" cy="12" r="1.8" fill="currentColor" />
+                <circle cx="12" cy="19" r="1.8" fill="currentColor" />
+            </svg>
+        </div>
+        <span className="deck-emoji">
+            {escapeHtml(deck.emoji || "📚")}
+        </span>
+        <span>
+        <h3 className="deck-name">{escapeHtml(deck.name)}</h3>
+        <p className="deck-count">{deck.cards.length} {deck.cards.length === 1 ? "card" : "cards"}</p>
+        </span>
+    </button>
+    )
 
     return (
     <>
@@ -96,7 +176,7 @@ function Decks() {
                     className="icon-btn" 
                     id="openDeckModal" 
                     aria-label="Criar deck"
-                    onClick={() => setBackGroundModalIsOpen(true)}
+                    onClick={abrirFormCreateDeck}
                     >
                         <svg 
                         viewBox="0 0 24 24" 
@@ -151,11 +231,30 @@ function Decks() {
 
         <ModalBackGround 
         isOpen={backGroundModalIsOpen} 
-        modalOpen="deck-create"
-        onClose={() => setBackGroundModalIsOpen(false)}> 
+        modalOpen={modalMode}
+        onClose={() => {
+            setBackGroundModalIsOpen(false)
+            setDeckToEdit(undefined)
+            setIsFormDeckModalOpen(false)
+            }}> 
             <DeckCreationModal 
-            onClose={() => setBackGroundModalIsOpen(false)}
-            onCreateDeck={handleCreateDeck}
+            isOpen={isFormDeckModalOpen}
+            onClose={() => {
+                setBackGroundModalIsOpen(false)
+                setModeFormDeck("")
+                setDeckToEdit(undefined)
+            }}
+            onSubmit={modeFormDeck === "create" ? handleCreateDeck : saveChangesDeck}
+            mode={modeFormDeck}
+            deck={deckToEdit}
+            setPropsToastInfo={setPropsToastInfo}
+            onDelete={abrirDeleteWarning}
+            />
+            <RemoverDeckModal 
+            isOpen={isDeleteModalOpen}
+            deck={deckToEdit}
+            onDelete={deletarDeck}
+            onClose={fecharDeleteWarning}
             />
         </ModalBackGround>
     </>

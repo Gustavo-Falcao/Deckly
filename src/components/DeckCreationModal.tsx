@@ -1,29 +1,67 @@
 import { useState } from "react"
 import type { Deck } from "../types/Deck"
 import { createDeck } from "../helpers/objectsCreation"
+import type { ToastInfo } from "../pages/App"
 
 type DeckCreationModalProps = {
+    isOpen: boolean
     onClose: () => void
-    onCreateDeck: (deck: Deck) => void
+    onSubmit: (deck: Deck) => void
+    mode: "create" | "edit" | ""
+    deck: Deck | undefined
+    setPropsToastInfo: ({ msg, type, isOpen }: ToastInfo) => void;
+    onDelete: () => void
 }
 
-function DeckCreationModal({ onClose, onCreateDeck }: DeckCreationModalProps) {
-//colocar state dos inputs e pegar parametro da funcao de setar os decks
-    const [inputNome, setInputNome] = useState("")
-    const [inputEmoji, setInputEmoji] = useState("")
+function DeckCreationModal({ isOpen, onClose, onSubmit, mode, deck, setPropsToastInfo, onDelete }: DeckCreationModalProps) {
+    const [inputNome, setInputNome] = useState<string>((): string => {
+        return deck ? deck.name : ""
+    })
+    const [inputEmoji, setInputEmoji] = useState<string>((): string => {
+        return deck ? deck.emoji : ""
+    })
 
-    function createDeckWithSimpleValidation() {
+    function submitDeckWithSimpleValidation() {
         if(inputNome.trim().length < 1) {
-            alert("O card deve ter um nome")
+            setPropsToastInfo({
+                msg: "O deck deve ter um nome!",
+                type: "error",
+                isOpen: true
+            })
             return
         }
 
-        onCreateDeck(createDeck(inputNome, inputEmoji))
+        if(mode === "edit") {
+            if(!deck) {
+                setPropsToastInfo({
+                    msg: "O deck para editar é inválido!",
+                    type: "error",
+                    isOpen: true
+                })
+                return
+            }
+            onSubmit(atualizarDeck(deck))
+        } else {
+            onSubmit(createDeck(inputNome, inputEmoji))
+        }
+
+        setPropsToastInfo({
+            msg: `Deck ${mode === "create" ? "criado" : "atualizado"} com sucesso!`,
+            type: "success",
+            isOpen: true
+        })
     }
 
+    function atualizarDeck(deck: Deck): Deck {
+        return {...deck, name: inputNome, emoji: inputEmoji}
+    }
+
+    if(!isOpen) return null
+    
     return (
+
         <div className="sheet">
-            <h2>Novo deck</h2>
+            <h2>{mode === "create" ? "Novo deck" : mode === "edit" ? "Editar deck" : ""}</h2>
             <div className="field">
                 <label htmlFor="deckNameInput">Nome</label>
                 <input
@@ -51,9 +89,9 @@ function DeckCreationModal({ onClose, onCreateDeck }: DeckCreationModalProps) {
                 <button 
                 className="primary-btn" 
                 id="saveDeckBtn"
-                onClick={createDeckWithSimpleValidation}
+                onClick={submitDeckWithSimpleValidation}
                 >
-                    Criar deck
+                    {mode === "create" ? "Criar" : "Salvar"} deck
                 </button>
                 <button 
                 className="secondary-btn" 
@@ -62,6 +100,14 @@ function DeckCreationModal({ onClose, onCreateDeck }: DeckCreationModalProps) {
                 >
                     Cancelar
                 </button>
+                {mode === "edit" && (
+                    <button 
+                    className="danger-btn" 
+                    type="button" 
+                    id="deleteDeckBtn"
+                    onClick={onDelete}
+                    >Excluir deck</button>
+                )}
             </div>
         </div>
     )
