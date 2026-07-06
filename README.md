@@ -1,73 +1,80 @@
-# React + TypeScript + Vite
+# Deckly
+Esse projeto é um webApp desenvolvido para a criação e gerenciamento de decks e cards de estudo voltado para aprimorar o vocabulário. Ele foi pensado para uso direto no navegador, como foco principal em dispositivos móveis. 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Demostração
+[Acessar webApp](https://gustavo-falcao.github.io/Deckly/#/decks)
 
-Currently, two official plugins are available:
+## Tecnologias utilizadas
+- React
+- Vite
+- TypeScript
+- React Router DOM
+- LocalStorage
+- GitHub Pages
+- gh-pages
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Como funciona
+O sistema funciona totalmente no lado do cliente, ou seja, não possui backend nem API externa.
 
-## React Compiler
+Os dados criados pelo usuário são salvos no LocalStorage do navegador.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Armazenamento dos dados
+Os dados são armazenados no localStorage do navegador.
 
-## Expanding the ESLint configuration
+Isso significa que:
+- os dados ficam salvos apenas no dispositivo/navegador usado;
+- não existe sincronização entre aparelhos;
+- se o usuário limpar os dados do navegador, as informações podem ser perdidas;
+- o app não possui login, conta de usuário ou banco de dados externo.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Funcionalidades
+- Criar, editar, excluir decks de estudo
+- Criar, editar, excluir cards dentro de um deck
+- Buscar decks e cards
+- Filtrar cards
+- Treinar os cards de um deck
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Modo de treino
+O modo de treino permite que o usuário pratique os cards cadastrados em um deck.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Durante o treino, o usuário visualiza os significados de cada card de forma aleatória e tenta adivinhar qual é a palavra presente na frase escolhida do deck selecionado e pode revisar seus conteúdos de forma sequencial. Essa funcionalidade foi criada para transformar os cards cadastrados em uma experiência prática de estudo.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+O treino utiliza apenas os significados que tem exemplo com a palavra escondida e dados armazenados localmente no navegador, sem comunicação com API ou banco de dados externo.
+
+## Recomendações de uso
+Embora o webApp funcione no navegador, ele foi pensado principalmente para uso em celulares.
+
+### A melhor forma de utilizar o app: 
+- acessar ele pelo navegador no celular;
+- adicionar a página na homeScreen do celular.
+
+## Limitações
+- O app não possui backend.
+- O app não possui login.
+- Os dados não sincronizam entre dispositivos.
+- Os dados podem ser perdidos caso o usuário limpe o LocalStorage do navegador.
+- O uso é recomendado no mesmo navegador e no mesmo dispositivo.
+
+## Como rodar localmente
+Clone o repositório:
+```bash
+git clone https://github.com/Gustavo-Falcao/Deckly.git
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Instale as dependências:
+```bash
+npm install
 ```
+
+Execute o projeto:
+```bash
+npm run dev
+```
+
+## Deploy
+O projeto foi hospedado no GitHub Pages utilizando a biblioteca gh-pages.
+
+## Melhorias futuras
+- Criar um API própria com autenticação e validação
+- Criar banco de dados
+- Implementar interface para desktop

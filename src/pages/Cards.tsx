@@ -167,9 +167,6 @@ function Cards({ setPropsToastInfo }: CardProps) {
         setSearchParams(newSearchParams)
     }
 
-    //deleteCard
-    //editWarning
-
     function openDeleteCardModal() {
         changeModalMode("delete")
     }

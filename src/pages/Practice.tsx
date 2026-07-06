@@ -107,18 +107,6 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
         }
     }
 
-    // function setarRespostaErradaTeste() {
-    //     setIsRespostaErrada(true)
-
-    //     if(keyTimeout.current) {
-    //         clearTimeout(keyTimeout.current)
-    //     }
-
-    //     keyTimeout.current = setTimeout(() => {
-    //         setIsRespostaErrada(false)
-    //     }, 6000)
-    // }
-
     function addDays(days: number) {
       const d = new Date();
       d.setDate(d.getDate() + days);

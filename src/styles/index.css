@@ -764,6 +764,10 @@ button {
 .modal-backdrop {
   position: fixed;
   inset: 0;
+  width: 100%;
+  max-width: 430px;
+  margin-left: auto;
+  margin-right: auto;
   background: rgba(12, 18, 30, 0.38);
   display: none;
   align-items: flex-end;

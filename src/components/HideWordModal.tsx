@@ -18,24 +18,6 @@ function HideWordModal({isOpen, onClose, exampleText, onSave, wordCurrentlyHide}
 
     if(!isOpen || !exampleText) return null
 
-    //PROBLEMA
-    //palavras já escondidas podem ocasionar em ocultacao de outras iguais sem pretencao
-        //ex: 'first my'
-        //separadas eles ficam 'first' 'my'
-        //porem em uma frase pode ter mais de um 'my' e eu nao quero esconder os outros
-    //SOLUCAO
-        //se o target vier somente com uma palavra, todas as ocorrencias dela dentro da frase serao ocultadas
-        //se o target vier com mais de uma palavra:
-            //sera usado a primeira palavra para encontrar a primeira o correncia dela
-            //em seguida, em monto a frase com o tamanho da string passada, pegando pelas posicoes do array
-            //verifico se a frase montada bate com a frase do target
-                //se sim sucesso
-                    //marca as palavras da frase encontrada com true e sai do loop
-                //se nao
-                    //continua percorrendo o array comparando com a primeira palavra da frase repetindo o processo
-
-        
-
     const [arrayWordsExampleText, setArrayWordsExampleText] = useState<WordTokenized[]>(() :WordTokenized[] => {
         const words = separarPalavras(exampleText)
 
