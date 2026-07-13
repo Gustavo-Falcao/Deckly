@@ -5,12 +5,13 @@ import { useEffect, useState, Fragment, useRef } from "react"
 import { createEmptyMeaningPractice } from "../helpers/objectsCreation"
 
 type PracticeProps = {
-    onCloseModoTreino: () => void,
-    decks: Deck[],
-    setDecks: (deck: Deck[]) => void,
-    deckEscolhido: Deck | undefined,
+    onCloseModoTreino: () => void
+    decks: Deck[]
+    setDecks: (deck: Deck[]) => void
+    deckEscolhido: Deck | undefined
     meaningsToPractice: MeaningPractice[]
     setMeaningsToPractice: (newMeaningsToPractice: MeaningPractice[]) => void
+    mode: "practice" | "review" | null
 }
 
 type TrainSession = {
@@ -38,6 +39,8 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
 
     useEffect(() => {
         console.log(decks)
+        console.log("Meanings to practice passado como argumento abaixo")
+        console.log(meaningsToPractice)
     }, [])
 
     useEffect(() => {
@@ -122,6 +125,8 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
             updated.interval = 1;
             updated.nextReviewDate = addDays(1);
             updated.done = true;
+            updated.isInReview = true;
+            console.log("Retorno do obj updated para review => " + updated.isInReview)
             return updated;
         }
 
@@ -149,6 +154,8 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
         updated.interval = newInterval;
         updated.nextReviewDate = addDays(newInterval);
         updated.done = true;
+        if(updated.easeFactor < 2.5) updated.isInReview = true 
+
         return updated;
     }
 
@@ -165,7 +172,13 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
             const updatedDeck = decks.map(deck => deck.id === idDeck ?
                 {...deck, cards: deck.cards.map(card => card.id === currentMeaningPracticeUpdated.idCard ? 
                     {...card, meanings: card.meanings.map(meaning => meaning.id === currentMeaningPracticeUpdated.id ?
-                        {...meaning, nextReviewDate: currentMeaningPracticeUpdated.nextReviewDate, interval: currentMeaningPracticeUpdated.interval, repetitions: currentMeaningPracticeUpdated.repetitions, easeFactor: currentMeaningPracticeUpdated.easeFactor} 
+                        {...meaning, 
+                            nextReviewDate: currentMeaningPracticeUpdated.nextReviewDate,
+                            interval: currentMeaningPracticeUpdated.interval,
+                            repetitions: currentMeaningPracticeUpdated.repetitions, 
+                            easeFactor: currentMeaningPracticeUpdated.easeFactor,
+                            isInReview: currentMeaningPracticeUpdated.isInReview
+                        } 
                         : 
                         meaning
                     )}
@@ -321,7 +334,6 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
                             className={`train-check-btn ${isRespostaCorreta || isRespostaErrada ? 'hide' : ''}`}
                             id="trainCheckBtn"
                             onClick={verificarResposta}
-                            
                             >Verificar</button>
                         </div>
 

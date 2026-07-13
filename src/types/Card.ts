@@ -26,6 +26,7 @@ export type Meaning = {
     interval: number;
     repetitions: number;
     easeFactor: number;
+    isInReview: boolean;
 };
 
 export type MeaningFormData = {
@@ -82,5 +83,6 @@ export type MeaningPractice = {
     interval: number;
     repetitions: number;
     easeFactor: number;
-    done: boolean
+    done: boolean;
+    isInReview: boolean;
 }

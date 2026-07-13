@@ -415,6 +415,7 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
             interval: 0,
             repetitions: 0,
             easeFactor: 2.5,
+            isInReview: false
         }))
 
         const card: Card = {
@@ -463,8 +464,11 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
                 if(meaningForm.id === meaning.id) {
                     meaningsAtualizado.push({
                         ...meaningForm, 
-                        nextReviewDate: meaning.nextReviewDate, interval: meaning.interval, 
-                        repetitions: meaning.repetitions, easeFactor: meaning.easeFactor
+                        nextReviewDate: meaning.nextReviewDate, 
+                        interval: meaning.interval, 
+                        repetitions: meaning.repetitions, 
+                        easeFactor: meaning.easeFactor,
+                        isInReview: meaning.isInReview
                     })
                     meaningInserido = true
                     break
@@ -477,7 +481,8 @@ function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
                     nextReviewDate: new Date().toISOString(),
                     interval: 0,
                     repetitions: 0,
-                    easeFactor: 2.5
+                    easeFactor: 2.5,
+                    isInReview: false
                 })
             }
         }

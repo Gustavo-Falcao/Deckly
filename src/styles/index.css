@@ -1139,6 +1139,9 @@ button {
 
 .practice-bar {
   margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .practice-btn {
@@ -1156,6 +1159,13 @@ button {
   font-size: 1rem;
 }
 
+.practice-btn.mistakes-btn {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 10px 26px rgba(24, 33, 54, 0.08);
+  border: 1px solid var(--line);
+}
+
 .practice-btn:disabled {
   opacity: 0.45;
   box-shadow: none;
@@ -1168,6 +1178,12 @@ button {
   padding: 3px 10px;
   font-size: 0.78rem;
   font-weight: 900;
+}
+
+
+.due-badge.miss-badge {
+  background: var(--pink-soft);
+  color: var(--pink);
 }
 
 .train-header {

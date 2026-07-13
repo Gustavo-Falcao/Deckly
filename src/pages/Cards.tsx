@@ -41,6 +41,7 @@ function Cards({ setPropsToastInfo }: CardProps) {
     const showTopArea = useHideOnScroll(80)
     const isModalEditWarningOpen = modalMode === "warning"
     const [isPracticeActive, setIsPracticeActive] = useState(false)
+    const [modePractice, setModePractice] = useState<"practice" | "review" | null>(null)
 
     const [decks, setDecks] = useState<Deck[]>(() :Deck[] => {
                 const valorLocalStorage = localStorage.getItem("_DECKS_")
@@ -62,7 +63,21 @@ function Cards({ setPropsToastInfo }: CardProps) {
     const nomeEditCard = deckEscolhido?.helperCard.edit?.name 
     const [inputSearchCard, setInputSearchCard] = useState("")
     const filteredCards: Card[] = getCardsFiltrados(deckEscolhido, inputSearchCard, filterModeCard)
-    const [meaningsToPractice, setMeaningsToPractice] = useState<MeaningPractice[]>(() => carregarMeaninsPractice())
+    const [meaningsToPractice, setMeaningsToPractice] = useState<MeaningPractice[]>([])
+    const [meaningsToReview, setMeaningsToReview] = useState<MeaningPractice[]>([])
+
+    useEffect(() => {
+        setMeaningsToPractice(carregarMeaninsPractice())
+        setMeaningsToReview(carregarMeaningsToReview())
+    }, [])
+
+    console.log("Decks atualizado abaixo")
+    console.log(decks)
+    console.log("Meanings to practice abaixo")
+    console.log(meaningsToPractice)
+    console.log("Meanings to review abaixo")
+    console.log(meaningsToReview)
+    
 
     useEffect(() => {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
@@ -70,11 +85,69 @@ function Cards({ setPropsToastInfo }: CardProps) {
 
     useEffect(() => {
         setMeaningsToPractice(carregarMeaninsPractice())
+        setMeaningsToReview(carregarMeaningsToReview())
     }, [idDeck])
+
+    useEffect(() => {
+        setMeaningsToReview(carregarMeaningsToReview())
+    }, [meaningsToPractice])
  
+    function carregarMeaningsToReview() {
+        if(!deckEscolhido) return []
+
+        const cardsCurrentDeck: Card[] = deckEscolhido.cards
+        let meaningsReviewArray: MeaningPractice[] = []
+
+        for(const card of cardsCurrentDeck) {
+            const meanings = card.meanings
+            const meaningsToBeReviewed = meanings.filter(m => m.isInReview === true)
+            console.log("Quantidade meanings com o inReview true => " + meaningsToBeReviewed.length)
+            if(meaningsToBeReviewed.length > 0) {
+
+                for(let i = 0; i < meaningsToBeReviewed.length; i++) {
+                    
+                    const exemplos = meaningsToBeReviewed[i].examples
+    
+                    const exemplosValidos = exemplos.filter(ex => ex.targetToBeHidden && ex.targetToBeHidden !== "")
+    
+                    let example: Example | undefined
+                    
+                    if(exemplosValidos.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * exemplosValidos.length)
+                        example = exemplosValidos[randomIndex]
+                        
+                        const meaningReviewObject: MeaningPractice = {
+                            id: meaningsToBeReviewed[i].id,
+                            idCard: card.id,
+                            generalContext: card.context,
+                            meaningContexts: meaningsToBeReviewed[i].contexts,
+                            meaningDefinition: meaningsToBeReviewed[i].definition,
+                            sentence: example?.text || "",
+                            tempoVerbal: example.tempoVerbal || undefined,
+                            modoVerbal: example.modoVerbal || undefined,
+                            targetResult: example?.targetToBeHidden || "",
+                            nextReviewDate: meaningsToBeReviewed[i].nextReviewDate,
+                            interval: meaningsToBeReviewed[i].interval,
+                            repetitions: meaningsToBeReviewed[i].repetitions,
+                            easeFactor: meaningsToBeReviewed[i].easeFactor,
+                            done: false,
+                            isInReview: meaningsToBeReviewed[i].isInReview
+                        }
+                        
+                        meaningsReviewArray.push(meaningReviewObject)
+                    }    
+                }
+            }
+        }
+
+        return meaningsReviewArray
+    }
+
     function carregarMeaninsPractice(): MeaningPractice[] {
         if(!deckEscolhido) return []
 
+        console.log("Deck escolhido que está sendo utilizado abaixo")
+        console.log(deckEscolhido.cards)
         const cardsCurrentDeck: Card[] = deckEscolhido.cards
         let meaningsPracticeArray: MeaningPractice[] = []
 
@@ -115,7 +188,8 @@ function Cards({ setPropsToastInfo }: CardProps) {
                             interval: meaningsToBePracticed[i].interval,
                             repetitions: meaningsToBePracticed[i].repetitions,
                             easeFactor: meaningsToBePracticed[i].easeFactor,
-                            done: false
+                            done: false,
+                            isInReview: meaningsToBePracticed[i].isInReview
                         }
                         
                         meaningsPracticeArray.push(meaningPracticeObject)
@@ -318,8 +392,11 @@ function Cards({ setPropsToastInfo }: CardProps) {
                 if(meaningForm.id === meaning.id) {
                     meaningsAtualizado.push({
                         ...meaningForm, 
-                        nextReviewDate: meaning.nextReviewDate, interval: meaning.interval, 
-                        repetitions: meaning.repetitions, easeFactor: meaning.easeFactor
+                        nextReviewDate: meaning.nextReviewDate, 
+                        interval: meaning.interval, 
+                        repetitions: meaning.repetitions, 
+                        easeFactor: meaning.easeFactor,
+                        isInReview: meaning.isInReview
                     })
                     meaningInserido = true
                     break
@@ -332,7 +409,8 @@ function Cards({ setPropsToastInfo }: CardProps) {
                     nextReviewDate: new Date().toISOString(),
                     interval: 0,
                     repetitions: 0,
-                    easeFactor: 2.5
+                    easeFactor: 2.5,
+                    isInReview: false
                 })
             }
         }
@@ -382,7 +460,7 @@ function Cards({ setPropsToastInfo }: CardProps) {
         navigate(`/decks/${idDeck}/cards/${cardToEdit.id}/editar`)
     }
 
-    function abrirModoTreino() {
+    function abrirModoTreino(mode: "practice" | "review" | null) {
         setSearchParams((params) => {
             const newParams = new URLSearchParams(params)
 
@@ -391,11 +469,13 @@ function Cards({ setPropsToastInfo }: CardProps) {
             return newParams
         })
         setMeaningsToPractice(shuffleArray(meaningsToPractice))
+        setModePractice(mode)
         setIsPracticeActive(true)
     }
 
     function fecharModoTreino() {
         setSearchParams({})
+        setModePractice(null)
         setIsPracticeActive(false)
         setMeaningsToPractice(carregarMeaninsPractice())
     }
@@ -424,6 +504,7 @@ function Cards({ setPropsToastInfo }: CardProps) {
                 deckEscolhido={deckEscolhido}
                 meaningsToPractice={meaningsToPractice}
                 setMeaningsToPractice={setMeaningsToPractice}
+                mode={modePractice}
                 />
             :
             <>
@@ -519,13 +600,25 @@ function Cards({ setPropsToastInfo }: CardProps) {
                         className="practice-btn" 
                         id="practiceBtn"
                         disabled={meaningsToPractice.length === 0}
-                        onClick={abrirModoTreino}
+                        onClick={() => abrirModoTreino("practice")}
                         >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round"/>
-                        </svg>
-                        Praticar Deck
-                        <span className="due-badge" id="dueBadge">{meaningsToPractice.length}</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round"/>
+                            </svg>
+                            Praticar Deck
+                            <span className="due-badge" id="dueBadge">{meaningsToPractice.length}</span>
+                        </button>
+                        <button 
+                        className="practice-btn mistakes-btn" 
+                        id="practiceMistakesBtn"
+                        disabled={meaningsToReview.length === 0}
+                        onClick={() => abrirModoTreino("review")}
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            Praticar mais errados
+                            <span className="due-badge miss-badge" id="missBadge">{meaningsToReview.length}</span>
                         </button>
                     </div>
                 <div className="section-title">

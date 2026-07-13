@@ -76,6 +76,7 @@ export function createEmptyMeaningPractice(): MeaningPractice {
         interval: 0,
         repetitions: 0,
         easeFactor: 0,
-        done: false
+        done: false,
+        isInReview: false
     }
 }
