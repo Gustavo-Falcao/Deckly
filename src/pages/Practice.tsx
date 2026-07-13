@@ -22,7 +22,7 @@ type TrainSession = {
 
 type Quality = "wrong" | "hard" | "good" | "easy" | "repeat"
 
-function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsToPractice, setMeaningsToPractice }: PracticeProps) {
+function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsToPractice, setMeaningsToPractice, mode }: PracticeProps) {
 
     const { idDeck } = useParams<{ idDeck: string }>()
     const [currentMeaningPractice, setCurrentMeaningPractice] = useState<MeaningPractice>(() => carregarCurrentMeaningPractice(meaningsToPractice) ?? createEmptyMeaningPractice())
@@ -36,12 +36,8 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
     const [isRespostaErrada, setIsRespostaErrada] = useState(false)
     const [isRespostaCorreta, setIsRespostaCorreta] = useState(false)
     const keyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    useEffect(() => {
-        console.log(decks)
-        console.log("Meanings to practice passado como argumento abaixo")
-        console.log(meaningsToPractice)
-    }, [])
+    const isModePractice = mode === "practice"
+    const isModeReview = mode === "review"
 
     useEffect(() => {
         setCurrentMeaningPractice(meaningsToPractice[trainSession.current] ?? createEmptyMeaningPractice())
@@ -51,8 +47,6 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
         if((trainSession.total === trainSession.done)) {
             setIsPracticeDone(true)
         }
-        console.log("Train session abaixo")
-        console.log(trainSession)
     }, [trainSession])
 
     function carregarCurrentMeaningPractice(meaningsPractice: MeaningPractice[]): MeaningPractice {
@@ -88,9 +82,9 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
     )
 
     function verificarResposta() {
-        const resposta = inputPalavra.trim()
+        const resposta = inputPalavra.trim().toLowerCase()
         
-        if(resposta === currentMeaningPractice.targetResult) {
+        if(resposta === currentMeaningPractice.targetResult.toLowerCase()) {
             if(keyTimeout.current) {
                 clearTimeout(keyTimeout.current)
             }
@@ -105,7 +99,8 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
             }
 
             keyTimeout.current = setTimeout(() => {
-                handleQualityChoice("wrong")
+                isModePractice && handleQualityChoice("wrong")
+                isModeReview && handleQualityChoiceReviewMode("wrong")
             }, 10000)
         }
     }
@@ -126,7 +121,6 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
             updated.nextReviewDate = addDays(1);
             updated.done = true;
             updated.isInReview = true;
-            console.log("Retorno do obj updated para review => " + updated.isInReview)
             return updated;
         }
 
@@ -208,6 +202,136 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
         setIsRespostaErrada(false)
         setInputPalavra("")
     }
+
+    function handleQualityChoiceReviewMode(quality: Quality) {
+        let newMeaningsToReview: MeaningPractice[] = []
+        
+        if(quality === "hard") {
+            newMeaningsToReview = meaningsToPractice.filter(meaning => meaning.id !== currentMeaningPractice.id)
+            newMeaningsToReview= [...newMeaningsToReview, currentMeaningPractice]
+        }
+        else {
+            const newCurrentMeaningReview = {...currentMeaningPractice}
+    
+            if(quality === "good" || quality === "wrong") {
+                newCurrentMeaningReview.done = true
+                newMeaningsToReview = meaningsToPractice.map(meaning => meaning.id === newCurrentMeaningReview.id ?
+                    {...newCurrentMeaningReview}
+                :
+                    meaning
+                )
+                setTrainSession((prevTrainSession) => ({
+                    ...prevTrainSession,
+                    current: prevTrainSession.current + 1,
+                    done: prevTrainSession.done + 1
+                }))
+            }
+            else if(quality === "easy") {
+                newCurrentMeaningReview.easeFactor = 2.6
+                newCurrentMeaningReview.repetitions = 0
+                newCurrentMeaningReview.interval = 1
+                newCurrentMeaningReview.nextReviewDate = addDays(1)
+                newCurrentMeaningReview.done = true
+                newCurrentMeaningReview.isInReview = false
+                
+                newMeaningsToReview = meaningsToPractice.map(meaning => meaning.id === newCurrentMeaningReview.id ?
+                    {...newCurrentMeaningReview}
+                :
+                    meaning
+                )
+
+                const updatedDeck = decks.map(deck => deck.id === idDeck ?
+                    {...deck, cards: deck.cards.map(card => card.id === newCurrentMeaningReview.idCard ?
+                        {...card, meanings: card.meanings.map(meaning => meaning.id === newCurrentMeaningReview.id ?
+                            {...meaning, 
+                                easeFactor: newCurrentMeaningReview.easeFactor,
+                                repetitions: newCurrentMeaningReview.repetitions,
+                                interval: newCurrentMeaningReview.interval,
+                                nextReviewDate: newCurrentMeaningReview.nextReviewDate,
+                                isInReview: newCurrentMeaningReview.isInReview
+                            }
+                        :
+                            meaning
+                        )}
+                    :
+                        card
+                    )}
+                :
+                    deck
+                )
+
+                setDecks(updatedDeck)
+                setTrainSession((prevTrainSession) => ({
+                    ...prevTrainSession,
+                    current: prevTrainSession.current + 1, 
+                    done: prevTrainSession.done + 1, 
+                }))
+            }
+        }
+
+        setMeaningsToPractice(newMeaningsToReview)
+        setIsRespostaCorreta(false)
+        setIsRespostaErrada(false)
+        setInputPalavra("")
+    }
+
+    const feedbackBtnsPracticeMode = (
+        <>
+            <button 
+            className="feedback-btn hard" 
+            data-quality="hard"
+            onClick={() => handleQualityChoice("hard")}
+            >Difícil
+            <small>Quase não lembrei</small>
+            </button>
+            <button 
+            className="feedback-btn good" 
+            data-quality="good"
+            onClick={() => handleQualityChoice("good")}
+            >
+                Bom<small>Esforcei um pouco</small>
+            </button>
+            <button 
+            className="feedback-btn easy"
+            data-quality="easy"
+            onClick={() => handleQualityChoice("easy")}
+            >
+                Fácil<small>Lembrei na hora</small>
+            </button>
+            <button
+            className="feedback-btn repetir"
+            onClick={() => handleQualityChoice("repeat")}
+            >
+                Repetir<small>Vai para o final da fila</small>
+            </button>
+        </>
+    )
+
+    const feedbackBtnsReviewMode = (
+        <>
+            <button 
+            className="feedback-btn hard" 
+            data-quality="hard"
+            onClick={() => handleQualityChoiceReviewMode("hard")}
+            >Difícil
+            <small>Continuar praticando</small>
+            </button>
+            <button 
+            className="feedback-btn good" 
+            data-quality="good"
+            onClick={() => handleQualityChoiceReviewMode("good")}
+            >
+                Bom<small>Esforcei um pouco</small>
+            </button>
+            <button 
+            className="feedback-btn easy"
+            data-quality="easy"
+            onClick={() => handleQualityChoiceReviewMode("easy")}
+            >
+                Fácil<small>Quero tirar do modo review</small>
+            </button>
+        </>
+    )
 
     return (
         <section className="screen active" id="screen-train">
@@ -340,33 +464,9 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
                         <div className={`train-feedback-section ${isRespostaCorreta ? 'visible' : ''}`} id="trainFeedback">
                             <p className="train-feedback-question">Como foi recuperar essa palavra da memória?</p>
                             <div className="train-feedback-btns">
-                                <button 
-                                className="feedback-btn hard" 
-                                data-quality="hard"
-                                onClick={() => handleQualityChoice("hard")}
-                                >Difícil
-                                <small>Quase não lembrei</small>
-                                </button>
-                                <button 
-                                className="feedback-btn good" 
-                                data-quality="good"
-                                onClick={() => handleQualityChoice("good")}
-                                >
-                                    Bom<small>Esforcei um pouco</small>
-                                </button>
-                                <button 
-                                className="feedback-btn easy"
-                                data-quality="easy"
-                                onClick={() => handleQualityChoice("easy")}
-                                >
-                                    Fácil<small>Lembrei na hora</small>
-                                </button>
-                                <button
-                                className="feedback-btn repetir"
-                                onClick={() => handleQualityChoice("repeat")}
-                                >
-                                    Repetir<small>Vai para o final da fila</small>
-                                </button>
+                                    {isModePractice && feedbackBtnsPracticeMode}
+
+                                    {isModeReview && feedbackBtnsReviewMode}
                             </div>
                         </div>
                     </Fragment>

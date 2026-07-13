@@ -70,15 +70,7 @@ function Cards({ setPropsToastInfo }: CardProps) {
         setMeaningsToPractice(carregarMeaninsPractice())
         setMeaningsToReview(carregarMeaningsToReview())
     }, [])
-
-    console.log("Decks atualizado abaixo")
-    console.log(decks)
-    console.log("Meanings to practice abaixo")
-    console.log(meaningsToPractice)
-    console.log("Meanings to review abaixo")
-    console.log(meaningsToReview)
     
-
     useEffect(() => {
         localStorage.setItem("_DECKS_", JSON.stringify(decks))
     }, [decks])
@@ -87,10 +79,6 @@ function Cards({ setPropsToastInfo }: CardProps) {
         setMeaningsToPractice(carregarMeaninsPractice())
         setMeaningsToReview(carregarMeaningsToReview())
     }, [idDeck])
-
-    useEffect(() => {
-        setMeaningsToReview(carregarMeaningsToReview())
-    }, [meaningsToPractice])
  
     function carregarMeaningsToReview() {
         if(!deckEscolhido) return []
@@ -101,7 +89,6 @@ function Cards({ setPropsToastInfo }: CardProps) {
         for(const card of cardsCurrentDeck) {
             const meanings = card.meanings
             const meaningsToBeReviewed = meanings.filter(m => m.isInReview === true)
-            console.log("Quantidade meanings com o inReview true => " + meaningsToBeReviewed.length)
             if(meaningsToBeReviewed.length > 0) {
 
                 for(let i = 0; i < meaningsToBeReviewed.length; i++) {
@@ -146,8 +133,6 @@ function Cards({ setPropsToastInfo }: CardProps) {
     function carregarMeaninsPractice(): MeaningPractice[] {
         if(!deckEscolhido) return []
 
-        console.log("Deck escolhido que está sendo utilizado abaixo")
-        console.log(deckEscolhido.cards)
         const cardsCurrentDeck: Card[] = deckEscolhido.cards
         let meaningsPracticeArray: MeaningPractice[] = []
 
@@ -461,23 +446,17 @@ function Cards({ setPropsToastInfo }: CardProps) {
     }
 
     function abrirModoTreino(mode: "practice" | "review" | null) {
-        setSearchParams((params) => {
-            const newParams = new URLSearchParams(params)
-
-            newParams.set("isPracticeActive", "true")
-
-            return newParams
-        })
-        setMeaningsToPractice(shuffleArray(meaningsToPractice))
+        modePractice === "practice" ? 
+        setMeaningsToPractice(shuffleArray(meaningsToPractice)) : setMeaningsToReview(shuffleArray(meaningsToReview))
         setModePractice(mode)
         setIsPracticeActive(true)
     }
 
     function fecharModoTreino() {
-        setSearchParams({})
+        setMeaningsToPractice(carregarMeaninsPractice())
+        setMeaningsToReview(carregarMeaningsToReview())
         setModePractice(null)
         setIsPracticeActive(false)
-        setMeaningsToPractice(carregarMeaninsPractice())
     }
 
     function shuffleArray(meaningPractice: MeaningPractice[]): MeaningPractice[] {
@@ -502,8 +481,8 @@ function Cards({ setPropsToastInfo }: CardProps) {
                 decks={decks}
                 setDecks={setDecks}
                 deckEscolhido={deckEscolhido}
-                meaningsToPractice={meaningsToPractice}
-                setMeaningsToPractice={setMeaningsToPractice}
+                meaningsToPractice={modePractice === "practice" ? meaningsToPractice : meaningsToReview}
+                setMeaningsToPractice={modePractice === "practice" ? setMeaningsToPractice : setMeaningsToReview}
                 mode={modePractice}
                 />
             :

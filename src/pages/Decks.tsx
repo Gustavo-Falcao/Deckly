@@ -47,23 +47,6 @@ function Decks( { setPropsToastInfo }: DecksProps ) {
 
     },[decks])
 
-    useEffect(() => {
-        atualizarDadosMeanings()
-    }, [])
-
-
-    function atualizarDadosMeanings() {
-        const newDecks = decks.map(deck => (
-          {...deck, cards: deck.cards.map(card => (
-            {...card, meanings: card.meanings.map(meaning => (
-                {...meaning, isInReview: meaning.easeFactor < 2.5 ? true : false}
-            ))}
-          ))}  
-        ))
-
-        setDecks(newDecks)
-    }
-
     const msgNoDecks = (
         <div 
         className="empty-state" 
