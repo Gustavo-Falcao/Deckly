@@ -2,7 +2,7 @@ import { NavLink, useLocation, useSearchParams } from "react-router-dom"
 
 function BottomNav() {
     const [searchParams] = useSearchParams()
-    const isPracticeActive = searchParams.get("isPracticeActive") === "true"
+    const isPracticeActive = searchParams.get("practiceMode") === "true"
     const location = useLocation();
     const pathname = location.pathname
 

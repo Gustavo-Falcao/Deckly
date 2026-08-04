@@ -449,7 +449,7 @@ button {
     background-color: #f5f5f4; 
 }
 
-.tag-passive {
+.tag.indicative {
     color: #0f766e;           
     background-color: #f0fdfa; 
 }

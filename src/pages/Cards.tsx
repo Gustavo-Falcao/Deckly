@@ -446,6 +446,14 @@ function Cards({ setPropsToastInfo }: CardProps) {
     }
 
     function abrirModoTreino(mode: "practice" | "review" | null) {
+        //aqui
+        setSearchParams((params) => {
+            const newParams = new URLSearchParams(params)
+
+            newParams.set("practiceMode", "true")
+
+            return newParams
+        })
         modePractice === "practice" ? 
         setMeaningsToPractice(shuffleArray(meaningsToPractice)) : setMeaningsToReview(shuffleArray(meaningsToReview))
         setModePractice(mode)
@@ -453,6 +461,7 @@ function Cards({ setPropsToastInfo }: CardProps) {
     }
 
     function fecharModoTreino() {
+        setSearchParams({})
         setMeaningsToPractice(carregarMeaninsPractice())
         setMeaningsToReview(carregarMeaningsToReview())
         setModePractice(null)

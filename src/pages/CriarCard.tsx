@@ -75,7 +75,8 @@ const modoVerbalOptions: ContextOption [] = [
     {value: "conditional", name: "Conditional"},
     {value: "subjunctive", name: "Subjunctive"},
     // {value: "passive voice", name: "Passive Voice"},
-    {value: "infinitive", name: "Infinitive"}
+    {value: "infinitive", name: "Infinitive"},
+    {value: "indicative", name: "Indicative"}
 ]
 
 function CriarCard({ mode, setPropsToastInfo }: CriarCardProps) {
