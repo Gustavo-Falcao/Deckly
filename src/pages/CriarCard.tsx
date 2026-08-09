@@ -59,6 +59,7 @@ const tempoVerbalOptions: ContextOption [] = [
     {value: "Pres. Simple", name: "Pres. Simple"},
     {value: "Pres. Continuous", name: "Pres. Continuous"},
     {value: "Pres. Perfect", name: "Pres. Perfect"},
+    {value: "Pres. Participle", name: "Pres. Participle"},
     {value: "Pres. Perf. Cont.", name: "Pres. Perf. Cont."},
     {value: "Past Simple", name: "Past Simple"},
     {value: "Past Participle", name: "Past Participle"},
