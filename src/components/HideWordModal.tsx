@@ -75,7 +75,7 @@ function HideWordModal({isOpen, onClose, exampleText, onSave, wordCurrentlyHide}
     })
 
     function separarPalavras(text: string): string[] {
-        const textoPreparado = String(text).replace(/([.,!?])/g, ' $1 ');
+        const textoPreparado = String(text).replace(/([.,!?";])/g, ' $1 ');
         
         return textoPreparado.trim().split(/\s+/).filter(Boolean);
     }
