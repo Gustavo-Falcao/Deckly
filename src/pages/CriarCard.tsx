@@ -76,7 +76,6 @@ const modoVerbalOptions: ContextOption [] = [
     {value: "imperative", name: "Imperative"},
     {value: "conditional", name: "Conditional"},
     {value: "subjunctive", name: "Subjunctive"},
-    // {value: "passive voice", name: "Passive Voice"},
     {value: "infinitive", name: "Infinitive"},
     {value: "indicative", name: "Indicative"}
 ]
