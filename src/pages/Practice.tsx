@@ -35,6 +35,7 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
     const [inputPalavra, setInputPalavra] = useState("")
     const [isRespostaErrada, setIsRespostaErrada] = useState(false)
     const [isRespostaCorreta, setIsRespostaCorreta] = useState(false)
+    const [isRespostaEnviada, setIsRespostaEnviada] = useState(false)
     const keyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isModePractice = mode === "practice"
     const isModeReview = mode === "review"
@@ -103,6 +104,14 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
                 isModeReview && handleQualityChoiceReviewMode("wrong")
             }, 10000)
         }
+        setIsRespostaEnviada(true)
+    }
+
+    function handleClickAnimationWrongAnswer() {
+        if(keyTimeout.current) clearTimeout(keyTimeout.current)
+
+        isModePractice && handleQualityChoice("wrong")
+        isModeReview && handleQualityChoiceReviewMode("wrong")
     }
 
     function addDays(days: number) {
@@ -201,6 +210,7 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
         setIsRespostaCorreta(false)
         setIsRespostaErrada(false)
         setInputPalavra("")
+        setIsRespostaEnviada(false)
     }
 
     function handleQualityChoiceReviewMode(quality: Quality) {
@@ -273,6 +283,7 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
         setIsRespostaCorreta(false)
         setIsRespostaErrada(false)
         setInputPalavra("")
+        setIsRespostaEnviada(false)
     }
 
     const feedbackBtnsPracticeMode = (
@@ -417,7 +428,9 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
                         {isRespostaErrada && (
                             <div 
                             className="train-wrong-answer"
-                            id="trainWrongMsg">
+                            id="trainWrongMsg"
+                            onClick={handleClickAnimationWrongAnswer}
+                            >
                                 <svg className="progress-border">
                                     <rect 
                                     className="progress-bg" 
@@ -453,6 +466,7 @@ function Practice({ onCloseModoTreino, decks, setDecks, deckEscolhido, meaningsT
                             spellCheck="false"
                             onChange={(e) => setInputPalavra(e.target.value)}
                             value={inputPalavra}
+                            disabled={isRespostaEnviada}
                             />
                             <button 
                             className={`train-check-btn ${isRespostaCorreta || isRespostaErrada ? 'hide' : ''}`}
